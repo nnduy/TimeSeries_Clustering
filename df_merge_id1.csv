@@ -1,0 +1,29 @@
+,air_store_id,air_genre_name,air_area_name,hc_ward_euclidean,hc_complete_euclidean,hc_complete_l1,hc_complete_l2,hc_complete_manhattan,hc_complete_cosine,hc_average_euclidean,hc_average_l1,hc_average_l2,hc_average_manhattan,hc_average_cosine,hc_single_euclidean,hc_single_l1,hc_single_l2,hc_single_manhattan,hc_single_cosine
+0,air_9438d67241c81314,Italian/French,Fukuoka-ken Fukuoka-shi Daimyō,2,2,0,2,0,1,0,0,0,0,0,0,0,0,0,0
+1,air_638c35eb25e53eea,Italian/French,Fukuoka-ken Fukuoka-shi Daimyō,0,0,2,0,2,0,2,2,2,2,0,0,0,0,0,0
+2,air_6cbe54f0aa30b615,Italian/French,Tōkyō-to Shinjuku-ku Kabukichō,1,1,1,1,1,2,2,2,2,2,0,0,0,0,0,0
+3,air_55c3627912b9c849,Italian/French,Fukuoka-ken Fukuoka-shi Hakata Ekimae,1,1,1,1,1,2,2,2,2,2,0,0,0,0,0,0
+4,air_c31472d14e29cee8,Cafe/Sweets,Fukuoka-ken Fukuoka-shi Daimyō,1,1,1,1,1,0,2,2,2,2,0,0,0,0,0,0
+5,air_a8533b7a992bb0ca,Cafe/Sweets,Tōkyō-to Shibuya-ku Shibuya,0,0,2,0,2,0,2,2,2,2,0,0,0,0,0,0
+6,air_8c119d1f16049f20,Cafe/Sweets,Tōkyō-to Shinjuku-ku Kabukichō,0,0,2,0,2,0,2,2,2,2,0,0,0,0,0,0
+7,air_fab092c35776a9b1,Cafe/Sweets,Fukuoka-ken Fukuoka-shi Momochi,1,1,1,1,1,0,2,2,2,2,0,0,0,0,0,0
+8,air_23ee674e91469086,Cafe/Sweets,Tōkyō-to Koganei-shi Honchō,0,0,2,0,2,0,2,2,2,2,0,0,0,0,0,0
+9,air_b1d822f75c9fc615,Cafe/Sweets,Tōkyō-to Toshima-ku Higashiikebukuro,1,1,1,1,1,0,2,2,2,2,0,0,0,0,0,2
+10,air_232dcee6f7c51d37,Cafe/Sweets,Tōkyō-to Shinjuku-ku Nishishinjuku,1,1,1,1,1,0,2,2,2,2,0,0,0,0,0,0
+11,air_d97dabf7aae60da5,Cafe/Sweets,Tōkyō-to Shibuya-ku Jingūmae,0,0,2,0,2,0,1,2,1,2,0,0,0,0,0,0
+12,air_05c325d315cc17f5,Izakaya,Fukuoka-ken Fukuoka-shi Daimyō,0,0,2,0,2,0,2,2,2,2,0,0,0,0,0,0
+13,air_cb7467aed805e7fe,Izakaya,Fukuoka-ken Fukuoka-shi Daimyō,0,0,2,0,2,0,1,0,1,0,0,0,0,0,0,0
+14,air_5c817ef28f236bdf,Izakaya,Tōkyō-to Shibuya-ku Shibuya,0,0,2,0,2,0,1,0,1,0,0,0,0,0,0,0
+15,air_68301bcb11e2f389,Izakaya,Tōkyō-to Suginami-ku Asagayaminami,0,0,2,0,2,0,2,2,2,2,0,0,0,0,0,0
+16,air_b60cc7d6aee68194,Izakaya,Hiroshima-ken Hiroshima-shi Kokutaijimachi,1,1,1,1,1,0,2,2,2,2,0,0,0,0,0,0
+17,air_f26f36ec4dc5adb0,Izakaya,Tōkyō-to Shinjuku-ku Kabukichō,0,0,2,0,2,0,1,0,1,0,0,0,0,0,0,0
+18,air_2634e41551e9807d,Izakaya,Tōkyō-to Shinjuku-ku Kabukichō,1,1,1,1,1,1,2,2,2,2,2,0,0,0,0,1
+19,air_640cf4835f0d9ba3,Izakaya,Tōkyō-to Ōta-ku Kamata,1,1,0,1,0,1,2,2,2,2,0,0,0,0,0,0
+20,air_b1bb1fae86617d7a,Izakaya,Fukuoka-ken Fukuoka-shi Hakata Ekimae,2,2,0,2,0,1,0,0,0,0,0,2,2,2,2,0
+21,air_a38f25e3399d1b25,Izakaya,Tōkyō-to Chiyoda-ku Kudanminami,2,2,0,2,0,1,0,1,0,1,1,1,1,1,1,0
+22,air_60a7057184ec7ec7,Izakaya,Fukuoka-ken Fukuoka-shi Torikai,0,0,2,0,2,0,1,0,1,0,0,0,0,0,0,0
+23,air_04341b588bde96cd,Izakaya,Tōkyō-to Nerima-ku Toyotamakita,0,0,2,0,2,0,1,0,1,0,0,0,0,0,0,0
+24,air_54d6c25d33f5260e,Izakaya,Fukuoka-ken Fukuoka-shi Shiobaru,2,2,0,2,0,1,0,0,0,0,0,0,0,0,0,0
+25,air_9241121af22ff1d6,Izakaya,Tōkyō-to Katsushika-ku Tateishi,0,0,2,0,2,0,2,2,2,2,0,0,0,0,0,0
+26,air_4cca5666eaf5c709,Izakaya,Tōkyō-to Kōtō-ku Kameido,0,0,2,0,2,0,2,2,2,2,0,0,0,0,0,0
+27,air_3c05c8f26c611eb9,Izakaya,Hiroshima-ken Fukuyama-shi Higashisakuramachi,0,0,0,0,0,2,2,2,2,2,0,0,0,0,0,0

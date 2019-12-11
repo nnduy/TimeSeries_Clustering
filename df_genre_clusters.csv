@@ -1,0 +1,4 @@
+,genre_name,0,hc_ward_euclidean,hc_complete_euclidean,hc_complete_l1,hc_complete_l2,hc_complete_manhattan,hc_complete_cosine,hc_average_euclidean,hc_average_l1,hc_average_l2,hc_average_manhattan,hc_average_cosine,hc_single_euclidean,hc_single_l1,hc_single_l2,hc_single_manhattan,hc_single_cosine
+0,Cafe/Sweets,18,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+1,Dining bar,18,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+2,Izakaya,18,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
