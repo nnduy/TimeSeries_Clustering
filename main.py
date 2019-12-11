@@ -850,18 +850,18 @@ def imputing_all_timeseries(df_store_and_visit, method, floor_percentage):
         list_percents.append(percent)
         # print("num_missing_values_df of serie with percentage:", num_missing_values, i, percent)
 
-        all_imputed_timeseries = pd.concat([all_imputed_timeseries, one_imputed_timeseries], axis=1)
+        # all_imputed_timeseries = pd.concat([all_imputed_timeseries, one_imputed_timeseries], axis=1)
 
-        # # Backup for moving floor_percentage argument before splitting groups
-        # if percent < floor_percentage:
-        #     total_num_missing_values = total_num_missing_values + num_missing_values
-        #     # Concatenate a list of of series to form up an dataframe
-        #     all_imputed_timeseries = pd.concat([all_imputed_timeseries, one_imputed_timeseries], axis=1)
-        #     list_timeseries.append(one_imputed_timeseries)
-        #     # Just to show the last id list
-        #     # if i==store_id_list[-1]:
-        # else:
-        #     list_removed_timeseries_index.append(int(j))
+        # Backup for moving floor_percentage argument before splitting groups
+        if percent < floor_percentage:
+            total_num_missing_values = total_num_missing_values + num_missing_values
+            # Concatenate a list of of series to form up an dataframe
+            all_imputed_timeseries = pd.concat([all_imputed_timeseries, one_imputed_timeseries], axis=1)
+            list_timeseries.append(one_imputed_timeseries)
+            # Just to show the last id list
+            # if i==store_id_list[-1]:
+        else:
+            list_removed_timeseries_index.append(int(j))
 
     # del(store_id_list[list_removed_timeseries_index])
     average_percent = Average(list_percents)
