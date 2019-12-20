@@ -19,7 +19,7 @@ import matplotlib.pyplot as plt
 # from .visualize_input import *
 import matplotlib.patches as mpatches
 from pylab import rcParams
-# from .main  import *
+from dbscan_algorithm import *
 
 # import sklearn
 from sklearn.cluster import DBSCAN
@@ -36,15 +36,15 @@ from sklearn.metrics.pairwise import cosine_similarity
 from scipy import sparse
 from sklearn.metrics import pairwise_distances
 
-ALGORITHMS = ['HIERACHY']
+ALGORITHMS = ['DBSCAN']
 ALGORITHMS_ARG = ['HIERACHY', 'DBSCAN']
-# RES_DATASET = ['air', 'hpg']
-RES_DATASET = ['air']
+RES_DATASET = ['air', 'hpg']
+# RES_DATASET = ['air']
 RES_DATASET_ARG = 'air'
 RESAMPLING_METHOD = ['under']
 RESAMPLING_METHOD_ARG = 'under'
 # SPLIT_GROUPS = [3, 9]
-# SPLIT_FIRST_BY = ['genre', 'area']
+SPLIT_FIRST_BY = ['genre', 'area']
 SPLIT_FIRST_BY_ARG = 'area'
 # split groups arguments always is 9
 # SPLIT_GROUPS_ARG = 9
@@ -53,7 +53,7 @@ SPLIT_FIRST_BY_ARG = 'area'
 IMPUTATION_METHOD = ['median', 'mean']
 IMPUTATION_METHOD_ARG = 'median'
 MAX_MISSING_PERCENTAGE = [28]
-MAX_MISSING_PERCENTAGE_ARG = 75
+MAX_MISSING_PERCENTAGE_ARG = 90
 
 # NUM_OF_HC_CLUSTER = [3, 9]
 NUM_OF_HC_CLUSTER_ARG = 5
@@ -228,8 +228,8 @@ def get_storeinfo_visitdata(df_asi, df_avd, df_hsi, df_hr, RES_DATASET_ARG):
 # output:
 #   df_merged_storeid_visits: dataset after merging store_info_dataset, df_vd
 def merge_store_visit_2nd(store_info_dataset, df_vd):
-    print("Store id dataset before merging - store_info_dataset - store_info_dataset:\n", store_info_dataset)
-    print("Store id dataset and visitor data before merging - df_vd:\n", df_vd)
+    # print("Store id dataset before merging - store_info_dataset - store_info_dataset:\n", store_info_dataset)
+    # print("Store id dataset and visitor data before merging - df_vd:\n", df_vd)
 
     df_merged_storeid_visits = pd.merge(store_info_dataset, df_vd, how='inner', on=['store_id'])
     print("Store id dataset and visitor data after  merging:\n", df_merged_storeid_visits)
@@ -358,7 +358,7 @@ def get_days_different(last_timepoint, first_timepoint):
 def missing_percentage(df, first_timepoint, last_timepoint):
     # date_range_idx = pd.date_range(min_date, max_date)
 
-    print("---------------df\n", df)
+    # print("---------------df\n", df)
     current_num_store_and_visit = df.shape[0]
     print("---------------total_num_rows including stores and visitors:", current_num_store_and_visit)
 
@@ -630,7 +630,7 @@ def imputing_one_timeseries(df, sid, dr_idx, method, column, j):
         series[column] = series[column].fillna(series[column].mean())
         # roundup and convert to int
         series['visitors'] = series['visitors'].apply(lambda x: round(x, 0)).astype(int)
-        print("series['visitors'] after:\n",series['visitors'])
+        # print("series['visitors'] after:\n",series['visitors'])
     elif method == 'median':
         # Median values imputation method
         series['visitors'] = series['visitors'].fillna(series['visitors'].median())
@@ -689,7 +689,7 @@ def imputing_all_timeseries(df_store_and_visit, method):
     min_date, max_date = min_max_first_last_moments(first_moment, last_moment)
     date_range_idx = pd.date_range(min_date, max_date)
 
-    print("Dataframe before imputed - df_store_and_visit:\n", df_store_and_visit)
+    # print("Dataframe before imputed - df_store_and_visit:\n", df_store_and_visit)
 
     store_id_list = df_store_and_visit[store_id].tolist()
     # Removing duplicate values
@@ -720,4 +720,64 @@ df_attrib_1, df_attrib_1_attrib_2 = filtering_splitting_merging(df_asi, df_avd, 
                                 RES_DATASET_ARG, MAX_MISSING_PERCENTAGE_ARG,
                                 SPLIT_FIRST_BY_ARG, RESAMPLING_METHOD_ARG)
 
-visitor_matrix_transposed = imputing_all_timeseries(df_attrib_1_attrib_2, IMPUTATION_METHOD_ARG)
+
+
+
+
+# method: do the clustering for missing values of time series
+def missing_values_clustering(X, ALGORITHMS_ARG, RES_DATASET_ARG, RESAMPLING_METHOD_ARG, SPLIT_GROUPS_ARG,
+                              IMPUTATION_METHOD_ARG, MAX_MISSING_PERCENTAGE_ARG):
+
+    if ALGORITHMS_ARG == 'HIERACHY':
+    #     timeseries_hierachy_clustered = clustering_by_hierachy(visitor_matrix_formatted_values, visitor_matrix_formatted_first_column,
+    #                                                             store_info_dataset, NUM_OF_HC_CLUSTER_ARG)
+    #     print("============================== ARGUMENTS LIST ======================================================")
+    #     print("Alogrithm:", ALGORITHMS_ARG,"-", "Resource dataset:", RES_DATASET_ARG,"-", "Resampling method:", RESAMPLING_METHOD_ARG,"-",
+    #           "Split to 3 or 9 groups:", SPLIT_GROUPS_ARG,"-",
+    #           "Imputation method:", IMPUTATION_METHOD_ARG,"-", "Max missing percentage:", MAX_MISSING_PERCENTAGE_ARG)
+    #
+    #     df = corelation_genre_clusters(timeseries_hierachy_clustered)
+        print("HIERACHY")
+
+    elif ALGORITHMS_ARG == 'DBSCAN':
+        METRIC = ['cityblock', 'cosine', 'euclidean', 'l1', 'l2', 'manhattan']
+        # ['braycurtis', 'canberra', 'chebyshev', 'correlation', 'dice', 'hamming', 'jaccard', 'kulsinski',
+        # 'mahalanobis', 'matching', 'minkowski', 'rogerstanimoto', 'russellrao', 'seuclidean', 'sokalmichener', 'sokalsneath', 'sqeuclidean', 'yule']
+        EPSILON_MIN = [5]
+        EPSILON_MAX = [15000]
+        EPSILON_STEP = [10]
+        MINS = [15]
+        for index, tuple in enumerate(itertools.product(METRIC, EPSILON_MIN, EPSILON_MAX, EPSILON_STEP, MINS)):
+            print("======================= START ", ALGORITHMS_ARG, " ALGORITHMS ===============================")
+            print("tuple [", index,  "]:", tuple)
+            str_tuple = "tuple [", index,  "]:", tuple
+            METRIC_ARG, EPSILON_MIN_ARG, EPSILON_MAX_ARG, EPSILON_STEP_ARG, MINS_ARG = tuple
+            clustering_by_dbscan(X, METRIC_ARG, EPSILON_MIN_ARG, EPSILON_MAX_ARG, EPSILON_STEP_ARG, MINS_ARG)
+    return 1
+
+for index, tuple in enumerate(itertools.product(ALGORITHMS, RES_DATASET, SPLIT_FIRST_BY, RESAMPLING_METHOD,
+                              IMPUTATION_METHOD, MAX_MISSING_PERCENTAGE)):
+    print("=================================== START ======================================================")
+    print("tuple [", index,  "]:", tuple)
+    str_tuple = "tuple [", index,  "]:", tuple
+
+    ALGORITHMS_ARG, RES_DATASET_ARG, SPLIT_FIRST_BY_ARG, RESAMPLING_METHOD_ARG, \
+    IMPUTATION_METHOD_ARG, MAX_MISSING_PERCENTAGE_ARG = tuple
+
+    visitor_matrix_transposed = imputing_all_timeseries(df_attrib_1_attrib_2, IMPUTATION_METHOD_ARG)
+    X = visitor_matrix_transposed.values
+
+    missing_values_clustering(X, ALGORITHMS_ARG, RES_DATASET_ARG, SPLIT_FIRST_BY_ARG, RESAMPLING_METHOD_ARG,
+                              IMPUTATION_METHOD_ARG, MAX_MISSING_PERCENTAGE_ARG)
+
+
+
+
+
+
+
+
+
+
+
+
