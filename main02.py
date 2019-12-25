@@ -20,7 +20,8 @@ import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 from pylab import rcParams
 from dbscan_algorithm import *
-
+from hierachy_algorithm import *
+import copy
 # import sklearn
 from sklearn.cluster import DBSCAN
 # from sklearn.cluster import OPTICS, cluster_optics_dbscan
@@ -44,13 +45,13 @@ RES_DATASET_ARG = 'air'
 RESAMPLING_METHOD = ['under']
 RESAMPLING_METHOD_ARG = 'under'
 # SPLIT_GROUPS = [3, 9]
-SPLIT_FIRST_BY = ['genre', 'area']
+SPLIT_FIRST_BY = ['genre']
 SPLIT_FIRST_BY_ARG = 'area'
 # split groups arguments always is 9
 # SPLIT_GROUPS_ARG = 9
 # IMPUTATION_METHOD = ['median', 'mean', 'linear', 'time', 'index', 'values', 'nearest', 'zero', 'slinear', 'quadratic', 'cubic', 'barycentric',
 #           'krogh', 'polynomial', 'spline', 'piecewise_polynomial', 'from_derivatives', 'pchip', 'akima']
-IMPUTATION_METHOD = ['median', 'mean']
+IMPUTATION_METHOD = ['mean']
 IMPUTATION_METHOD_ARG = 'median'
 MAX_MISSING_PERCENTAGE = [28]
 MAX_MISSING_PERCENTAGE_ARG = 90
@@ -242,7 +243,7 @@ def merge_store_visit_2nd(store_info_dataset, df_vd):
 #   RES_DATASET_ARG: resource dataset argument
 # output:
 #
-def split_store_visit_2nd(df_merged, RES_DATASET_ARG, RESAMPLING_METHOD_ARG):
+def split_store_visit_2nd(df_merged, RES_DATASET_ARG, RESAMPLING_METHOD_ARG, df_asi, df_avd, df_hsi, df_hr):
     print("df_merged:\n", df_merged)
     df_groups_store_id = df_merged
     df_groups_store_id = df_groups_store_id.drop(['visit_date', 'visitors'], axis=1)
@@ -252,7 +253,7 @@ def split_store_visit_2nd(df_merged, RES_DATASET_ARG, RESAMPLING_METHOD_ARG):
     df_groups = df_groups_store_id.groupby(genre_name).count().sort_values(store_id, ascending=False).reset_index()
     print('=== LIST OUT ALL GENRE GROUPS ASCENDING df_groups: === \n', df_groups)
 
-    store_info_dataset, df_vd = get_storeinfo_visitdata(RES_DATASET_ARG)
+    store_info_dataset, df_vd = get_storeinfo_visitdata(df_asi, df_avd, df_hsi, df_hr, RES_DATASET_ARG)
 
     # ========= Overall of 3 genres and 3 locations =========
     # Filtering air_store_info df to 3 main genres
@@ -669,6 +670,23 @@ def imputing_one_timeseries(df, sid, dr_idx, method, column, j):
     # print("imputing_one_timeserie - series 333:\n", series)
     return series
 
+# Method used: Get values of all time series as matrix values
+# input:
+#   visitor_matrix_transposed - Matrix of store id and their visitors after transposed with columns and rows name
+# output:
+#   matrix_values: Contain values of the input matrix
+def split_matrix_values(vmf):
+    print("vmf:\n", vmf)
+    # first_column_values = vmf.iloc[:, 0:1].values
+    # matrix_values = vmf.iloc[:, 1:].values
+
+    first_column_values = vmf.index
+    matrix_values = vmf.iloc[:, 0:].values
+
+    # print("First column values:\n", first_column_values)
+    print("Stacking all timeseries and use it as distance matrix values:\n", matrix_values)
+    return first_column_values, matrix_values
+
 # Create new visitor dataframe
 # input:
 # df - df_store_and_visit : dataframe contains the merge of all store and visits,
@@ -716,62 +734,206 @@ def imputing_all_timeseries(df_store_and_visit, method):
     return all_imputed_timeseries_transposed
 
 
-df_attrib_1, df_attrib_1_attrib_2 = filtering_splitting_merging(df_asi, df_avd, df_hsi, df_hr,
+
+
+
+
+# # ============ Step 10: Find the corelation between genres and clusters ==============
+# Method use: Find the corelation between genres and clusters
+# input:
+#   timeseries_hierachy_clustered      : dataframe contains 3 columns of store id, genres, locations and clusters label
+# output:
+#   df      : dataframe contains corelation between genre groups and clusters
+def corelation_genre_clusters(df):
+    # print("Input dataframe with clustered time series:\n", df)
+
+    df_temp = df
+
+    # Get first column to form up corelation dataframe
+    df_first_col = df_temp.groupby([genre_name]).size()
+    df_first_col = df_first_col.to_frame(name = 'size').reset_index()
+    # print("df_first_col: \n", df_first_col)
+
+    # Create a new empty corelation dataframe
+    df_corelation_genre_clusters = pd.DataFrame()
+    # Concatenate the new empty corelation dataframe with first column dataframe
+    # df_corelation_genre_clusters = pd.concat([df_corelation_genre_clusters, df_first_col], axis=1)
+
+    # Loop from the first cluster column to the end
+    max_col = df.shape[1]
+    for i in range(3, max_col):
+        # Group by genre name and cluster columns
+        df = df_temp.groupby([genre_name, df_temp.columns[i]]).size()
+        print("df====== 222\n:", df)
+        # reset index column
+        df = df.to_frame(name = 'size').reset_index()
+        print("df_merge_id:\n", df)
+        colname = df.columns[1]
+        print("colname = df.columns[pos]:", colname)
+        df_genre_name_cluster = df.groupby([colname, 'genre_name']).agg({'size': 'sum'})
+        print("df_genre_name_cluster:\n", df_genre_name_cluster)
+
+        # Calculate percentage for each genres by cluster
+        cluster_percentages = df_genre_name_cluster.groupby(level=0).apply(lambda x:
+                                                 100 * x / float(x.sum()))
+        cluster_percentages = cluster_percentages.reset_index()
+        print("cluster_percentages:\n", cluster_percentages)
+        cluster_percentages = cluster_percentages.round({'size': 1}).fillna(0)
+
+        # Pivot table and fill nan value
+        cluster_percentages_pivot = cluster_percentages.pivot_table(index=colname, columns='genre_name', values='size', aggfunc='max')
+        cluster_percentages_pivot = cluster_percentages_pivot.fillna(0)
+        cluster_percentages_pivot = cluster_percentages_pivot.reset_index()
+        # Get list of column names level 0
+        # cluster_percentages_pivot = cluster_percentages_pivot.reset_index(drop=True,level=0)
+        print("cluster_percentages after using pivot:\n", cluster_percentages_pivot)
+
+
+        # # Groupby genre again to get maximum size of appearances clusters
+        # idx = df.groupby([genre_name])['size'].transform(max) == df['size']
+        # df = df[idx]
+        # print("df====== 333:\n", df)
+        #
+        # str_column_name = df.columns[1]
+        # # print("str_column_name:", str_column_name)
+        #
+        # df = df.groupby(genre_name)[str_column_name].apply(lambda x: ','.join(map(str, x))).reset_index()
+        # print("df====== 444 : \n", df)
+        # df = df[[str_column_name]]
+        # print("df====== 555 : \n", df)
+
+        # Concatenate each result dataframe from each hierachy clustering arguments group
+        df_corelation_genre_clusters = pd.concat([df_corelation_genre_clusters, cluster_percentages_pivot], axis=1)
+
+    # Concatenate a list of dataframes
+    df_corelation_genre_clusters= df_corelation_genre_clusters.reset_index()
+
+    return df_corelation_genre_clusters
+
+# method: do the clustering for missing values of time series
+# def missing_values_clustering(X, ALGORITHMS_ARG, RES_DATASET_ARG, SPLIT_FIRST_BY_ARG,
+#                               RESAMPLING_METHOD_ARG,IMPUTATION_METHOD_ARG, MAX_MISSING_PERCENTAGE_ARG,
+#                               df_imputation_level):
+def missing_values_clustering(df_imputation):
+    print("df_imputation_level input missing_values_clustering:\n", df_imputation)
+    imputation_dbscan_index = 0
+    list_cols = list(df_imputation.columns.values)
+    list_cols.extend(['METRIC_ARG', 'EPSILON_MIN_ARG', 'EPSILON_MAX_ARG', 'EPSILON_STEP_ARG', 'MINS_ARG'])
+    df_imputation_dbscan = pd.DataFrame(columns=list_cols)
+
+    for i, row in df_imputation.iterrows():
+        if df_imputation.iloc[i]['ALGORITHMS_ARG'] == 'HIERACHY':
+            # timeseries_hierachy_clustered = clustering_by_hierachy(X, X_first_column,
+            #                                                         store_info_dataset, NUM_OF_HC_CLUSTER_ARG)
+            # print("============================== ARGUMENTS LIST ======================================================")
+            # print("Alogrithm:", ALGORITHMS_ARG,"-", "Resource dataset:", RES_DATASET_ARG,"-", "Resampling method:", RESAMPLING_METHOD_ARG,"-",
+            #       "Imputation method:", IMPUTATION_METHOD_ARG,"-", "Max missing percentage:", MAX_MISSING_PERCENTAGE_ARG)
+            #
+            # df = corelation_genre_clusters(timeseries_hierachy_clustered)
+            print("HIERACHYHIERACHYHIERACHYHIERACHYHIERACHY")
+
+        elif df_imputation.iloc[i]['ALGORITHMS_ARG'] == 'DBSCAN':
+
+
+            # print("df_result_dbscan2:", df_imputation_dbscan)
+
+            # df_imputation_dbscan = copy.deepcopy(df_imputation_level)
+
+            METRIC = ['euclidean', 'manhattan']
+            # METRIC = ['cityblock', 'cosine', 'euclidean', 'l1', 'l2', 'manhattan']
+            # ['braycurtis', 'canberra', 'chebyshev', 'correlation', 'dice', 'hamming', 'jaccard', 'kulsinski',
+            # 'mahalanobis', 'matching', 'minkowski', 'rogerstanimoto', 'russellrao', 'seuclidean', 'sokalmichener', 'sokalsneath', 'sqeuclidean', 'yule']
+            EPSILON_MIN = [5]
+            EPSILON_MAX = [15000]
+            EPSILON_STEP = [10]
+            MINS = [3]
+            for index, tuple in enumerate(itertools.product(METRIC, EPSILON_MIN, EPSILON_MAX, EPSILON_STEP, MINS)):
+                print("======================= START ", ALGORITHMS_ARG, " ALGORITHMS ===============================")
+                print("tuple [", index,  "]:", tuple)
+                METRIC_ARG, EPSILON_MIN_ARG, EPSILON_MAX_ARG, EPSILON_STEP_ARG, MINS_ARG = tuple
+
+
+                imputation_dbscan_index = imputation_dbscan_index + 1
+                # print("maxmaxmaxmaxmaxmaxmax:", max)
+                # print("i_i_i_i_i_i_i_i_i_i_i_i:", i)
+                # print("indexindexindexindex:", index)
+
+                df_imputation_dbscan.loc[imputation_dbscan_index] = [df_imputation.iloc[i]['X_first_column']] + [df_imputation.iloc[i]['X']]\
+                                                + [df_imputation.iloc[i]['ALGORITHMS_ARG']] + [df_imputation.iloc[i]['RES_DATASET_ARG']]\
+                                                + [df_imputation.iloc[i]['SPLIT_FIRST_BY_ARG']] + [df_imputation.iloc[i]['RESAMPLING_METHOD_ARG']]\
+                                                + [df_imputation.iloc[i]['IMPUTATION_METHOD_ARG']] + [df_imputation.iloc[i]['MAX_MISSING_PERCENTAGE_ARG']]\
+                                                + [METRIC_ARG] + [EPSILON_MIN_ARG] + [EPSILON_MAX_ARG] + [EPSILON_STEP_ARG] + [MINS_ARG]
+
+                result_list = clustering_by_dbscan(df_imputation.iloc[i]['X'], METRIC_ARG,
+                                                   EPSILON_MIN_ARG, EPSILON_MAX_ARG, EPSILON_STEP_ARG, MINS_ARG)
+
+                # print("DBSCANDBSCANDBSCANDBSCANDBSCANDBSCAN\n", df_imputation_dbscan)
+                # print("df_result_cluster_dbscan before:\n", df_imputation_dbscan)
+                # df_imputation_dbscan.loc = [MINS_ARG]
+                # df_imputation_dbscan.loc[:, 'MINS_ARG'] = [MINS_ARG]
+                # df_imputation_dbscan = df_imputation_dbscan.append(pd.DataFrame({'MINS_ARGMINS_ARG:': MINS_ARG},
+                #                                                                 index=[0]), ignore_index=False, sort=False)
+
+                # df_result_cluster_dbscan = pd.concat([df_result_cluster_dbscan,pd.DataFrame(columns=['MINS'])])
+                # result_list.append([labels, nclusters, n_noise_, percent_of_noise, eps])
+
+                # EPSILON_ARG, MINS_ARG, nclusters_arg, n_noise_arg, percent_of_noise_arg, labels_arg = tuple
+                # print("tuple tuple:\n", EPSILON_ARG, MINS_ARG, nclusters_arg, n_noise_arg, percent_of_noise_arg, labels_arg)
+                # print("Testing X matrix values:\n", X)
+                # print("labels:", labels)
+                # if 'MINS_ARG' not in df_result_cluster_dbscan.columns:
+                #     # df_result_cluster_dbscan.insert(loc=7, column='METRIC_ARG', value=METRIC_ARG)
+                #     df_result_cluster_dbscan.insert(loc=7, column='MINS_ARG', value=MINS_ARG)
+                # df_result_cluster_dbscan.loc[index] = [METRIC_ARG] + [MINS_ARG]
+
+            # print("df_result_cluster_dbscan after:\n", df_imputation_dbscan)
+    print("DBSCANDBSCANDBSCANDBSCANDBSCANDBSCAN\n", df_imputation_dbscan)
+
+    return 1
+
+# method: get imputation matrix, which is preparing for clustering
+# input:
+# output:
+#   df_imputation_level: contain imputation level of input dataset arguments
+#                         ['X_first_column', 'ALGORITHMS_ARG', 'RES_DATASET_ARG', 'SPLIT_FIRST_BY_ARG',
+#                         'RESAMPLING_METHOD_ARG', 'IMPUTATION_METHOD_ARG', 'MAX_MISSING_PERCENTAGE_ARG'])
+def get_df_imputation_level(ALGORITHMS, RES_DATASET, SPLIT_FIRST_BY, RESAMPLING_METHOD,
+                                  IMPUTATION_METHOD, MAX_MISSING_PERCENTAGE):
+    df_imputation = pd.DataFrame(columns=['X_first_column', 'X', 'ALGORITHMS_ARG', 'RES_DATASET_ARG', 'SPLIT_FIRST_BY_ARG',
+                                              'RESAMPLING_METHOD_ARG', 'IMPUTATION_METHOD_ARG', 'MAX_MISSING_PERCENTAGE_ARG'])
+    for index, tuple in enumerate(itertools.product(ALGORITHMS, RES_DATASET, SPLIT_FIRST_BY, RESAMPLING_METHOD,
+                                  IMPUTATION_METHOD, MAX_MISSING_PERCENTAGE)):
+        print("=================================== START ======================================================")
+        print("tuple [", index,  "]:", tuple)
+        str_tuple = "tuple [", index,  "]:", tuple
+
+        ALGORITHMS_ARG, RES_DATASET_ARG, SPLIT_FIRST_BY_ARG, RESAMPLING_METHOD_ARG, \
+        IMPUTATION_METHOD_ARG, MAX_MISSING_PERCENTAGE_ARG = tuple
+
+        df_attrib_1, df_attrib_1_attrib_2 = filtering_splitting_merging(df_asi, df_avd, df_hsi, df_hr,
                                 RES_DATASET_ARG, MAX_MISSING_PERCENTAGE_ARG,
                                 SPLIT_FIRST_BY_ARG, RESAMPLING_METHOD_ARG)
 
+        visitor_matrix_transposed = imputing_all_timeseries(df_attrib_1_attrib_2, IMPUTATION_METHOD_ARG)
+        X_first_column, X = split_matrix_values(visitor_matrix_transposed)
+        print("visitor_matrix_transposed:=====================\n", visitor_matrix_transposed)
+        print("X_first_column:\n", X_first_column)
+        print("X:\n", X)
+        print("X shape:\n", X.shape)
+        # store_info_dataset, df_vd = get_storeinfo_visitdata(df_asi, df_avd, df_hsi, df_hr, RES_DATASET_ARG)
 
+        df_imputation.loc[index] = [X_first_column] + [X] + [ALGORITHMS_ARG] + [RES_DATASET_ARG] + [SPLIT_FIRST_BY_ARG] + \
+                                       [RESAMPLING_METHOD_ARG] + [IMPUTATION_METHOD_ARG] + [MAX_MISSING_PERCENTAGE_ARG]
+        # print("df_imputation_level 2:\n", df_imputation)
+    return df_imputation
 
+df_imputation = get_df_imputation_level(ALGORITHMS, RES_DATASET, SPLIT_FIRST_BY, RESAMPLING_METHOD,
+                                  IMPUTATION_METHOD, MAX_MISSING_PERCENTAGE)
 
-
-# method: do the clustering for missing values of time series
-def missing_values_clustering(X, ALGORITHMS_ARG, RES_DATASET_ARG, RESAMPLING_METHOD_ARG, SPLIT_GROUPS_ARG,
-                              IMPUTATION_METHOD_ARG, MAX_MISSING_PERCENTAGE_ARG):
-
-    if ALGORITHMS_ARG == 'HIERACHY':
-    #     timeseries_hierachy_clustered = clustering_by_hierachy(visitor_matrix_formatted_values, visitor_matrix_formatted_first_column,
-    #                                                             store_info_dataset, NUM_OF_HC_CLUSTER_ARG)
-    #     print("============================== ARGUMENTS LIST ======================================================")
-    #     print("Alogrithm:", ALGORITHMS_ARG,"-", "Resource dataset:", RES_DATASET_ARG,"-", "Resampling method:", RESAMPLING_METHOD_ARG,"-",
-    #           "Split to 3 or 9 groups:", SPLIT_GROUPS_ARG,"-",
-    #           "Imputation method:", IMPUTATION_METHOD_ARG,"-", "Max missing percentage:", MAX_MISSING_PERCENTAGE_ARG)
-    #
-    #     df = corelation_genre_clusters(timeseries_hierachy_clustered)
-        print("HIERACHY")
-
-    elif ALGORITHMS_ARG == 'DBSCAN':
-        METRIC = ['cityblock', 'cosine', 'euclidean', 'l1', 'l2', 'manhattan']
-        # ['braycurtis', 'canberra', 'chebyshev', 'correlation', 'dice', 'hamming', 'jaccard', 'kulsinski',
-        # 'mahalanobis', 'matching', 'minkowski', 'rogerstanimoto', 'russellrao', 'seuclidean', 'sokalmichener', 'sokalsneath', 'sqeuclidean', 'yule']
-        EPSILON_MIN = [5]
-        EPSILON_MAX = [15000]
-        EPSILON_STEP = [10]
-        MINS = [15]
-        for index, tuple in enumerate(itertools.product(METRIC, EPSILON_MIN, EPSILON_MAX, EPSILON_STEP, MINS)):
-            print("======================= START ", ALGORITHMS_ARG, " ALGORITHMS ===============================")
-            print("tuple [", index,  "]:", tuple)
-            str_tuple = "tuple [", index,  "]:", tuple
-            METRIC_ARG, EPSILON_MIN_ARG, EPSILON_MAX_ARG, EPSILON_STEP_ARG, MINS_ARG = tuple
-            clustering_by_dbscan(X, METRIC_ARG, EPSILON_MIN_ARG, EPSILON_MAX_ARG, EPSILON_STEP_ARG, MINS_ARG)
-    return 1
-
-for index, tuple in enumerate(itertools.product(ALGORITHMS, RES_DATASET, SPLIT_FIRST_BY, RESAMPLING_METHOD,
-                              IMPUTATION_METHOD, MAX_MISSING_PERCENTAGE)):
-    print("=================================== START ======================================================")
-    print("tuple [", index,  "]:", tuple)
-    str_tuple = "tuple [", index,  "]:", tuple
-
-    ALGORITHMS_ARG, RES_DATASET_ARG, SPLIT_FIRST_BY_ARG, RESAMPLING_METHOD_ARG, \
-    IMPUTATION_METHOD_ARG, MAX_MISSING_PERCENTAGE_ARG = tuple
-
-    visitor_matrix_transposed = imputing_all_timeseries(df_attrib_1_attrib_2, IMPUTATION_METHOD_ARG)
-    X = visitor_matrix_transposed.values
-
-    missing_values_clustering(X, ALGORITHMS_ARG, RES_DATASET_ARG, SPLIT_FIRST_BY_ARG, RESAMPLING_METHOD_ARG,
-                              IMPUTATION_METHOD_ARG, MAX_MISSING_PERCENTAGE_ARG)
-
-
-
+missing_values_clustering(df_imputation)
+#
+#
+# print("df_result_cluster:\n", df_imputation_level)
 
 
 
