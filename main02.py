@@ -39,13 +39,13 @@ from sklearn.metrics import pairwise_distances
 
 ALGORITHMS = ['DBSCAN']
 ALGORITHMS_ARG = ['HIERACHY', 'DBSCAN']
-RES_DATASET = ['air', 'hpg']
+RES_DATASET = ['air']
 # RES_DATASET = ['air']
 RES_DATASET_ARG = 'air'
 RESAMPLING_METHOD = ['under']
 RESAMPLING_METHOD_ARG = 'under'
 # SPLIT_GROUPS = [3, 9]
-SPLIT_FIRST_BY = ['genre', 'area']
+SPLIT_FIRST_BY = ['genre']
 SPLIT_FIRST_BY_ARG = 'area'
 # split groups arguments always is 9
 # SPLIT_GROUPS_ARG = 9
@@ -744,33 +744,139 @@ def imputing_all_timeseries(df_store_and_visit, method):
 #   timeseries_hierachy_clustered      : dataframe contains 3 columns of store id, genres, locations and clusters label
 # output:
 #   df      : dataframe contains corelation between genre groups and clusters
-def corelation_genre_clusters(df):
-    # print("Input dataframe with clustered time series:\n", df)
+# def corelation_genre_clusters(df):
+#     # print("Input dataframe with clustered time series:\n", df)
+#
+#     df_temp = df
+#
+#     # Get first column to form up corelation dataframe
+#     df_first_col = df_temp.groupby([genre_name]).size()
+#     df_first_col = df_first_col.to_frame(name = 'size').reset_index()
+#     # print("df_first_col: \n", df_first_col)
+#
+#     # Create a new empty corelation dataframe
+#     df_corelation_genre_clusters = pd.DataFrame()
+#     # Concatenate the new empty corelation dataframe with first column dataframe
+#     # df_corelation_genre_clusters = pd.concat([df_corelation_genre_clusters, df_first_col], axis=1)
+#
+#     # Loop from the first cluster column to the end
+#     max_col = df.shape[1]
+#     for i in range(3, max_col):
+#         # Group by genre name and cluster columns
+#         df = df_temp.groupby([genre_name, df_temp.columns[i]]).size()
+#         print("df====== 222\n:", df)
+#         # reset index column
+#         df = df.to_frame(name = 'size').reset_index()
+#         print("df_merge_id:\n", df)
+#         colname = df.columns[1]
+#         print("colname = df.columns[pos]:", colname)
+#         df_genre_name_cluster = df.groupby([colname, 'genre_name']).agg({'size': 'sum'})
+#         print("df_genre_name_cluster:\n", df_genre_name_cluster)
+#
+#         # Calculate percentage for each genres by cluster
+#         cluster_percentages = df_genre_name_cluster.groupby(level=0).apply(lambda x:
+#                                                  100 * x / float(x.sum()))
+#         cluster_percentages = cluster_percentages.reset_index()
+#         print("cluster_percentages:\n", cluster_percentages)
+#         cluster_percentages = cluster_percentages.round({'size': 1}).fillna(0)
+#
+#         # Pivot table and fill nan value
+#         cluster_percentages_pivot = cluster_percentages.pivot_table(index=colname, columns='genre_name', values='size', aggfunc='max')
+#         cluster_percentages_pivot = cluster_percentages_pivot.fillna(0)
+#         cluster_percentages_pivot = cluster_percentages_pivot.reset_index()
+#         # Get list of column names level 0
+#         # cluster_percentages_pivot = cluster_percentages_pivot.reset_index(drop=True,level=0)
+#         print("cluster_percentages after using pivot:\n", cluster_percentages_pivot)
+#
+#
+#         # # Groupby genre again to get maximum size of appearances clusters
+#         # idx = df.groupby([genre_name])['size'].transform(max) == df['size']
+#         # df = df[idx]
+#         # print("df====== 333:\n", df)
+#         #
+#         # str_column_name = df.columns[1]
+#         # # print("str_column_name:", str_column_name)
+#         #
+#         # df = df.groupby(genre_name)[str_column_name].apply(lambda x: ','.join(map(str, x))).reset_index()
+#         # print("df====== 444 : \n", df)
+#         # df = df[[str_column_name]]
+#         # print("df====== 555 : \n", df)
+#
+#         # Concatenate each result dataframe from each hierachy clustering arguments group
+#         df_corelation_genre_clusters = pd.concat([df_corelation_genre_clusters, cluster_percentages_pivot], axis=1)
+#
+#     # Concatenate a list of dataframes
+#     df_corelation_genre_clusters= df_corelation_genre_clusters.reset_index()
+#
+#     return df_corelation_genre_clusters
 
-    df_temp = df
+# Method: Adding 4 more pivot columns
+# input:
+#   df_clustered: This dataframe contains all possible columns to calculate pivot table
+# output:
+#   df_clustered_pivot: Return new dataframe contains pivot table which has 4 flatted columns
+#       pivot_labels, pivot_..._1st, pivot_..._2nd, pivot_..._3rd
+def corelation_genre_clusters(df_clustered):
+    # print("df_clustered:", df_clustered)
+    # Iterating row by row
+    for i, row in df_clustered.iterrows():
+        # Create a new dataframe with first columns of X is store_id and it's labels
+        X_first_column = df_clustered.iloc[i]['X_first_column']
+        labels = df_clustered.iloc[i]['labels']
+        labels = convert_labels_to_dataframe(labels)
+        X_first_column = convert_Xfirstcol_to_dataframe(X_first_column)
+        df_clustered_refined = pd.concat([X_first_column, labels], axis=1)
 
-    # Get first column to form up corelation dataframe
-    df_first_col = df_temp.groupby([genre_name]).size()
-    df_first_col = df_first_col.to_frame(name = 'size').reset_index()
-    # print("df_first_col: \n", df_first_col)
+        # Get store_info_dataset and visit date in preparing further
+        RES_DATASET_ARG = df_clustered.iloc[i]['RES_DATASET_ARG']
+        store_info_dataset, df_vd = get_storeinfo_visitdata(df_asi, df_avd, df_hsi, df_hr, RES_DATASET_ARG)
 
-    # Create a new empty corelation dataframe
-    df_corelation_genre_clusters = pd.DataFrame()
-    # Concatenate the new empty corelation dataframe with first column dataframe
-    # df_corelation_genre_clusters = pd.concat([df_corelation_genre_clusters, df_first_col], axis=1)
+        print("df_clustered_refined:\n", df_clustered_refined)
+        print("store_info_dataset:\n", store_info_dataset)
+        print("df_vd:\n", store_info_dataset)
 
-    # Loop from the first cluster column to the end
-    max_col = df.shape[1]
-    for i in range(3, max_col):
-        # Group by genre name and cluster columns
-        df = df_temp.groupby([genre_name, df_temp.columns[i]]).size()
-        print("df====== 222\n:", df)
+        # Merging with store_info_dataset to get genre name and area name
+        df_clustered_refined = pd.merge(store_info_dataset, df_clustered_refined, how='inner', on=[store_id])
+
+        # Get only the first word of area_name
+        df_clustered_refined = format_arename_col_first_word(df_clustered_refined).reset_index(drop=True)
+        print("Final dataframe of time series and their clusters:\n", df_clustered_refined)
+
+        # Create 2 new dataframe ass temporaries for upcoming
+        df_temp = df_clustered_refined
+        df = df_clustered_refined
+        # Choosing between 2 type of split by genre or area
+        if df_clustered.iloc[i]['SPLIT_FIRST_BY_ARG'] == 'genre':
+            group_type = genre_name
+        else: # groupby area name
+            group_type = area_name
+
+        # Get first column to form up corelation dataframe
+        df_first_col = df_temp.groupby([group_type]).size()
+        df_first_col = df_first_col.to_frame(name = 'size').reset_index()
+        print("df_first_col: \n", df_first_col)
+
+        # Create a new empty corelation dataframe
+        df_corelation_genre_clusters = pd.DataFrame()
+        # Concatenate the new empty corelation dataframe with first column dataframe
+        df_corelation_genre_clusters = pd.concat([df_corelation_genre_clusters, df_first_col], axis=1)
+
+        # Loop from the first cluster column to the end
+        # print("df.shape[1] which contain number of columns", df.shape[1])
+        max_col = df.shape[1] - 1
+        # We group it by group_type and last column number 3.
+        # We create pivot table by these columns.
+        print("df====== 111:\n", df)
+
+        # Group by genre name or area name and cluster columns
+        df = df_temp.groupby([group_type, df_temp.columns[max_col]]).size()
+        print("df_temp.columns[j]:\n", df_temp.columns[max_col])
         # reset index column
         df = df.to_frame(name = 'size').reset_index()
         print("df_merge_id:\n", df)
         colname = df.columns[1]
         print("colname = df.columns[pos]:", colname)
-        df_genre_name_cluster = df.groupby([colname, 'genre_name']).agg({'size': 'sum'})
+        df_genre_name_cluster = df.groupby([colname, group_type]).agg({'size': 'sum'})
         print("df_genre_name_cluster:\n", df_genre_name_cluster)
 
         # Calculate percentage for each genres by cluster
@@ -781,34 +887,32 @@ def corelation_genre_clusters(df):
         cluster_percentages = cluster_percentages.round({'size': 1}).fillna(0)
 
         # Pivot table and fill nan value
-        cluster_percentages_pivot = cluster_percentages.pivot_table(index=colname, columns='genre_name', values='size', aggfunc='max')
+        cluster_percentages_pivot = cluster_percentages.pivot_table(index=colname, columns=group_type, values='size', aggfunc='max')
         cluster_percentages_pivot = cluster_percentages_pivot.fillna(0)
         cluster_percentages_pivot = cluster_percentages_pivot.reset_index()
         # Get list of column names level 0
         # cluster_percentages_pivot = cluster_percentages_pivot.reset_index(drop=True,level=0)
-        print("cluster_percentages after using pivot:\n", cluster_percentages_pivot)
+
+        print("cluster_percentages after using pivot:", "\n", cluster_percentages_pivot)
+        print("list(my_dataframe.columns.values):", "\n", list(cluster_percentages_pivot.columns.values))
+        p_labels,group_type_1st,group_type_2nd,group_type_3rd = list(cluster_percentages_pivot.columns.values)
+
+        print("cluster_percentages_pivot[p_labels].values.tolist()      ", cluster_percentages_pivot[p_labels].values.tolist())
+        print("cluster_percentages_pivot[group_type_1st].values.tolist()", cluster_percentages_pivot[group_type_1st].values.tolist())
+        print("cluster_percentages_pivot[group_type_2nd].values.tolist()", cluster_percentages_pivot[group_type_2nd].values.tolist())
+        print("cluster_percentages_pivot[group_type_3rd].values.tolist()", cluster_percentages_pivot[group_type_3rd].values.tolist())
+        s = cluster_percentages_pivot[group_type_1st].values.tolist()
 
 
-        # # Groupby genre again to get maximum size of appearances clusters
-        # idx = df.groupby([genre_name])['size'].transform(max) == df['size']
-        # df = df[idx]
-        # print("df====== 333:\n", df)
-        #
-        # str_column_name = df.columns[1]
-        # # print("str_column_name:", str_column_name)
-        #
-        # df = df.groupby(genre_name)[str_column_name].apply(lambda x: ','.join(map(str, x))).reset_index()
-        # print("df====== 444 : \n", df)
-        # df = df[[str_column_name]]
-        # print("df====== 555 : \n", df)
+        df_clustered.at[i, 'pivot_'+p_labels] = listToString(cluster_percentages_pivot[p_labels].values.tolist())
+        df_clustered.at[i, 'pivot_'+group_type_1st] = listToString(cluster_percentages_pivot[group_type_1st].values.tolist())
+        df_clustered.at[i, 'pivot_'+group_type_2nd] = listToString(cluster_percentages_pivot[group_type_2nd].values.tolist())
+        df_clustered.at[i, 'pivot_'+group_type_3rd] = listToString(cluster_percentages_pivot[group_type_3rd].values.tolist())
 
-        # Concatenate each result dataframe from each hierachy clustering arguments group
-        df_corelation_genre_clusters = pd.concat([df_corelation_genre_clusters, cluster_percentages_pivot], axis=1)
-
-    # Concatenate a list of dataframes
-    df_corelation_genre_clusters= df_corelation_genre_clusters.reset_index()
-
-    return df_corelation_genre_clusters
+    print("df_clustered:", "\n", df_clustered)
+    df_clustered.to_csv("ttess.csv")
+    df_clustered_pivot = df_clustered
+    return df_clustered_pivot
 
 # method: do the clustering for missing values of time series
 # def missing_values_clustering(X, ALGORITHMS_ARG, RES_DATASET_ARG, SPLIT_FIRST_BY_ARG,
@@ -845,7 +949,7 @@ def missing_values_clustering(df_imputation):
             # ['braycurtis', 'canberra', 'chebyshev', 'correlation', 'dice', 'hamming', 'jaccard', 'kulsinski',
             # 'mahalanobis', 'matching', 'minkowski', 'rogerstanimoto', 'russellrao', 'seuclidean', 'sokalmichener', 'sokalsneath', 'sqeuclidean', 'yule']
             EPSILON_MIN = [5]
-            EPSILON_MAX = [160]
+            EPSILON_MAX = [16000]
             EPSILON_STEP = [10]
             MINS = [3]
             for index, tuple in enumerate(itertools.product(METRIC, EPSILON_MIN, EPSILON_MAX, EPSILON_STEP, MINS)):
@@ -921,12 +1025,12 @@ def listToString(s):
     return listToStr
 
 def convert_labels_to_dataframe(labels):
-    labels = labels[1:]
-    labels = labels[:-1]
+    # print("labels 000000000:\n", labels)
+    # print("labels 111111111:\n", labels)
     labels = pd.DataFrame(data=labels)
     labels = labels.astype(int)
     labels.rename(columns = {0:'labels'}, inplace=True)
-    # print("labels:\n", labels)
+    # print("labels 222222222:\n", labels)
     return labels
 
 # Method:  Remove bracket [] characters

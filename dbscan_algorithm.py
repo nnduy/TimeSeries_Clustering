@@ -71,6 +71,82 @@ def percentage(part, whole, digits):
 # # pairwise_DTW = pairwise_distances(visitor_matrix_transposed, metric='euclidean')
 # # print('pairwise_distances euclidean:\n {} \n'.format(pairwise_euclidean))
 
+# # # #############################################################################
+# # # Perform DBSCAN clustering from vector array or distance matrix.
+# # # input:
+# # #       eps: float - The maximum distance between two samples for one to be considered as in the neighborhood of the other.
+# # #       distance_measure: string - The metric to use when calculating distance between instances in a feature array.
+# # #       min_samples: int - The number of samples (or total weight) in a neighborhood for a point to be considered
+# # #           as a core point. This includes the point itself.
+# # def cluster_dbscan(matrix, distance_measure, eps, minS):
+# #     dbs = DBSCAN(eps=eps, metric=distance_measure, min_samples=minS).fit(matrix)
+# #     cluster_labels = dbs.labels_
+# #     core_samples_mask = np.zeros_like(dbs.labels_, dtype=bool)
+# #     core_samples_mask[dbs.core_sample_indices_] = True
+# #     return cluster_labels, core_samples_mask
+#
+# # input:
+# #       distance_measure: string - The metric to use when calculating distance between instances in a feature array.
+# def run_cluster(X, distance_measure, param_min, param_max, param_step, minS):
+#     nrows = X.shape[0]
+#     if nrows <= 1:
+#         raise ValueError("Time-series matrix contains no information. " \
+#                          "Was all of your data filtered out?")
+#     prev_nclusters = 0
+#     break_out = False
+#     parameter_range = np.arange(param_min, param_max, param_step)
+#     actual_parameters = []
+#     cluster_label_matrix = np.empty(shape = (nrows, len(parameter_range)), dtype=int)
+#     result_list = []
+#     for ind, eps in enumerate(parameter_range):
+#         actual_parameters.append(eps)
+#
+#         dbs = DBSCAN(eps=eps, metric=distance_measure, min_samples=minS).fit(X)
+#         labels = dbs.labels_
+#         core_samples_mask = np.zeros_like(dbs.labels_, dtype=bool)
+#         core_samples_mask[dbs.core_sample_indices_] = True
+#
+#         nclusters = len(list(np.unique(labels)))
+#         n_noise_ = list(labels).count(-1)
+#         total_number_of_store = len(labels)
+#         percent_of_noise = percentage(n_noise_, total_number_of_store, 2)
+#         cluster_label_matrix[:, ind] = labels
+#         if nclusters > 1:
+#             break_out = True
+#         # prev_nclusters != nclusters: Choose only one number of cluster - (prev_nclusters != nclusters) &
+#         # nclusters > 2: Number of clusters must be greater than 2
+#         # percent_of_noise<10: percent of noise must be less than 10 percent
+#         if (nclusters > 2) & (percent_of_noise<20):
+#             print('================= RESULTS ========================')
+#             print('Number of the clusters : {}'.format(nclusters))
+#             print('Number of noise points : {}'.format(n_noise_))
+#             print('Percent_of_noise       : {}'.format(percent_of_noise))
+#             print('cluster_labels index   : {}'.format(ind))
+#             print('cluster_labels eps     : {}'.format(eps))
+#             print('cluster_labels list : \n {}'.format(labels))
+#             # X, distance_measure, eps, minS, nclusters, n_noise_, percent_of_noise, labels = tuple
+#             # eps, minS, nclusters, n_noise_, percent_of_noise, labels = tuple
+#
+#             # EPSILON_ARG, MINS_ARG, nclusters_arg, n_noise_arg, percent_of_noise_arg, labels_arg = tuple
+#             # print("tuple tuple:\n", EPSILON_ARG, MINS_ARG, nclusters_arg, n_noise_arg, percent_of_noise_arg, labels_arg)
+#             result_list.append(['<run_cluster>'])
+#             result_list.append([labels, nclusters, n_noise_, percent_of_noise, eps])
+#             result_list.append(['</run_cluster>'])
+#             # print("result_list:", result_list)
+#             print('================= RESULTS ========================')
+#         if (prev_nclusters == 1) & (nclusters == 1) & break_out:
+#           param_max = eps
+#           break
+#         else:
+#           prev_nclusters = nclusters
+#     # Print out the clusters with their sequence IDs
+#     # print('cluster_label_matrix:\n {} \n'.format(cluster_label_matrix))
+#     for i in range(0, cluster_label_matrix.shape[0]):
+#         encoded_labels = [ str(x).encode() for x \
+#                 in cluster_label_matrix[i, 0:len(actual_parameters)] ]
+#     # return labels, nclusters, core_samples_mask
+#     return result_list
+
 # # #############################################################################
 # # Perform DBSCAN clustering from vector array or distance matrix.
 # # input:
@@ -87,73 +163,88 @@ def percentage(part, whole, digits):
 
 # input:
 #       distance_measure: string - The metric to use when calculating distance between instances in a feature array.
-def run_cluster(X, distance_measure, param_min, param_max, param_step, minS):
-    nrows = X.shape[0]
-    if nrows <= 1:
-        raise ValueError("Time-series matrix contains no information. " \
-                         "Was all of your data filtered out?")
-    prev_nclusters = 0
-    break_out = False
-    parameter_range = np.arange(param_min, param_max, param_step)
-    actual_parameters = []
-    cluster_label_matrix = np.empty(shape = (nrows, len(parameter_range)), dtype=int)
-    for ind, eps in enumerate(parameter_range):
-        actual_parameters.append(eps)
+# def clustering_by_dbscan(X, METRIC_ARG, EPSILON_MIN_ARG, EPSILON_MAX_ARG, EPSILON_STEP_ARG, MINS_ARG):
+def clustering_by_dbscan(df_imputation_dbscan):
+    # result_list = clustering_by_dbscan(df_imputation_dbscan.iloc[imputation_dbscan_index]['X'], METRIC_ARG,
+                #                                    EPSILON_MIN_ARG, EPSILON_MAX_ARG, EPSILON_STEP_ARG, MINS_ARG)
+    print("df_imputation_dbscan input clustering_by_dbscan:\n", df_imputation_dbscan)
+    # Creating index for new dataframe
+    imputation_dbscan_arg_index = 0
+    print('type of imputation_dbscan_arg_index: {}', type(imputation_dbscan_arg_index))
+    list_cols = list(df_imputation_dbscan.columns.values)
+    list_cols.extend(['eps', 'labels', 'nclusters', 'n_noise_', 'percent_of_noise'])
+    df_imputation_dbscan_arg = pd.DataFrame(columns=list_cols)
 
-        dbs = DBSCAN(eps=eps, metric=distance_measure, min_samples=minS).fit(X)
-        labels = dbs.labels_
-        core_samples_mask = np.zeros_like(dbs.labels_, dtype=bool)
-        core_samples_mask[dbs.core_sample_indices_] = True
+    for i, row in df_imputation_dbscan.iterrows():
+        print("X:\n", df_imputation_dbscan.iloc[i]['X'])
+        X = df_imputation_dbscan.iloc[i]['X']
+        pairwise_distance_matrix = pairwise_distances(X, metric=df_imputation_dbscan.iloc[i]['METRIC_ARG'])
+        print("pairwise_distance_matrix:\n", pairwise_distance_matrix)
 
-        nclusters = len(list(np.unique(labels)))
-        n_noise_ = list(labels).count(-1)
-        total_number_of_store = len(labels)
-        percent_of_noise = percentage(n_noise_, total_number_of_store, 2)
-        cluster_label_matrix[:, ind] = labels
-        if nclusters > 1:
-            break_out = True
-        # prev_nclusters != nclusters: Choose only one number of cluster - (prev_nclusters != nclusters) &
-        # nclusters > 2: Number of clusters must be greater than 2
-        # percent_of_noise<10: percent of noise must be less than 10 percent
-        if (nclusters > 2) & (percent_of_noise<10):
-            print('================= RESULTS ========================')
-            print('Number of the clusters : {}'.format(nclusters))
-            print('Number of noise points : {}'.format(n_noise_))
-            print('Percent_of_noise       : {}'.format(percent_of_noise))
-            print('cluster_labels index   : {}'.format(ind))
-            print('cluster_labels eps     : {}'.format(eps))
-            print('Noise points           : {}'.format(n_noise_))
-            print('cluster_labels list : \n {}'.format(labels))
-            print('================= RESULTS ========================')
-        if (prev_nclusters == 1) & (nclusters == 1) & break_out:
-          param_max = eps
-          break
-        else:
-          prev_nclusters = nclusters
-    # Print out the clusters with their sequence IDs
-    # print('cluster_label_matrix:\n {} \n'.format(cluster_label_matrix))
-    for i in range(0, cluster_label_matrix.shape[0]):
-        encoded_labels = [ str(x).encode() for x \
-                in cluster_label_matrix[i, 0:len(actual_parameters)] ]
-    return labels, nclusters, core_samples_mask
+        nrows = pairwise_distance_matrix.shape[0]
+        if nrows <= 1:
+            raise ValueError("Time-series matrix contains no information. " \
+                             "Was all of your data filtered out?")
+        prev_nclusters = 0
+        break_out = False
+        EPSILON_MIN_ARG = df_imputation_dbscan.iloc[i]['EPSILON_MIN_ARG']
+        EPSILON_MAX_ARG = df_imputation_dbscan.iloc[i]['EPSILON_MAX_ARG']
+        EPSILON_STEP_ARG = df_imputation_dbscan.iloc[i]['EPSILON_STEP_ARG']
+        METRIC_ARG = df_imputation_dbscan.iloc[i]['METRIC_ARG']
+        MINS_ARG = df_imputation_dbscan.iloc[i]['MINS_ARG']
 
-def clustering_by_dbscan(X, METRIC_ARG, EPSILON_MIN_ARG, EPSILON_MAX_ARG, EPSILON_STEP_ARG, MINS_ARG):
-    print("X:\n", X)
+        parameter_range = np.arange(EPSILON_MIN_ARG, EPSILON_MAX_ARG, EPSILON_STEP_ARG)
+        actual_parameters = []
+        cluster_label_matrix = np.empty(shape = (nrows, len(parameter_range)), dtype=int)
+        result_list = []
+        for ind, eps in enumerate(parameter_range):
+            actual_parameters.append(eps)
+            dbs = DBSCAN(eps=eps, metric=METRIC_ARG, min_samples=MINS_ARG).fit(pairwise_distance_matrix)
+            labels = dbs.labels_
+            # core_samples_mask = np.zeros_like(dbs.labels_, dtype=bool)
+            # core_samples_mask[dbs.core_sample_indices_] = True
 
-    pairwise_distance_matrix = pairwise_distances(X, metric=METRIC_ARG)
-    print("pairwise_distance_matrix:\n", pairwise_distance_matrix)
+            nclusters = len(list(np.unique(labels)))
+            n_noise_ = list(labels).count(-1)
+            total_number_of_store = len(labels)
+            percent_of_noise = percentage(n_noise_, total_number_of_store, 2)
+            cluster_label_matrix[:, ind] = labels
+            if nclusters > 1:
+                break_out = True
+            # prev_nclusters != nclusters: Choose only one number of cluster - (prev_nclusters != nclusters) &
+            # nclusters > 2: Number of clusters must be greater than 2
+            # percent_of_noise<10: percent of noise must be less than 10 percent
+            if (nclusters > 2) & (percent_of_noise<60):
+            # if True:
+                print('================= RESULTS ========================')
+                print('cluster_labels index   : {}'.format(ind))
+                print('eps                    : {}'.format(eps))
+                print('labels                 : \n {}'.format(labels))
+                print('Number of the clusters : {}'.format(nclusters))
+                print('Number of noise points : {}'.format(n_noise_))
+                print('Percent_of_noise       : {}'.format(percent_of_noise))
 
-    # This function need and input as a pairwise distance matrix. This is a must.
-    labels, nclusters, core_samples_mask = run_cluster(pairwise_distance_matrix, METRIC_ARG,
-                                                       param_min = EPSILON_MIN_ARG, param_max = EPSILON_MAX_ARG,
-                                                       param_step = EPSILON_STEP_ARG, minS = MINS_ARG)
-    # print("Labels:\n", labels)
-    # print("nclusters:\n", nclusters)
-    # print("core_samples_mask:\n", core_samples_mask)
-    # check_central_majority(df_3genres_3locations, labels)
+                df_imputation_dbscan_arg.loc[imputation_dbscan_arg_index] = [df_imputation_dbscan.iloc[i]['X_first_column']] + [df_imputation_dbscan.iloc[i]['X']]\
+                    + [df_imputation_dbscan.iloc[i]['ALGORITHMS_ARG']] + [df_imputation_dbscan.iloc[i]['RES_DATASET_ARG']]\
+                    + [df_imputation_dbscan.iloc[i]['SPLIT_FIRST_BY_ARG']] + [df_imputation_dbscan.iloc[i]['RESAMPLING_METHOD_ARG']]\
+                    + [df_imputation_dbscan.iloc[i]['IMPUTATION_METHOD_ARG']] + [df_imputation_dbscan.iloc[i]['MAX_MISSING_PERCENTAGE_ARG']]\
+                    + [METRIC_ARG] + [EPSILON_MIN_ARG] + [EPSILON_MAX_ARG] + [EPSILON_STEP_ARG] + [MINS_ARG]\
+                    + [eps] + [labels] + [nclusters] + [n_noise_] + [percent_of_noise]
+                imputation_dbscan_arg_index = imputation_dbscan_arg_index + 1
 
-    # plot_all_ts(X, labels)
-    # plot_each_group_ts(X, labels, core_samples_mask)
+                print('================= RESULTS ========================')
+            if (prev_nclusters == 1) & (nclusters == 1) & break_out:
+              param_max = eps
+              break
+            else:
+              prev_nclusters = nclusters
+
+        # for i in range(0, cluster_label_matrix.shape[0]):
+        #     encoded_labels = [ str(x).encode() for x \
+        #             in cluster_label_matrix[i, 0:len(actual_parameters)] ]
+    print("Dataframe after imputation and dbscan clustering - df_imputation_dbscan_arg: \n", df_imputation_dbscan_arg)
+    # df_imputation_dbscan_arg.to_csv('df_imputation_dbscan_arg.csv')
+    return df_imputation_dbscan_arg
 
 def check_central_majority(df_genre_location, labels):
     df = df_genre_location
