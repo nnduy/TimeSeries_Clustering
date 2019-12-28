@@ -37,15 +37,15 @@ from sklearn.metrics.pairwise import cosine_similarity
 from scipy import sparse
 from sklearn.metrics import pairwise_distances
 
-ALGORITHMS = ['DBSCAN']
-ALGORITHMS_ARG = ['HIERACHY', 'DBSCAN']
+ALGORITHMS = ['HIERACHY', 'DBSCAN']
+ALGORITHMS_ARG = ['HIERACHY']
 RES_DATASET = ['air']
 # RES_DATASET = ['air']
 RES_DATASET_ARG = 'air'
 RESAMPLING_METHOD = ['under']
 RESAMPLING_METHOD_ARG = 'under'
 # SPLIT_GROUPS = [3, 9]
-SPLIT_FIRST_BY = ['genre']
+SPLIT_FIRST_BY = ['area']
 SPLIT_FIRST_BY_ARG = 'area'
 # split groups arguments always is 9
 # SPLIT_GROUPS_ARG = 9
@@ -914,52 +914,67 @@ def corelation_genre_clusters(df_clustered):
     df_clustered_pivot = df_clustered
     return df_clustered_pivot
 
-# method: do the clustering for missing values of time series
-# def missing_values_clustering(X, ALGORITHMS_ARG, RES_DATASET_ARG, SPLIT_FIRST_BY_ARG,
-#                               RESAMPLING_METHOD_ARG,IMPUTATION_METHOD_ARG, MAX_MISSING_PERCENTAGE_ARG,
-#                               df_imputation_level):
+# method: do the clustering for missing values of time series for 5 algorithms
+# input:
+#   df_imputation: dataframe contains first level of arguments:
+#       X_first_column, X ALGORITHMS_ARG, RES_DATASET_ARG, SPLIT_FIRST_BY_ARG, RESAMPLING_METHOD_ARG,
+#       IMPUTATION_METHOD_ARG, MAX_MISSING_PERCENTAGE_ARG
+# output:
+#   df_imputation_clustered: Dataframe contains imputation from multiple algorithms: dbscan, hierachy, .., .., ..
 def missing_values_clustering(df_imputation):
     print("df_imputation_level input missing_values_clustering:\n", df_imputation)
-    imputation_dbscan_index = 0
+    imputation_dbscan_index   = 0
+    imputation_hierachy_index = 0
     list_cols = list(df_imputation.columns.values)
     list_cols.extend(['METRIC_ARG', 'EPSILON_MIN_ARG', 'EPSILON_MAX_ARG', 'EPSILON_STEP_ARG', 'MINS_ARG'])
     df_imputation_dbscan = pd.DataFrame(columns=list_cols)
 
+    list_cols_hierachy = list(df_imputation.columns.values)
+    list_cols_hierachy.extend(['NUM_OF_HC_CLUSTER', 'LINKAGE', 'AFFINITY'])
+    df_imputation_hierachy = pd.DataFrame(columns=list_cols_hierachy)
+
     for i, row in df_imputation.iterrows():
+        # Creating dataframe of arguments of Hierachy
         if df_imputation.iloc[i]['ALGORITHMS_ARG'] == 'HIERACHY':
-            # timeseries_hierachy_clustered = clustering_by_hierachy(X, X_first_column,
-            #                                                         store_info_dataset, NUM_OF_HC_CLUSTER_ARG)
-            # print("============================== ARGUMENTS LIST ======================================================")
-            # print("Alogrithm:", ALGORITHMS_ARG,"-", "Resource dataset:", RES_DATASET_ARG,"-", "Resampling method:", RESAMPLING_METHOD_ARG,"-",
-            #       "Imputation method:", IMPUTATION_METHOD_ARG,"-", "Max missing percentage:", MAX_MISSING_PERCENTAGE_ARG)
-            #
-            # df = corelation_genre_clusters(timeseries_hierachy_clustered)
-            df_imputation_hierachy_clustered = 1
-            print("HIERACHYHIERACHYHIERACHYHIERACHYHIERACHY", df_imputation_hierachy_clustered)
+            NUM_OF_HC_CLUSTER = [3, 9]
+            LINKAGE = ['complete', 'average', 'single']
+            AFFINITY = ['euclidean', 'l1', 'l2', 'manhattan', 'cosine']
+            LINKAGE_EXTENDED = ['ward']
+            AFFINITY_EXTENDED = ['euclidean']
 
+            for index, tuple in enumerate(itertools.product(NUM_OF_HC_CLUSTER, LINKAGE, AFFINITY)):
+                NUM_OF_HC_CLUSTER_ARG, LINKAGE_ARG, AFFINITY_ARG = tuple
+                df_imputation_hierachy.loc[imputation_hierachy_index] = [df_imputation.iloc[i]['X_first_column']] + [df_imputation.iloc[i]['X']]\
+                                                    + [df_imputation.iloc[i]['ALGORITHMS_ARG']] + [df_imputation.iloc[i]['RES_DATASET_ARG']]\
+                                                    + [df_imputation.iloc[i]['SPLIT_FIRST_BY_ARG']] + [df_imputation.iloc[i]['RESAMPLING_METHOD_ARG']]\
+                                                    + [df_imputation.iloc[i]['IMPUTATION_METHOD_ARG']] + [df_imputation.iloc[i]['MAX_MISSING_PERCENTAGE_ARG']]\
+                                                    + [NUM_OF_HC_CLUSTER_ARG] + [LINKAGE_ARG] + [AFFINITY_ARG]
+                imputation_hierachy_index = imputation_hierachy_index + 1
+
+            for index, tuple in enumerate(itertools.product(NUM_OF_HC_CLUSTER, LINKAGE_EXTENDED, AFFINITY_EXTENDED)):
+                NUM_OF_HC_CLUSTER_ARG, LINKAGE_ARG, AFFINITY_ARG = tuple
+                df_imputation_hierachy.loc[imputation_hierachy_index] = [df_imputation.iloc[i]['X_first_column']] + [df_imputation.iloc[i]['X']]\
+                                                    + [df_imputation.iloc[i]['ALGORITHMS_ARG']] + [df_imputation.iloc[i]['RES_DATASET_ARG']]\
+                                                    + [df_imputation.iloc[i]['SPLIT_FIRST_BY_ARG']] + [df_imputation.iloc[i]['RESAMPLING_METHOD_ARG']]\
+                                                    + [df_imputation.iloc[i]['IMPUTATION_METHOD_ARG']] + [df_imputation.iloc[i]['MAX_MISSING_PERCENTAGE_ARG']]\
+                                                    + [NUM_OF_HC_CLUSTER_ARG] + [LINKAGE_ARG] + [AFFINITY_ARG]
+                imputation_hierachy_index = imputation_hierachy_index + 1
+
+
+        # Creating dataframe of arguments of Dbscan
         elif df_imputation.iloc[i]['ALGORITHMS_ARG'] == 'DBSCAN':
-
-
-            # print("df_result_dbscan2:", df_imputation_dbscan)
-
-            # df_imputation_dbscan = copy.deepcopy(df_imputation_level)
-
             METRIC = ['euclidean', 'manhattan']
             # METRIC = ['cityblock', 'cosine', 'euclidean', 'l1', 'l2', 'manhattan']
             # ['braycurtis', 'canberra', 'chebyshev', 'correlation', 'dice', 'hamming', 'jaccard', 'kulsinski',
-            # 'mahalanobis', 'matching', 'minkowski', 'rogerstanimoto', 'russellrao', 'seuclidean', 'sokalmichener', 'sokalsneath', 'sqeuclidean', 'yule']
+            # 'mahalanobis', 'matching', 'minkowski', 'rogerstanimoto', 'russellrao', 'seuclidean', 'sokalmichener',
+            #  'sokalsneath', 'sqeuclidean', 'yule']
             EPSILON_MIN = [5]
             EPSILON_MAX = [16000]
             EPSILON_STEP = [10]
             MINS = [3]
             for index, tuple in enumerate(itertools.product(METRIC, EPSILON_MIN, EPSILON_MAX, EPSILON_STEP, MINS)):
-                print("======================= START ", ALGORITHMS_ARG, " ALGORITHMS ===============================")
                 print("tuple [", index,  "]:", tuple)
                 METRIC_ARG, EPSILON_MIN_ARG, EPSILON_MAX_ARG, EPSILON_STEP_ARG, MINS_ARG = tuple
-                # print("maxmaxmaxmaxmaxmaxmax:", max)
-                # print("i_i_i_i_i_i_i_i_i_i_i_i:", i)
-                # print("indexindexindexindex:", index)
-
                 df_imputation_dbscan.loc[imputation_dbscan_index] = [df_imputation.iloc[i]['X_first_column']] + [df_imputation.iloc[i]['X']]\
                                                 + [df_imputation.iloc[i]['ALGORITHMS_ARG']] + [df_imputation.iloc[i]['RES_DATASET_ARG']]\
                                                 + [df_imputation.iloc[i]['SPLIT_FIRST_BY_ARG']] + [df_imputation.iloc[i]['RESAMPLING_METHOD_ARG']]\
@@ -968,14 +983,24 @@ def missing_values_clustering(df_imputation):
 
                 print("imputation_dbscan_index:", imputation_dbscan_index)
                 print("df_imputation_dbscan.iloc[imputation_dbscan_index]['X']:\n", df_imputation_dbscan.iloc[imputation_dbscan_index]['X'])
-                # result_list = clustering_by_dbscan(df_imputation_dbscan.iloc[imputation_dbscan_index]['X'], METRIC_ARG,
-                #                                    EPSILON_MIN_ARG, EPSILON_MAX_ARG, EPSILON_STEP_ARG, MINS_ARG)
-
                 imputation_dbscan_index = imputation_dbscan_index + 1
 
-    print("DBSCANDBSCANDBSCANDBSCANDBSCANDBSCAN\n", df_imputation_dbscan)
+
+
+    # Get clustered from dbscan argumented dataframe
     df_imputation_dbscan_clustered = clustering_by_dbscan(df_imputation_dbscan)
-    return df_imputation_dbscan_clustered
+    print("DBSCANDBSCANDBSCANDBSCANDBSCANDBSCAN:\n", df_imputation_dbscan_clustered)
+
+    # Get clustered from hierachy argumented dataframe
+    df_imputation_hierachy_clustered = clustering_by_hierachy(df_imputation_hierachy)
+    print("HIERACHYHIERACHYHIERACHYHIERACHYHIERACHY", df_imputation_hierachy_clustered)
+
+    # # This action will mergering in columns and in rows of multiple dataframes.
+    # # It will create new columns of this dataframe and add it to another one.
+    # df_all_algo_clustered = [df_imputation_dbscan_clustered, df_imputation_hierachy_clustered]
+    # df_all_algo_clustered = pd.concat(df_all_algo_clustered).reset_index(drop=True)
+
+    return df_imputation_dbscan_clustered, df_imputation_hierachy_clustered
 
 # method: get imputation matrix, which is preparing for clustering
 # input:
@@ -1046,7 +1071,7 @@ def convert_Xfirstcol_to_dataframe(X_first_column):
 # output:
 #   df_clustered_pivot: Return new dataframe contains pivot table which has 4 flatted columns
 #       pivot_labels, pivot_..._1st, pivot_..._2nd, pivot_..._3rd
-def corelation_genre_clusters(df_clustered):
+def correlation_clustered_pivoting(df_clustered):
     # print("df_clustered:", df_clustered)
     # Iterating row by row
     for i, row in df_clustered.iterrows():
@@ -1148,8 +1173,10 @@ def corelation_genre_clusters(df_clustered):
 df_imputation = get_df_imputation_level(ALGORITHMS, RES_DATASET, SPLIT_FIRST_BY, RESAMPLING_METHOD,
                                   IMPUTATION_METHOD, MAX_MISSING_PERCENTAGE)
 
-df_clustered = missing_values_clustering(df_imputation)
-df_clustered_pivot = corelation_genre_clusters(df_clustered)
+# Get clustered by algrorithms
+df_imputation_dbscan_clustered, df_imputation_hierachy_clustered = missing_values_clustering(df_imputation)
+df_dbscan_clustered_pivot   = correlation_clustered_pivoting(df_imputation_dbscan_clustered)
+df_hierachy_clustered_pivot = correlation_clustered_pivoting(df_imputation_hierachy_clustered)
 
 
 

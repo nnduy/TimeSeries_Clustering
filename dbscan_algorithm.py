@@ -196,14 +196,12 @@ def clustering_by_dbscan(df_imputation_dbscan):
         parameter_range = np.arange(EPSILON_MIN_ARG, EPSILON_MAX_ARG, EPSILON_STEP_ARG)
         actual_parameters = []
         cluster_label_matrix = np.empty(shape = (nrows, len(parameter_range)), dtype=int)
-        result_list = []
         for ind, eps in enumerate(parameter_range):
+            # Retest this epsilon value accumulation
             actual_parameters.append(eps)
+
             dbs = DBSCAN(eps=eps, metric=METRIC_ARG, min_samples=MINS_ARG).fit(pairwise_distance_matrix)
             labels = dbs.labels_
-            # core_samples_mask = np.zeros_like(dbs.labels_, dtype=bool)
-            # core_samples_mask[dbs.core_sample_indices_] = True
-
             nclusters = len(list(np.unique(labels)))
             n_noise_ = list(labels).count(-1)
             total_number_of_store = len(labels)
