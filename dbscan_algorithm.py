@@ -1,39 +1,12 @@
 #! /usr/bin/env python
 #coding=utf-8
 
-import glob, re
-import numpy as np
 import pandas as pd
-from datetime import date
-import itertools
-# from pandas import Timestamp
-from sklearn import *
-from datetime import datetime
-# from xgboost import XGBRegressor
-import math
-import statistics
-import kmedoids
-import random
 from math import floor
 import matplotlib.pyplot as plt
-# from .visualize_input import *
 import matplotlib.patches as mpatches
-from pylab import rcParams
-from sklearn.preprocessing import Normalizer
-
-# import sklearn
 from sklearn.cluster import DBSCAN
-# from sklearn.cluster import OPTICS, cluster_optics_dbscan
 from OPTICS.optics import *
-
-from sklearn import metrics
-from sklearn.datasets.samples_generator import make_blobs
-from sklearn.preprocessing import StandardScaler
-from scipy.stats.mstats import gmean
-from scipy.stats.mstats import gmean
-# from collections import Counter
-from sklearn.metrics.pairwise import cosine_similarity
-from scipy import sparse
 from sklearn.metrics import pairwise_distances
 
 def percentage(part, whole, digits):
@@ -71,96 +44,13 @@ def percentage(part, whole, digits):
 # # pairwise_DTW = pairwise_distances(visitor_matrix_transposed, metric='euclidean')
 # # print('pairwise_distances euclidean:\n {} \n'.format(pairwise_euclidean))
 
-# # # #############################################################################
-# # # Perform DBSCAN clustering from vector array or distance matrix.
-# # # input:
-# # #       eps: float - The maximum distance between two samples for one to be considered as in the neighborhood of the other.
-# # #       distance_measure: string - The metric to use when calculating distance between instances in a feature array.
-# # #       min_samples: int - The number of samples (or total weight) in a neighborhood for a point to be considered
-# # #           as a core point. This includes the point itself.
-# # def cluster_dbscan(matrix, distance_measure, eps, minS):
-# #     dbs = DBSCAN(eps=eps, metric=distance_measure, min_samples=minS).fit(matrix)
-# #     cluster_labels = dbs.labels_
-# #     core_samples_mask = np.zeros_like(dbs.labels_, dtype=bool)
-# #     core_samples_mask[dbs.core_sample_indices_] = True
-# #     return cluster_labels, core_samples_mask
-#
-# # input:
-# #       distance_measure: string - The metric to use when calculating distance between instances in a feature array.
-# def run_cluster(X, distance_measure, param_min, param_max, param_step, minS):
-#     nrows = X.shape[0]
-#     if nrows <= 1:
-#         raise ValueError("Time-series matrix contains no information. " \
-#                          "Was all of your data filtered out?")
-#     prev_nclusters = 0
-#     break_out = False
-#     parameter_range = np.arange(param_min, param_max, param_step)
-#     actual_parameters = []
-#     cluster_label_matrix = np.empty(shape = (nrows, len(parameter_range)), dtype=int)
-#     result_list = []
-#     for ind, eps in enumerate(parameter_range):
-#         actual_parameters.append(eps)
-#
-#         dbs = DBSCAN(eps=eps, metric=distance_measure, min_samples=minS).fit(X)
-#         labels = dbs.labels_
-#         core_samples_mask = np.zeros_like(dbs.labels_, dtype=bool)
-#         core_samples_mask[dbs.core_sample_indices_] = True
-#
-#         nclusters = len(list(np.unique(labels)))
-#         n_noise_ = list(labels).count(-1)
-#         total_number_of_store = len(labels)
-#         percent_of_noise = percentage(n_noise_, total_number_of_store, 2)
-#         cluster_label_matrix[:, ind] = labels
-#         if nclusters > 1:
-#             break_out = True
-#         # prev_nclusters != nclusters: Choose only one number of cluster - (prev_nclusters != nclusters) &
-#         # nclusters > 2: Number of clusters must be greater than 2
-#         # percent_of_noise<10: percent of noise must be less than 10 percent
-#         if (nclusters > 2) & (percent_of_noise<20):
-#             print('================= RESULTS ========================')
-#             print('Number of the clusters : {}'.format(nclusters))
-#             print('Number of noise points : {}'.format(n_noise_))
-#             print('Percent_of_noise       : {}'.format(percent_of_noise))
-#             print('cluster_labels index   : {}'.format(ind))
-#             print('cluster_labels eps     : {}'.format(eps))
-#             print('cluster_labels list : \n {}'.format(labels))
-#             # X, distance_measure, eps, minS, nclusters, n_noise_, percent_of_noise, labels = tuple
-#             # eps, minS, nclusters, n_noise_, percent_of_noise, labels = tuple
-#
-#             # EPSILON_ARG, MINS_ARG, nclusters_arg, n_noise_arg, percent_of_noise_arg, labels_arg = tuple
-#             # print("tuple tuple:\n", EPSILON_ARG, MINS_ARG, nclusters_arg, n_noise_arg, percent_of_noise_arg, labels_arg)
-#             result_list.append(['<run_cluster>'])
-#             result_list.append([labels, nclusters, n_noise_, percent_of_noise, eps])
-#             result_list.append(['</run_cluster>'])
-#             # print("result_list:", result_list)
-#             print('================= RESULTS ========================')
-#         if (prev_nclusters == 1) & (nclusters == 1) & break_out:
-#           param_max = eps
-#           break
-#         else:
-#           prev_nclusters = nclusters
-#     # Print out the clusters with their sequence IDs
-#     # print('cluster_label_matrix:\n {} \n'.format(cluster_label_matrix))
-#     for i in range(0, cluster_label_matrix.shape[0]):
-#         encoded_labels = [ str(x).encode() for x \
-#                 in cluster_label_matrix[i, 0:len(actual_parameters)] ]
-#     # return labels, nclusters, core_samples_mask
-#     return result_list
-
-# # #############################################################################
-# # Perform DBSCAN clustering from vector array or distance matrix.
-# # input:
-# #       eps: float - The maximum distance between two samples for one to be considered as in the neighborhood of the other.
-# #       distance_measure: string - The metric to use when calculating distance between instances in a feature array.
-# #       min_samples: int - The number of samples (or total weight) in a neighborhood for a point to be considered
-# #           as a core point. This includes the point itself.
-# def cluster_dbscan(matrix, distance_measure, eps, minS):
-#     dbs = DBSCAN(eps=eps, metric=distance_measure, min_samples=minS).fit(matrix)
-#     cluster_labels = dbs.labels_
-#     core_samples_mask = np.zeros_like(dbs.labels_, dtype=bool)
-#     core_samples_mask[dbs.core_sample_indices_] = True
-#     return cluster_labels, core_samples_mask
-
+# #############################################################################
+# Perform DBSCAN clustering from vector array or distance matrix.
+# input:
+#       eps: float - The maximum distance between two samples for one to be considered as in the neighborhood of the other.
+#       distance_measure: string - The metric to use when calculating distance between instances in a feature array.
+#       min_samples: int - The number of samples (or total weight) in a neighborhood for a point to be considered
+#           as a core point. This includes the point itself.
 # input:
 #       distance_measure: string - The metric to use when calculating distance between instances in a feature array.
 # def clustering_by_dbscan(X, METRIC_ARG, EPSILON_MIN_ARG, EPSILON_MAX_ARG, EPSILON_STEP_ARG, MINS_ARG):

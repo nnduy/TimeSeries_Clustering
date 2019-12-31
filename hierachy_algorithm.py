@@ -1,48 +1,13 @@
 #! /usr/bin/env python
 #coding=utf-8
 
-import glob, re
-import numpy as np
-import pandas as pd
-from datetime import date
-import itertools
-# from pandas import Timestamp
-from sklearn import *
-from datetime import datetime
-# from xgboost import XGBRegressor
-import math
-import statistics
-import kmedoids
-import random
-from math import floor
-import matplotlib.pyplot as plt
-# from .visualize_input import *
-import matplotlib.patches as mpatches
-from pylab import rcParams
 from dbscan_algorithm import *
-
-# import sklearn
-from sklearn.cluster import DBSCAN
-# from sklearn.cluster import OPTICS, cluster_optics_dbscan
 from OPTICS.optics import *
-
-from sklearn import metrics
-from sklearn.datasets.samples_generator import make_blobs
-from sklearn.preprocessing import StandardScaler
-from scipy.stats.mstats import gmean
-from scipy.stats.mstats import gmean
-# from collections import Counter
-from sklearn.metrics.pairwise import cosine_similarity
-from scipy import sparse
-from sklearn.metrics import pairwise_distances
 from sklearn.cluster import AgglomerativeClustering
-
 import pandas as pd
 
 # This option help to print out all data columns of a dataframe
 pd.set_option('display.expand_frame_repr', False)
-
-nl = '\n'
 
 # read in all csv file to data variable
 data = {
@@ -136,7 +101,10 @@ def clustering_by_hierachy(df_imputation_hierachy):
         AFFINITY_ARG = df_imputation_hierachy.iloc[i]['AFFINITY']
         LINKAGE_ARG = df_imputation_hierachy.iloc[i]['LINKAGE']
 
+        # Running clustering and get labels list
         labels = labeling_hierachy_cluster(X, AFFINITY_ARG, LINKAGE_ARG, NUM_OF_HC_CLUSTER_ARG)
+
+        # Calculating some metrics for further visualization
         nclusters = len(list(np.unique(labels)))
         n_noise_ = list(labels).count(-1)
         total_number_of_store = len(labels)

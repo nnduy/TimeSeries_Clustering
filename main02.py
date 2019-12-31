@@ -21,6 +21,7 @@ import matplotlib.patches as mpatches
 from pylab import rcParams
 from dbscan_algorithm import *
 from hierachy_algorithm import *
+from kmeans_algorithm import *
 import copy
 # import sklearn
 from sklearn.cluster import DBSCAN
@@ -37,8 +38,8 @@ from sklearn.metrics.pairwise import cosine_similarity
 from scipy import sparse
 from sklearn.metrics import pairwise_distances
 
-ALGORITHMS = ['HIERACHY', 'DBSCAN']
-ALGORITHMS_ARG = ['HIERACHY']
+ALGORITHMS = ['KMEANS_DTW']
+ALGORITHMS_ARG = ['HIERACHY', 'DBSCAN', 'KMEANS_AUTO']
 RES_DATASET = ['air']
 # RES_DATASET = ['air']
 RES_DATASET_ARG = 'air'
@@ -924,14 +925,25 @@ def corelation_genre_clusters(df_clustered):
 def missing_values_clustering(df_imputation):
     print("df_imputation_level input missing_values_clustering:\n", df_imputation)
     imputation_dbscan_index   = 0
-    imputation_hierachy_index = 0
+
     list_cols = list(df_imputation.columns.values)
     list_cols.extend(['METRIC_ARG', 'EPSILON_MIN_ARG', 'EPSILON_MAX_ARG', 'EPSILON_STEP_ARG', 'MINS_ARG'])
     df_imputation_dbscan = pd.DataFrame(columns=list_cols)
 
+    imputation_hierachy_index = 0
     list_cols_hierachy = list(df_imputation.columns.values)
     list_cols_hierachy.extend(['NUM_OF_HC_CLUSTER', 'LINKAGE', 'AFFINITY'])
     df_imputation_hierachy = pd.DataFrame(columns=list_cols_hierachy)
+
+    imputation_kmeans_index   = 0
+    list_cols_kmeans = list(df_imputation.columns.values)
+    list_cols_kmeans.extend(['NUM_CLUSTERS_ARG', 'ITERATIONS_ARG', 'WINDOW_SIZE_ARG'])
+    df_imputation_kmeans = pd.DataFrame(columns=list_cols_kmeans)
+
+    imputation_kmeans_auto_index   = 0
+    list_cols_kmeans_auto = list(df_imputation.columns.values)
+    list_cols_kmeans_auto.extend(['NUM_CLUSTERS_ARG', 'ITERATIONS_ARG'])
+    df_imputation_kmeans_auto = pd.DataFrame(columns=list_cols_kmeans_auto)
 
     for i, row in df_imputation.iterrows():
         # Creating dataframe of arguments of Hierachy
@@ -973,7 +985,7 @@ def missing_values_clustering(df_imputation):
             EPSILON_STEP = [10]
             MINS = [3]
             for index, tuple in enumerate(itertools.product(METRIC, EPSILON_MIN, EPSILON_MAX, EPSILON_STEP, MINS)):
-                print("tuple [", index,  "]:", tuple)
+                # print("tuple [", index,  "]:", tuple)
                 METRIC_ARG, EPSILON_MIN_ARG, EPSILON_MAX_ARG, EPSILON_STEP_ARG, MINS_ARG = tuple
                 df_imputation_dbscan.loc[imputation_dbscan_index] = [df_imputation.iloc[i]['X_first_column']] + [df_imputation.iloc[i]['X']]\
                                                 + [df_imputation.iloc[i]['ALGORITHMS_ARG']] + [df_imputation.iloc[i]['RES_DATASET_ARG']]\
@@ -985,22 +997,68 @@ def missing_values_clustering(df_imputation):
                 print("df_imputation_dbscan.iloc[imputation_dbscan_index]['X']:\n", df_imputation_dbscan.iloc[imputation_dbscan_index]['X'])
                 imputation_dbscan_index = imputation_dbscan_index + 1
 
+        elif df_imputation.iloc[i]['ALGORITHMS_ARG'] == 'KMEANS_DTW':
+            NUM_CLUSTERS = [3, 9]
+            ITERATIONS = [10, 15, 20]
+            WINDOW_SIZE = [3, 6, 9]
+            # NUM_CLUSTERS = [3]
+            # ITERATIONS = [10]
+            # WINDOW_SIZE = [3]
 
+            for index, tuple in enumerate(itertools.product(NUM_CLUSTERS, ITERATIONS, WINDOW_SIZE)):
+                # print("tuple [", index,  "]:", tuple)
+                NUM_CLUSTERS_ARG, ITERATIONS_ARG, WINDOW_SIZE_ARG = tuple
+                df_imputation_kmeans.loc[imputation_kmeans_index] = [df_imputation.iloc[i]['X_first_column']] + [df_imputation.iloc[i]['X']]\
+                                                + [df_imputation.iloc[i]['ALGORITHMS_ARG']] + [df_imputation.iloc[i]['RES_DATASET_ARG']]\
+                                                + [df_imputation.iloc[i]['SPLIT_FIRST_BY_ARG']] + [df_imputation.iloc[i]['RESAMPLING_METHOD_ARG']]\
+                                                + [df_imputation.iloc[i]['IMPUTATION_METHOD_ARG']] + [df_imputation.iloc[i]['MAX_MISSING_PERCENTAGE_ARG']]\
+                                                + [NUM_CLUSTERS_ARG] + [ITERATIONS_ARG] + [WINDOW_SIZE_ARG]
+
+                print("imputation_kmeans_index:", imputation_kmeans_index)
+                print("df_imputation_kmeans.iloc[imputation_kmeans_index]['X']:\n", df_imputation_kmeans.iloc[imputation_kmeans_index]['X'])
+                imputation_kmeans_index = imputation_kmeans_index + 1
+
+        elif df_imputation.iloc[i]['ALGORITHMS_ARG'] == 'KMEANS_AUTO':
+            NUM_CLUSTERS = [3, 9]
+            ITERATIONS = [10, 15, 20]
+            # NUM_CLUSTERS = [3]
+            # ITERATIONS = [10]
+
+            for index, tuple in enumerate(itertools.product(NUM_CLUSTERS, ITERATIONS)):
+                # print("tuple [", index,  "]:", tuple)
+                NUM_CLUSTERS_ARG, ITERATIONS_ARG = tuple
+                df_imputation_kmeans_auto.loc[imputation_kmeans_auto_index] = [df_imputation.iloc[i]['X_first_column']] + [df_imputation.iloc[i]['X']]\
+                                                + [df_imputation.iloc[i]['ALGORITHMS_ARG']] + [df_imputation.iloc[i]['RES_DATASET_ARG']]\
+                                                + [df_imputation.iloc[i]['SPLIT_FIRST_BY_ARG']] + [df_imputation.iloc[i]['RESAMPLING_METHOD_ARG']]\
+                                                + [df_imputation.iloc[i]['IMPUTATION_METHOD_ARG']] + [df_imputation.iloc[i]['MAX_MISSING_PERCENTAGE_ARG']]\
+                                                + [NUM_CLUSTERS_ARG] + [ITERATIONS_ARG]
+
+                print("imputation_kmeans_auto_index:", imputation_kmeans_auto_index)
+                print("df_imputation_kmeans.iloc[imputation_kmeans_auto_index]['X']:\n", df_imputation_kmeans_auto.iloc[imputation_kmeans_auto_index]['X'])
+                imputation_kmeans_auto_index = imputation_kmeans_auto_index + 1
 
     # Get clustered from dbscan argumented dataframe
     df_imputation_dbscan_clustered = clustering_by_dbscan(df_imputation_dbscan)
-    print("DBSCANDBSCANDBSCANDBSCANDBSCANDBSCAN:\n", df_imputation_dbscan_clustered)
+    print("DBSCAN ALGORITHMS:\n", df_imputation_dbscan_clustered)
 
     # Get clustered from hierachy argumented dataframe
     df_imputation_hierachy_clustered = clustering_by_hierachy(df_imputation_hierachy)
-    print("HIERACHYHIERACHYHIERACHYHIERACHYHIERACHY", df_imputation_hierachy_clustered)
+    print("HIERACHY ALGORITHMS", df_imputation_hierachy_clustered)
+
+    # Get clustered from kmeans DTW argumented dataframe
+    df_imputation_kmeans_clustered = clustering_by_kmeans(df_imputation_kmeans)
+    print("KMEANS ALGORITHMS\n", df_imputation_kmeans_clustered)
+
+    # Get clustered from kmeans auto argumented dataframe
+    df_imputation_kmeans_auto_clustered = clustering_by_kmeans_auto(df_imputation_kmeans_auto)
+    print("KMEANS ALGORITHMS\n", df_imputation_kmeans_auto_clustered)
 
     # # This action will mergering in columns and in rows of multiple dataframes.
     # # It will create new columns of this dataframe and add it to another one.
     # df_all_algo_clustered = [df_imputation_dbscan_clustered, df_imputation_hierachy_clustered]
     # df_all_algo_clustered = pd.concat(df_all_algo_clustered).reset_index(drop=True)
 
-    return df_imputation_dbscan_clustered, df_imputation_hierachy_clustered
+    return df_imputation_dbscan_clustered, df_imputation_hierachy_clustered, df_imputation_kmeans_clustered, df_imputation_kmeans_auto_clustered
 
 # method: get imputation matrix, which is preparing for clustering
 # input:
@@ -1174,11 +1232,15 @@ df_imputation = get_df_imputation_level(ALGORITHMS, RES_DATASET, SPLIT_FIRST_BY,
                                   IMPUTATION_METHOD, MAX_MISSING_PERCENTAGE)
 
 # Get clustered by algrorithms
-df_imputation_dbscan_clustered, df_imputation_hierachy_clustered = missing_values_clustering(df_imputation)
-df_dbscan_clustered_pivot   = correlation_clustered_pivoting(df_imputation_dbscan_clustered)
-df_hierachy_clustered_pivot = correlation_clustered_pivoting(df_imputation_hierachy_clustered)
+df_imputation_dbscan_clustered, df_imputation_hierachy_clustered, \
+df_imputation_kmeans_clustered, df_imputation_kmeans_auto_clustered = missing_values_clustering(df_imputation)
 
+# df_dbscan_clustered_pivot   = correlation_clustered_pivoting(df_imputation_dbscan_clustered)
+# df_hierachy_clustered_pivot = correlation_clustered_pivoting(df_imputation_hierachy_clustered)
+# df_kmeans_clustered_pivot = correlation_clustered_pivoting(df_imputation_kmeans_clustered)
+# df_kmeans_auto_clustered_pivot = correlation_clustered_pivoting(df_imputation_kmeans_auto_clustered)
 
+# print("df_kmeans_clustered_pivot:\n", df_kmeans_auto_clustered_pivot)
 
 
 
