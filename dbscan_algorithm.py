@@ -57,19 +57,19 @@ def percentage(part, whole, digits):
 def clustering_by_dbscan(df_imputation_dbscan):
     # result_list = clustering_by_dbscan(df_imputation_dbscan.iloc[imputation_dbscan_index]['X'], METRIC_ARG,
                 #                                    EPSILON_MIN_ARG, EPSILON_MAX_ARG, EPSILON_STEP_ARG, MINS_ARG)
-    print("df_imputation_dbscan input clustering_by_dbscan:\n", df_imputation_dbscan)
+    # print("df_imputation_dbscan input clustering_by_dbscan:\n", df_imputation_dbscan)
     # Creating index for new dataframe
     imputation_dbscan_arg_index = 0
-    print('type of imputation_dbscan_arg_index: {}', type(imputation_dbscan_arg_index))
+    # print('type of imputation_dbscan_arg_index: {}', type(imputation_dbscan_arg_index))
     list_cols = list(df_imputation_dbscan.columns.values)
     list_cols.extend(['eps', 'labels', 'nclusters', 'n_noise_', 'percent_of_noise'])
     df_imputation_dbscan_arg = pd.DataFrame(columns=list_cols)
 
     for i, row in df_imputation_dbscan.iterrows():
-        print("X:\n", df_imputation_dbscan.iloc[i]['X'])
+        # print("X:\n", df_imputation_dbscan.iloc[i]['X'])
         X = df_imputation_dbscan.iloc[i]['X']
         pairwise_distance_matrix = pairwise_distances(X, metric=df_imputation_dbscan.iloc[i]['METRIC_ARG'])
-        print("pairwise_distance_matrix:\n", pairwise_distance_matrix)
+        # print("pairwise_distance_matrix:\n", pairwise_distance_matrix)
 
         nrows = pairwise_distance_matrix.shape[0]
         if nrows <= 1:

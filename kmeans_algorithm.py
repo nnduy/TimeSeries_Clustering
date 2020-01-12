@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
 from sklearn.cluster import KMeans
+import sys
 
 # read in all csv file to data variable
 data = {
@@ -22,7 +23,7 @@ data = {
     'sidr' : pd.read_csv('input/store_id_relation.csv'),
     'tes': pd.read_csv('input/sample_submission.csv'),
     'hol': pd.read_csv('input/date_info.csv').rename(columns={'calendar_date':'visit_date'}),
-    'test': pd.read_csv('df_imputation_dbscan_arg.csv')
+    # 'test': pd.read_csv('df_imputation_dbscan_arg.csv')
     }
 
 df_ar = data['ar']
@@ -31,7 +32,7 @@ df_asi = data['asi']
 df_avd = data['avd']
 df_hsi = data['hsi']
 df_hr = data['hr']
-df_test = data['test']
+# df_test = data['test']
 
 genre_name = 'genre_name'
 area_name = 'area_name'
@@ -276,5 +277,5 @@ def clustering_by_kmeans_auto(df_imputation_kmeans_auto):
 
     print("Dataframe after imputation and kmeans clustering - df_imputation_kmeans_arg: \n", df_imputation_kmeans_arg)
     # df_imputation_kmeans_arg.to_csv('df_imputation_kmeans_arg.csv')
-
+    # sys.exit()
     return df_imputation_kmeans_arg
