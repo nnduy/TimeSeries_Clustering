@@ -1,6 +1,7 @@
 #! /usr/bin/env python
 #coding=utf-8
 
+import math
 import pandas as pd
 from math import floor
 import matplotlib.pyplot as plt
@@ -14,6 +15,22 @@ def percentage(part, whole, digits):
     val *= 10 ** (digits + 2)
     return (floor(val) / 10 ** digits)
 
+def DTWDistance(s1, s2, w=5):
+    DTW={}
+
+    w = max(w, abs(len(s1)-len(s2)))
+
+    for i in range(-1,len(s1)):
+        for j in range(-1,len(s2)):
+            DTW[(i, j)] = float('inf')
+    DTW[(-1, -1)] = 0
+
+    for i in range(len(s1)):
+        for j in range(max(0, i-w), min(len(s2), i+w)):
+            dist= (s1[i]-s2[j])**2
+            DTW[(i, j)] = dist + min(DTW[(i-1, j)],DTW[(i, j-1)], DTW[(i-1, j-1)])
+
+    return math.sqrt(DTW[len(s1)-1, len(s2)-1])
 
 # # ============ Step 05: Clustering using DBSCAN and Pairwise Similarity Evaluation ==============
 #
@@ -82,6 +99,8 @@ def clustering_by_dbscan(df_imputation_dbscan):
         EPSILON_STEP_ARG = df_imputation_dbscan.iloc[i]['EPSILON_STEP_ARG']
         METRIC_ARG = df_imputation_dbscan.iloc[i]['METRIC_ARG']
         MINS_ARG = df_imputation_dbscan.iloc[i]['MINS_ARG']
+        MIN_CLUSTERS_ARG = df_imputation_dbscan.iloc[i]['MIN_CLUSTERS_ARG']
+        MAX_NOISE_PERCENT_ARG = df_imputation_dbscan.iloc[i]['MAX_NOISE_PERCENT_ARG']
 
         parameter_range = np.arange(EPSILON_MIN_ARG, EPSILON_MAX_ARG, EPSILON_STEP_ARG)
         actual_parameters = []
@@ -90,6 +109,11 @@ def clustering_by_dbscan(df_imputation_dbscan):
             # Retest this epsilon value accumulation
             actual_parameters.append(eps)
 
+            # if METRIC_ARG == 'DTWDistance':
+            #     dbs = DBSCAN(eps=eps, metric=lambda X, Y: DTWDistance(X, Y, w=5), min_samples=MINS_ARG).fit(pairwise_distance_matrix)
+            #     # clust = OPTICS(metric=lambda X, Y: DTWDistance(X, Y, w=5), min_samples=4, xi=.01, min_cluster_size=.01)
+            #     # clust = OPTICS(metric=DTWDistance, min_samples=7, xi=.01, min_cluster_size=.01)
+            # else:
             dbs = DBSCAN(eps=eps, metric=METRIC_ARG, min_samples=MINS_ARG).fit(pairwise_distance_matrix)
             labels = dbs.labels_
             nclusters = len(list(np.unique(labels)))
@@ -102,25 +126,26 @@ def clustering_by_dbscan(df_imputation_dbscan):
             # prev_nclusters != nclusters: Choose only one number of cluster - (prev_nclusters != nclusters) &
             # nclusters > 2: Number of clusters must be greater than 2
             # percent_of_noise<10: percent of noise must be less than 10 percent
-            if (nclusters > 2) & (percent_of_noise<60):
+            if (nclusters > MIN_CLUSTERS_ARG) & (percent_of_noise < MAX_NOISE_PERCENT_ARG):
             # if True:
-                print('================= RESULTS ========================')
-                print('cluster_labels index   : {}'.format(ind))
-                print('eps                    : {}'.format(eps))
-                print('labels                 : \n {}'.format(labels))
-                print('Number of the clusters : {}'.format(nclusters))
-                print('Number of noise points : {}'.format(n_noise_))
-                print('Percent_of_noise       : {}'.format(percent_of_noise))
+            #     print('================= RESULTS ========================')
+            #     print('cluster_labels index   : {}'.format(ind))
+            #     print('eps                    : {}'.format(eps))
+            #     print('labels                 : \n {}'.format(labels))
+            #     print('Number of the clusters : {}'.format(nclusters))
+            #     print('Number of noise points : {}'.format(n_noise_))
+            #     print('Percent_of_noise       : {}'.format(percent_of_noise))
 
                 df_imputation_dbscan_arg.loc[imputation_dbscan_arg_index] = [df_imputation_dbscan.iloc[i]['X_first_column']] + [df_imputation_dbscan.iloc[i]['X']]\
                     + [df_imputation_dbscan.iloc[i]['ALGORITHMS_ARG']] + [df_imputation_dbscan.iloc[i]['RES_DATASET_ARG']]\
                     + [df_imputation_dbscan.iloc[i]['SPLIT_FIRST_BY_ARG']] + [df_imputation_dbscan.iloc[i]['RESAMPLING_METHOD_ARG']]\
                     + [df_imputation_dbscan.iloc[i]['IMPUTATION_METHOD_ARG']] + [df_imputation_dbscan.iloc[i]['MAX_MISSING_PERCENTAGE_ARG']]\
                     + [METRIC_ARG] + [EPSILON_MIN_ARG] + [EPSILON_MAX_ARG] + [EPSILON_STEP_ARG] + [MINS_ARG]\
+                    + [MIN_CLUSTERS_ARG] + [MAX_NOISE_PERCENT_ARG]\
                     + [eps] + [labels] + [nclusters] + [n_noise_] + [percent_of_noise]
                 imputation_dbscan_arg_index = imputation_dbscan_arg_index + 1
 
-                print('================= RESULTS ========================')
+                # print('================= RESULTS ========================')
             if (prev_nclusters == 1) & (nclusters == 1) & break_out:
               param_max = eps
               break
@@ -130,7 +155,7 @@ def clustering_by_dbscan(df_imputation_dbscan):
         # for i in range(0, cluster_label_matrix.shape[0]):
         #     encoded_labels = [ str(x).encode() for x \
         #             in cluster_label_matrix[i, 0:len(actual_parameters)] ]
-    print("Dataframe after imputation and dbscan clustering - df_imputation_dbscan_arg: \n", df_imputation_dbscan_arg)
+    # print("Dataframe after imputation and dbscan clustering - df_imputation_dbscan_arg: \n", df_imputation_dbscan_arg)
     # df_imputation_dbscan_arg.to_csv('df_imputation_dbscan_arg.csv')
     return df_imputation_dbscan_arg
 

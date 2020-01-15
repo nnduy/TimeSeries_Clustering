@@ -31,7 +31,7 @@ from OPTICS.optics import *
 import sys
 import uuid
 pd.set_option('precision', 0)
-
+import pandas as pd
 from sklearn import metrics
 from sklearn.datasets.samples_generator import make_blobs
 from sklearn.preprocessing import StandardScaler
@@ -42,32 +42,7 @@ from sklearn.metrics.pairwise import cosine_similarity
 from scipy import sparse
 from sklearn.metrics import pairwise_distances
 
-ALGORITHMS = ['KMEANS_AUTO']
-ALGORITHMS_ARG = ['HIERACHY', 'DBSCAN', 'KMEANS_AUTO', 'KMEANS_DTW', 'OPTICS']
-RES_DATASET = ['air']
-# RES_DATASET = ['air']
-RES_DATASET_ARG = 'air'
-RESAMPLING_METHOD = ['over']
-RESAMPLING_METHOD_ARG = 'under', 'over'
-# SPLIT_GROUPS = [3, 9]
-SPLIT_FIRST_BY = ['area']
-SPLIT_FIRST_BY_ARG = 'area'
-# split groups arguments always is 9
-# SPLIT_GROUPS_ARG = 9
-# IMPUTATION_METHOD = ['median', 'mean', 'linear', 'time', 'index', 'values', 'nearest', 'zero', 'slinear', 'quadratic', 'cubic', 'barycentric',
-#           'krogh', 'polynomial', 'spline', 'piecewise_polynomial', 'from_derivatives', 'pchip', 'akima']
-# IMPUTATION_METHOD = ['barycentric', 'krogh', 'polynomial', 'spline',] --> fail
-IMPUTATION_METHOD = ['median']
-# IMPUTATION_METHOD_ARG = 'median'
-# MAX_MISSING_PERCENTAGE = 100 means: we take all of timeseries which have missing point
-# MAX_MISSING_PERCENTAGE = 20  means: we take only first 20 percent of timeseries which have missing point
-MAX_MISSING_PERCENTAGE = [75]
-MAX_MISSING_PERCENTAGE_ARG = 90
 
-# NUM_OF_HC_CLUSTER = [3, 9]
-NUM_OF_HC_CLUSTER_ARG = 5
-
-import pandas as pd
 
 # This option help to print out all data columns of a dataframe
 pd.set_option('display.expand_frame_repr', False)
@@ -992,182 +967,12 @@ def imputing_all_timeseries(df_store_and_visit, method):
 
 
 
-# # ============ Step 10: Find the corelation between genres and clusters ==============
-# Method use: Find the corelation between genres and clusters
-# input:
-#   timeseries_hierachy_clustered      : dataframe contains 3 columns of store id, genres, locations and clusters label
-# output:
-#   df      : dataframe contains corelation between genre groups and clusters
-# def corelation_genre_clusters(df):
-#     # print("Input dataframe with clustered time series:\n", df)
-#
-#     df_temp = df
-#
-#     # Get first column to form up corelation dataframe
-#     df_first_col = df_temp.groupby([genre_name]).size()
-#     df_first_col = df_first_col.to_frame(name = 'size').reset_index()
-#     # print("df_first_col: \n", df_first_col)
-#
-#     # Create a new empty corelation dataframe
-#     df_corelation_genre_clusters = pd.DataFrame()
-#     # Concatenate the new empty corelation dataframe with first column dataframe
-#     # df_corelation_genre_clusters = pd.concat([df_corelation_genre_clusters, df_first_col], axis=1)
-#
-#     # Loop from the first cluster column to the end
-#     max_col = df.shape[1]
-#     for i in range(3, max_col):
-#         # Group by genre name and cluster columns
-#         df = df_temp.groupby([genre_name, df_temp.columns[i]]).size()
-#         print("df====== 222\n:", df)
-#         # reset index column
-#         df = df.to_frame(name = 'size').reset_index()
-#         print("df_merge_id:\n", df)
-#         colname = df.columns[1]
-#         print("colname = df.columns[pos]:", colname)
-#         df_genre_name_cluster = df.groupby([colname, 'genre_name']).agg({'size': 'sum'})
-#         print("df_genre_name_cluster:\n", df_genre_name_cluster)
-#
-#         # Calculate percentage for each genres by cluster
-#         cluster_percentages = df_genre_name_cluster.groupby(level=0).apply(lambda x:
-#                                                  100 * x / float(x.sum()))
-#         cluster_percentages = cluster_percentages.reset_index()
-#         print("cluster_percentages:\n", cluster_percentages)
-#         cluster_percentages = cluster_percentages.round({'size': 1}).fillna(0)
-#
-#         # Pivot table and fill nan value
-#         cluster_percentages_pivot = cluster_percentages.pivot_table(index=colname, columns='genre_name', values='size', aggfunc='max')
-#         cluster_percentages_pivot = cluster_percentages_pivot.fillna(0)
-#         cluster_percentages_pivot = cluster_percentages_pivot.reset_index()
-#         # Get list of column names level 0
-#         # cluster_percentages_pivot = cluster_percentages_pivot.reset_index(drop=True,level=0)
-#         print("cluster_percentages after using pivot:\n", cluster_percentages_pivot)
-#
-#
-#         # # Groupby genre again to get maximum size of appearances clusters
-#         # idx = df.groupby([genre_name])['size'].transform(max) == df['size']
-#         # df = df[idx]
-#         # print("df====== 333:\n", df)
-#         #
-#         # str_column_name = df.columns[1]
-#         # # print("str_column_name:", str_column_name)
-#         #
-#         # df = df.groupby(genre_name)[str_column_name].apply(lambda x: ','.join(map(str, x))).reset_index()
-#         # print("df====== 444 : \n", df)
-#         # df = df[[str_column_name]]
-#         # print("df====== 555 : \n", df)
-#
-#         # Concatenate each result dataframe from each hierachy clustering arguments group
-#         df_corelation_genre_clusters = pd.concat([df_corelation_genre_clusters, cluster_percentages_pivot], axis=1)
-#
-#     # Concatenate a list of dataframes
-#     df_corelation_genre_clusters= df_corelation_genre_clusters.reset_index()
-#
-#     return df_corelation_genre_clusters
-
 # Method: Adding 4 more pivot columns
 # input:
 #   df_clustered: This dataframe contains all possible columns to calculate pivot table
 # output:
 #   df_clustered_pivot: Return new dataframe contains pivot table which has 4 flatted columns
 #       pivot_labels, pivot_..._1st, pivot_..._2nd, pivot_..._3rd
-def corelation_genre_clusters(df_clustered):
-    # print("df_clustered:", df_clustered)
-    # Iterating row by row
-    for i, row in df_clustered.iterrows():
-        # Create a new dataframe with first columns of X is store_id and it's labels
-        X_first_column = df_clustered.iloc[i]['X_first_column']
-        labels = df_clustered.iloc[i]['labels']
-        labels = convert_labels_to_dataframe(labels)
-        X_first_column = convert_Xfirstcol_to_dataframe(X_first_column)
-        df_clustered_refined = pd.concat([X_first_column, labels], axis=1)
-
-        # Get store_info_dataset and visit date in preparing further
-        RES_DATASET_ARG = df_clustered.iloc[i]['RES_DATASET_ARG']
-        store_info_dataset, df_vd = get_storeinfo_visitdata(df_asi, df_avd, df_hsi, df_hr, RES_DATASET_ARG)
-
-        print("df_clustered_refined:\n", df_clustered_refined)
-        print("store_info_dataset:\n", store_info_dataset)
-        print("df_vd:\n", store_info_dataset)
-
-        # Merging with store_info_dataset to get genre name and area name
-        df_clustered_refined = pd.merge(store_info_dataset, df_clustered_refined, how='inner', on=[store_id])
-
-        # Get only the first word of area_name
-        df_clustered_refined = format_arename_col_first_word(df_clustered_refined).reset_index(drop=True)
-        print("Final dataframe of time series and their clusters:\n", df_clustered_refined)
-
-        # Create 2 new dataframe ass temporaries for upcoming
-        df_temp = df_clustered_refined
-        df = df_clustered_refined
-        # Choosing between 2 type of split by genre or area
-        if df_clustered.iloc[i]['SPLIT_FIRST_BY_ARG'] == 'genre':
-            group_type = genre_name
-        else: # groupby area name
-            group_type = area_name
-
-        # Get first column to form up corelation dataframe
-        df_first_col = df_temp.groupby([group_type]).size()
-        df_first_col = df_first_col.to_frame(name = 'size').reset_index()
-        print("df_first_col: \n", df_first_col)
-
-        # Create a new empty corelation dataframe
-        df_corelation_genre_clusters = pd.DataFrame()
-        # Concatenate the new empty corelation dataframe with first column dataframe
-        df_corelation_genre_clusters = pd.concat([df_corelation_genre_clusters, df_first_col], axis=1)
-
-        # Loop from the first cluster column to the end
-        # print("df.shape[1] which contain number of columns", df.shape[1])
-        max_col = df.shape[1] - 1
-        # We group it by group_type and last column number 3.
-        # We create pivot table by these columns.
-        print("df====== 111:\n", df)
-
-        # Group by genre name or area name and cluster columns
-        df = df_temp.groupby([group_type, df_temp.columns[max_col]]).size()
-        print("df_temp.columns[j]:\n", df_temp.columns[max_col])
-        # reset index column
-        df = df.to_frame(name = 'size').reset_index()
-        print("df_merge_id:\n", df)
-        colname = df.columns[1]
-        print("colname = df.columns[pos]:", colname)
-        df_genre_name_cluster = df.groupby([colname, group_type]).agg({'size': 'sum'})
-        print("df_genre_name_cluster:\n", df_genre_name_cluster)
-
-        # Calculate percentage for each genres by cluster
-        cluster_percentages = df_genre_name_cluster.groupby(level=0).apply(lambda x:
-                                                 100 * x / float(x.sum()))
-        cluster_percentages = cluster_percentages.reset_index()
-        print("cluster_percentages:\n", cluster_percentages)
-        cluster_percentages = cluster_percentages.round({'size': 0}).fillna(0)
-
-        # Pivot table and fill nan value
-        cluster_percentages_pivot = cluster_percentages.pivot_table(index=colname, columns=group_type, values='size', aggfunc='max')
-        cluster_percentages_pivot = cluster_percentages_pivot.fillna(0)
-        cluster_percentages_pivot = cluster_percentages_pivot.reset_index()
-        # Get list of column names level 0
-        # cluster_percentages_pivot = cluster_percentages_pivot.reset_index(drop=True,level=0)
-
-        print("cluster_percentages after using pivot:", "\n", cluster_percentages_pivot)
-        print("list(my_dataframe.columns.values):", "\n", list(cluster_percentages_pivot.columns.values))
-        p_labels,group_type_1st,group_type_2nd,group_type_3rd = list(cluster_percentages_pivot.columns.values)
-
-        print("cluster_percentages_pivot[p_labels].values.tolist()      ", cluster_percentages_pivot[p_labels].values.tolist())
-        print("cluster_percentages_pivot[group_type_1st].values.tolist()", cluster_percentages_pivot[group_type_1st].values.tolist().astype(int))
-        print("cluster_percentages_pivot[group_type_2nd].values.tolist()", cluster_percentages_pivot[group_type_2nd].values.tolist().astype(int))
-        print("cluster_percentages_pivot[group_type_3rd].values.tolist()", cluster_percentages_pivot[group_type_3rd].values.tolist().astype(int))
-        s = cluster_percentages_pivot[group_type_1st].values.tolist()
-
-
-        df_clustered.at[i, 'pivot_'+p_labels] = listToString(cluster_percentages_pivot[p_labels].values.tolist())
-        df_clustered.at[i, 'pivot_'+group_type_1st] = listToString(cluster_percentages_pivot[group_type_1st].values.tolist())
-        df_clustered.at[i, 'pivot_'+group_type_2nd] = listToString(cluster_percentages_pivot[group_type_2nd].values.tolist())
-        df_clustered.at[i, 'pivot_'+group_type_3rd] = listToString(cluster_percentages_pivot[group_type_3rd].values.tolist())
-
-    # print("df_clustered:", "\n", df_clustered)
-    # df_clustered.to_csv("ttess.csv")
-    df_clustered_pivot = df_clustered
-    return df_clustered_pivot
-
 # method: do the clustering for missing values of time series for 5 algorithms
 # input:
 #   df_imputation: dataframe contains first level of arguments:
@@ -1180,12 +985,15 @@ def missing_values_clustering(df_imputation):
 
     imputation_dbscan_index   = 0
     list_cols = list(df_imputation.columns.values)
-    list_cols.extend(['METRIC_ARG', 'EPSILON_MIN_ARG', 'EPSILON_MAX_ARG', 'EPSILON_STEP_ARG', 'MINS_ARG'])
+    list_cols.extend(['METRIC_ARG', 'EPSILON_MIN_ARG', 'EPSILON_MAX_ARG', 'EPSILON_STEP_ARG', 'MINS_ARG',
+                      'MIN_CLUSTERS_ARG', 'MAX_NOISE_PERCENT_ARG'])
     df_imputation_dbscan = pd.DataFrame(columns=list_cols)
 
     imputation_optics_index   = 0
     list_cols_optics = list(df_imputation.columns.values)
-    list_cols_optics.extend(['METRIC_ARG', 'MIN_SAMPLES_ARG', 'XI_ARG', 'MIN_CLUSTER_SIZE_ARG'])
+    list_cols_optics.extend(['METRIC_ARG', 'MIN_SAMPLES_ARG', 'XI_ARG', 'MIN_CLUSTER_SIZE_ARG',
+                             'OPTICS_MIN_CLUSTERS_ARG', 'OPTICS_MAX_NOISE_PERCENT_ARG'])
+    # list_cols_optics.extend(['METRIC_ARG', 'MIN_SAMPLES_ARG', 'XI_ARG', 'MIN_CLUSTER_SIZE_ARG'])
     df_imputation_optics = pd.DataFrame(columns=list_cols_optics)
 
     imputation_hierachy_index = 0
@@ -1212,17 +1020,21 @@ def missing_values_clustering(df_imputation):
             # 'mahalanobis', 'matching', 'minkowski', 'rogerstanimoto', 'russellrao', 'seuclidean', 'sokalmichener',
             #  'sokalsneath', 'sqeuclidean', 'yule']
             EPSILON_MIN = [5]
-            EPSILON_MAX = [16000]
+            EPSILON_MAX = [20000]
             EPSILON_STEP = [10]
             MINS = [3]
-            for index, tuple in enumerate(itertools.product(METRIC, EPSILON_MIN, EPSILON_MAX, EPSILON_STEP, MINS)):
+            MIN_CLUSTERS = [3]
+            MAX_NOISE_PERCENT = [50]
+            for index, tuple in enumerate(itertools.product(METRIC, EPSILON_MIN, EPSILON_MAX, EPSILON_STEP, MINS,
+                                                            MIN_CLUSTERS, MAX_NOISE_PERCENT)):
                 # print("tuple [", index,  "]:", tuple)
-                METRIC_ARG, EPSILON_MIN_ARG, EPSILON_MAX_ARG, EPSILON_STEP_ARG, MINS_ARG = tuple
+                METRIC_ARG, EPSILON_MIN_ARG, EPSILON_MAX_ARG, EPSILON_STEP_ARG, MINS_ARG, MIN_CLUSTERS_ARG, MAX_NOISE_PERCENT_ARG = tuple
                 df_imputation_dbscan.loc[imputation_dbscan_index] = [df_imputation.iloc[i]['X_first_column']] + [df_imputation.iloc[i]['X']]\
                                                 + [df_imputation.iloc[i]['ALGORITHMS_ARG']] + [df_imputation.iloc[i]['RES_DATASET_ARG']]\
                                                 + [df_imputation.iloc[i]['SPLIT_FIRST_BY_ARG']] + [df_imputation.iloc[i]['RESAMPLING_METHOD_ARG']]\
                                                 + [df_imputation.iloc[i]['IMPUTATION_METHOD_ARG']] + [df_imputation.iloc[i]['MAX_MISSING_PERCENTAGE_ARG']]\
-                                                + [METRIC_ARG] + [EPSILON_MIN_ARG] + [EPSILON_MAX_ARG] + [EPSILON_STEP_ARG] + [MINS_ARG]
+                                                + [METRIC_ARG] + [EPSILON_MIN_ARG] + [EPSILON_MAX_ARG] + [EPSILON_STEP_ARG] + [MINS_ARG]\
+                                                + [MIN_CLUSTERS_ARG] + [MAX_NOISE_PERCENT_ARG]
 
                 # print("imputation_dbscan_index:", imputation_dbscan_index)
                 # print("df_imputation_dbscan.iloc[imputation_dbscan_index]['X']:\n", df_imputation_dbscan.iloc[imputation_dbscan_index]['X'])
@@ -1230,8 +1042,8 @@ def missing_values_clustering(df_imputation):
 
         # Creating dataframe of arguments of Dbscan
         elif df_imputation.iloc[i]['ALGORITHMS_ARG'] == 'OPTICS':
-            # METRIC = ['euclidean', 'manhattan']
-            METRIC = ['DTWDistance']
+            METRIC = ['euclidean', 'manhattan']
+            # METRIC = ['DTWDistance']
             # METRIC = ['cityblock', 'cosine', 'euclidean', 'l1', 'l2', 'manhattan']
             # ['braycurtis', 'canberra', 'chebyshev', 'correlation', 'dice', 'hamming', 'jaccard',
             # 'kulsinski', 'mahalanobis', 'minkowski', 'rogerstanimoto', 'russellrao', 'seuclidean',
@@ -1240,19 +1052,23 @@ def missing_values_clustering(df_imputation):
             MIN_SAMPLES = [3]
             XI = [0.01] # Determines the minimum steepness on the reachability plot that constitutes a cluster boundary.
             MIN_CLUSTER_SIZE = [0.01]
-            for index, tuple in enumerate(itertools.product(METRIC, MIN_SAMPLES, XI, MIN_CLUSTER_SIZE)):
-                METRIC_ARG, MIN_SAMPLES_ARG, XI_ARG, MIN_CLUSTER_SIZE_ARG = tuple
+            OPTICS_MIN_CLUSTERS = [1]
+            OPTICS_MAX_NOISE_PERCENT = [100]
+            for index, tuple in enumerate(itertools.product(METRIC, MIN_SAMPLES, XI, MIN_CLUSTER_SIZE,
+                                                            OPTICS_MIN_CLUSTERS, OPTICS_MAX_NOISE_PERCENT)):
+                METRIC_ARG, MIN_SAMPLES_ARG, XI_ARG, MIN_CLUSTER_SIZE_ARG, OPTICS_MIN_CLUSTERS_ARG, OPTICS_MAX_NOISE_PERCENT_ARG = tuple
                 df_imputation_optics.loc[imputation_optics_index] = [df_imputation.iloc[i]['X_first_column']] + [df_imputation.iloc[i]['X']]\
                                                 + [df_imputation.iloc[i]['ALGORITHMS_ARG']] + [df_imputation.iloc[i]['RES_DATASET_ARG']]\
                                                 + [df_imputation.iloc[i]['SPLIT_FIRST_BY_ARG']] + [df_imputation.iloc[i]['RESAMPLING_METHOD_ARG']]\
                                                 + [df_imputation.iloc[i]['IMPUTATION_METHOD_ARG']] + [df_imputation.iloc[i]['MAX_MISSING_PERCENTAGE_ARG']]\
-                                                + [METRIC_ARG] + [MIN_SAMPLES_ARG] + [XI_ARG] + [MIN_CLUSTER_SIZE_ARG]
+                                                + [METRIC_ARG] + [MIN_SAMPLES_ARG] + [XI_ARG] + [MIN_CLUSTER_SIZE_ARG]\
+                                                + [OPTICS_MIN_CLUSTERS_ARG] + [OPTICS_MAX_NOISE_PERCENT_ARG]
 
-                print("imputation_optics_index:", imputation_optics_index)
-                print("df_imputation_optics.iloc[imputation_optics_index]['X']:\n", df_imputation_optics.iloc[imputation_optics_index]['X'])
+                # print("imputation_optics_index:", imputation_optics_index)
+                # print("df_imputation_optics.iloc[imputation_optics_index]['X']:\n", df_imputation_optics.iloc[imputation_optics_index]['X'])
                 imputation_optics_index = imputation_optics_index + 1
 
-        elif df_imputation.iloc[i]['ALGORITHMS_ARG'] == 'HIERACHY':
+        elif df_imputation.iloc[i]['ALGORITHMS_ARG'] == 'HIERARCHICAL':
             NUM_OF_HC_CLUSTER = [3, 9]
             LINKAGE = ['complete', 'average', 'single']
             AFFINITY = ['euclidean', 'l1', 'l2', 'manhattan', 'cosine']
@@ -1327,7 +1143,7 @@ def missing_values_clustering(df_imputation):
 
     # Get clustered from hierachy argumented dataframe
     df_imputation_hierachy_clustered = clustering_by_hierachy(df_imputation_hierachy)
-    # print("HIERACHY ALGORITHMS", df_imputation_hierachy_clustered)
+    # print("HIERARCHICAL ALGORITHMS", df_imputation_hierachy_clustered)
 
     # Get clustered from kmeans DTW argumented dataframe
     df_imputation_kmeans_clustered = clustering_by_kmeans(df_imputation_kmeans)
@@ -1378,7 +1194,6 @@ def get_df_imputation_level(ALGORITHMS, RES_DATASET, SPLIT_FIRST_BY, RESAMPLING_
 
         df_imputation.loc[index] = [X_first_column] + [X] + [ALGORITHMS_ARG] + [RES_DATASET_ARG] + [SPLIT_FIRST_BY_ARG] + \
                                        [RESAMPLING_METHOD_ARG] + [IMPUTATION_METHOD_ARG] + [MAX_MISSING_PERCENTAGE_ARG]
-        print("df_imputation_level 2:\n", df_imputation)
         # sys.exit()
     return df_imputation, df_vd, df_si
 
@@ -1408,6 +1223,58 @@ def convert_Xfirstcol_to_dataframe(X_first_column):
     # print("X_first_column convert_Xfirstcol_to_dataframe:\n", X_first_column)
     return X_first_column
 
+# Evaluating result of pivot dataframe
+def evaluating_pitvot(df):
+    # Remove index column name and remove a list of header
+    # del df.index.name
+    # print("current df in:\n", df)
+    df.reset_index(inplace=True)
+    # removing noise row
+    # print("current df out:\n", df)
+    # print("type of df:", type(df))
+
+    # Get names of indexes for which column labels has value != -1
+    df  = df.drop(df[(df['labels'] == -1)].index)
+    # print("df:\n", df)
+
+    print("df.shape[0]:", df.shape[0])
+    print("df.shape[1]:", df.shape[1])
+
+    if (df.shape[0] == df.shape[1] - 2):
+        list1 = list(df.columns.values)
+        # print("list1:", list1)
+        # print("index name:", df.index.name)
+        df = df.drop(['labels', 'index'], axis=1)
+        df = df.reset_index()
+        # print("cluster_percentages_pivot\n", df)
+        # Remove row and column by index
+        max_list = []
+        for i in range(df.shape[0]):
+            # print("df:\n", df)
+            max = df.values.max()
+            max_list.append(max)
+            # print("max:\n", max)
+            tuple = [(df[col][df[col].eq(max)].index[i], df.columns.get_loc(col)) for col in df.columns for i in range(len(df[col][df[col].eq(max)].index))]
+            index_row = tuple[0][0]
+            index_col = tuple[0][1]
+            # print("index_row:", index_row)
+            # print("index_col:", index_col)
+            df = df.drop(df.index[index_row])
+
+            df.drop(df.columns[index_col], axis=1, inplace=True)
+            df=df.reset_index(drop=True)
+            # print("df:\n", df)
+
+        # print("max_list:\n", max_list)
+
+        sum_of_list = sum(max_list)
+        # print("sum_of_list:\n", sum_of_list)
+        if sum_of_list > 140:
+            return sum_of_list, 'yes'
+        else:
+            return sum_of_list, 'no'
+    else:
+        return 0, 'NA'
 # Method: Adding 4 more pivot columns
 # input:
 #   df_clustered: This dataframe contains all possible columns to calculate pivot table
@@ -1419,13 +1286,19 @@ def correlation_clustered_pivoting(df_clustered, df_vd, df_si):
     # Iterating row by row
     for i, row in df_clustered.iterrows():
         # Create a new dataframe with first columns of X is store_id and it's labels
+        # print("Row number:", i)
+        # print("row:", row)
+        # print("df_clustered:\n", df_clustered)
+
         X_first_column = df_clustered.iloc[i]['X_first_column']
+        # print("X_first_column:", X_first_column)
+        # sys.exit()
         labels = df_clustered.iloc[i]['labels']
         labels = convert_labels_to_dataframe(labels)
         X_first_column = convert_Xfirstcol_to_dataframe(X_first_column)
         df_clustered_refined = pd.concat([X_first_column, labels], axis=1)
 
-        print("df_si input :\n", df_si)
+        # print("df_si input :\n", df_si)
         df_si = store_info_format(df_si)
         df_si[genre_name] = df_si[genre_name].str.strip()
         df_si[area_name]  = df_si[area_name].str.strip()
@@ -1436,7 +1309,7 @@ def correlation_clustered_pivoting(df_clustered, df_vd, df_si):
         # RES_DATASET_ARG = df_clustered.iloc[i]['RES_DATASET_ARG']
         # store_info_dataset, df_vd = get_storeinfo_visitdata(df_asi, df_avd, df_hsi, df_hr, RES_DATASET_ARG)
         #
-        print("df_clustered_refined:\n", df_clustered_refined)
+        # print("df_clustered_refined:\n", df_clustered_refined)
         # df_clustered_refined.to_csv("df_clustered_refined.csv")
 
         # print("store_info_dataset:\n", store_info_dataset)
@@ -1463,8 +1336,7 @@ def correlation_clustered_pivoting(df_clustered, df_vd, df_si):
         # Merging with store_info_dataset to get genre name and area name
         df_clustered_refined = pd.merge(df_si, df_clustered_refined, how='inner', on=[store_id])
         # df_clustered_refined.to_csv("df_clustered_refined_merged.csv")
-        print("df_clustered_refined after merging:\n", df_clustered_refined)
-        # sys.exit()
+        # print("df_clustered_refined after merging:\n", df_clustered_refined)
 
         # Get only the first word of area_name
         df_clustered_refined = format_arename_col_first_word(df_clustered_refined).reset_index(drop=True)
@@ -1482,7 +1354,7 @@ def correlation_clustered_pivoting(df_clustered, df_vd, df_si):
         # Get first column to form up corelation dataframe
         df_first_col = df_temp.groupby([group_type]).size()
         df_first_col = df_first_col.to_frame(name = 'size').reset_index()
-        print("df_first_col: \n", df_first_col)
+        # print("df_first_col: \n", df_first_col)
 
         # Create a new empty corelation dataframe
         df_corelation_genre_clusters = pd.DataFrame()
@@ -1515,13 +1387,18 @@ def correlation_clustered_pivoting(df_clustered, df_vd, df_si):
         cluster_percentages = cluster_percentages.round({'size': 0}).fillna(0)
 
         # Pivot table and fill nan value
+        # df.groupby(['company', 'partner']).size().unstack(fill_value=0).astype(bool).rename_axis(None, 1).reset_index()
+
+
         cluster_percentages_pivot = cluster_percentages.pivot_table(index=colname, columns=group_type, values='size', aggfunc='max')
         cluster_percentages_pivot = cluster_percentages_pivot.fillna(0).astype(int)
         cluster_percentages_pivot = cluster_percentages_pivot.reset_index()
         # Get list of column names level 0
         # cluster_percentages_pivot = cluster_percentages_pivot.reset_index(drop=True,level=0)
-
         print("cluster_percentages after using pivot:", "\n", cluster_percentages_pivot)
+
+
+
         print("list(my_dataframe.columns.values):", "\n", list(cluster_percentages_pivot.columns.values))
         p_labels,group_type_1st,group_type_2nd,group_type_3rd = list(cluster_percentages_pivot.columns.values)
 
@@ -1537,31 +1414,88 @@ def correlation_clustered_pivoting(df_clustered, df_vd, df_si):
         df_clustered.at[i, 'pivot_'+group_type_2nd] = listToString(cluster_percentages_pivot[group_type_2nd].values.tolist())
         df_clustered.at[i, 'pivot_'+group_type_3rd] = listToString(cluster_percentages_pivot[group_type_3rd].values.tolist())
 
-    # print("df_clustered:", "\n", df_clustered)
-    # df_clustered.to_csv("ttess.csv")
+        print("cluster_percentages_pivot:", "\n", cluster_percentages_pivot)
+        new_cluster_percentages_pivot = cluster_percentages_pivot[['labels', group_type_1st, group_type_2nd, group_type_3rd]].copy()
+        print("new_cluster_percentages_pivot:\n", new_cluster_percentages_pivot)
+        # Evaluating result of pivot dataframe
+        print("new_cluster_percentages_pivot shape 0 - row:", new_cluster_percentages_pivot.shape[0])
+        print("new_cluster_percentages_pivot shape 0 - col:", new_cluster_percentages_pivot.shape[1])
+        # sys.exit()
+        sum_eval ,evaluation_result = evaluating_pitvot(new_cluster_percentages_pivot)
+        df_clustered.at[i, 'sum_eval'] = sum_eval
+        df_clustered.at[i, 'good_result'] = evaluation_result
+
+    # print("df_clustered:\n", df_clustered)
+    # sys.exit()
     df_clustered_pivot = df_clustered
     return df_clustered_pivot
 
 
-df_imputation, df_vd, df_si = get_df_imputation_level(ALGORITHMS, RES_DATASET, SPLIT_FIRST_BY, RESAMPLING_METHOD,
+
+
+ALGORITHMS = ['HIERARCHICAL']
+ALGORITHMS_ARG = ['HIERARCHICAL', 'DBSCAN', 'KMEANS_AUTO', 'KMEANS_DTW', 'OPTICS']
+RES_DATASET = ['air']
+# RES_DATASET = ['air']
+RES_DATASET_ARG = 'air'
+RESAMPLING_METHOD = ['under']
+RESAMPLING_METHOD_ARG = 'under', 'over'
+# SPLIT_GROUPS = [3, 9]
+SPLIT_FIRST_BY = ['area', 'genre']
+SPLIT_FIRST_BY_ARG = 'area'
+# split groups arguments always is 9
+# SPLIT_GROUPS_ARG = 9
+# IMPUTATION_METHOD = ['median', 'mean', 'linear', 'time', 'index', 'values', 'nearest', 'zero', 'slinear', 'quadratic', 'cubic', 'barycentric',
+#           'krogh', 'polynomial', 'spline', 'piecewise_polynomial', 'from_derivatives', 'pchip', 'akima']
+# IMPUTATION_METHOD = ['barycentric', 'krogh', 'polynomial', 'spline',] --> fail
+IMPUTATION_METHOD = ['median', 'mean', 'linear']
+# IMPUTATION_METHOD_ARG = 'median'
+# MAX_MISSING_PERCENTAGE = 100 means: we take all of timeseries which have missing point
+# MAX_MISSING_PERCENTAGE = 20  means: we take only first 20 percent of timeseries which have missing point
+MAX_MISSING_PERCENTAGE = [55, 60, 65, 70, 75, 80, 85, 90, 95, 100]
+MAX_MISSING_PERCENTAGE_ARG = 90
+
+# NUM_OF_HC_CLUSTER = [3, 9]
+NUM_OF_HC_CLUSTER_ARG = 5
+
+
+
+def main():
+    df_imputation, df_vd, df_si = get_df_imputation_level(ALGORITHMS, RES_DATASET, SPLIT_FIRST_BY, RESAMPLING_METHOD,
                                   IMPUTATION_METHOD, MAX_MISSING_PERCENTAGE)
 
-# Get clustered by algrorithms
-df_imputation_dbscan_clustered, df_imputation_optics_clustered, df_imputation_hierachy_clustered, \
-df_imputation_kmeans_clustered, df_imputation_kmeans_auto_clustered = missing_values_clustering(df_imputation)
+    # Get clustered by algrorithms
+    df_imputation_dbscan_clustered, df_imputation_optics_clustered, df_imputation_hierachy_clustered, \
+    df_imputation_kmeans_clustered, df_imputation_kmeans_auto_clustered = missing_values_clustering(df_imputation)
 
-# df_dbscan_clustered_pivot   = correlation_clustered_pivoting(df_imputation_dbscan_clustered)
-# df_optics_clustered_pivot = correlation_clustered_pivoting(df_imputation_optics_clustered)
-# df_hierachy_clustered_pivot = correlation_clustered_pivoting(df_imputation_hierachy_clustered)
-# df_kmeans_clustered_pivot = correlation_clustered_pivoting(df_imputation_kmeans_clustered)
-df_kmeans_auto_clustered_pivot = correlation_clustered_pivoting(df_imputation_kmeans_auto_clustered, df_vd, df_si)
+    frames_clustered = [df_imputation_dbscan_clustered, df_imputation_optics_clustered, df_imputation_hierachy_clustered, \
+    df_imputation_kmeans_clustered, df_imputation_kmeans_auto_clustered]
 
+    for i, df in enumerate(frames_clustered):
+        if not df.empty:
+            str_algorithm = df.iloc[0]['ALGORITHMS_ARG']
+            print("Current dataframe of algorithm:", str_algorithm, "\n", df)
+            if str_algorithm == 'DBSCAN':
+                df_dbscan_clustered_pivot   = correlation_clustered_pivoting(df_imputation_dbscan_clustered, df_vd, df_si)
+                print("df_dbscan_clustered_pivot:\n", df_dbscan_clustered_pivot)
+                df_dbscan_clustered_pivot.to_csv("df_dbscan_clustered_pivot.csv")
+            elif str_algorithm == 'OPTICS':
+                df_optics_clustered_pivot = correlation_clustered_pivoting(df_imputation_optics_clustered, df_vd, df_si)
+                print("df_optics_clustered_pivot:\n", df_optics_clustered_pivot)
+                df_optics_clustered_pivot.to_csv("df_optics_clustered_pivot.csv")
+            elif str_algorithm == 'HIERARCHICAL':
+                df_hierachy_clustered_pivot = correlation_clustered_pivoting(df_imputation_hierachy_clustered, df_vd, df_si)
+                print("df_hierachy_clustered_pivot:\n", df_hierachy_clustered_pivot)
+                df_hierachy_clustered_pivot.to_csv("df_hierachy_clustered_pivot.csv")
+            elif str_algorithm == 'KMEANS_DTW':
+                df_kmeans_clustered_pivot = correlation_clustered_pivoting(df_imputation_kmeans_clustered, df_vd, df_si)
+                print("df_kmeans_clustered_pivot:\n", df_kmeans_clustered_pivot)
+                df_kmeans_clustered_pivot.to_csv("df_kmeans_clustered_pivot.csv")
+            elif str_algorithm == 'KMEANS_AUTO':
+                df_kmeans_auto_clustered_pivot = correlation_clustered_pivoting(df_imputation_kmeans_auto_clustered, df_vd, df_si)
+                print("df_kmeans_auto_clustered_pivot:\n", df_kmeans_auto_clustered_pivot)
+                df_kmeans_auto_clustered_pivot.to_csv("df_kmeans_auto_clustered_pivot.csv")
 
-# print("df_kmeans_clustered_pivot:\n", df_kmeans_auto_clustered_pivot)
-print("df_optics_clustered_pivot:\n", df_kmeans_auto_clustered_pivot)
-
-df_kmeans_auto_clustered_pivot.to_csv("df_kmeans_auto_clustered_pivot.csv")
-
-
-
+if __name__ == "__main__":
+    main()
 

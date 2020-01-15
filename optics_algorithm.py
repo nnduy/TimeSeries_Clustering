@@ -15,6 +15,22 @@ def percentage(part, whole, digits):
     val *= 10 ** (digits + 2)
     return (floor(val) / 10 ** digits)
 
+# DTW Distance between 2 time series with fully window size complexity of O(nm)
+def DTWDistance(s1, s2):
+    DTW={}
+
+    for i in range(len(s1)):
+        DTW[(i, -1)] = float('inf')
+    for i in range(len(s2)):
+        DTW[(-1, i)] = float('inf')
+    DTW[(-1, -1)] = 0
+
+    for i in range(len(s1)):
+        for j in range(len(s2)):
+            dist= (s1[i]-s2[j])**2
+            DTW[(i, j)] = dist + min(DTW[(i-1, j)],DTW[(i, j-1)], DTW[(i-1, j-1)])
+
+    return math.sqrt(DTW[len(s1)-1, len(s2)-1])
 
 # DTW Distance between 2 time series with specific window size w to increase speed
 def DTWDistance(s1, s2, w=5):
@@ -124,17 +140,17 @@ def plot_current_cluster(X, clust):
 # input:
 #       distance_measure: string - The metric to use when calculating distance between instances in a feature array.
 def clustering_by_optics(df_imputation_optics):
-    print("df_imputation_optics input clustering_by_optics:\n", df_imputation_optics)
+    # print("df_imputation_optics input clustering_by_optics:\n", df_imputation_optics)
     # Creating index for new dataframe
     imputation_optics_arg_index = 0
     # print('type of imputation_optics_arg_index: {}', type(imputation_optics_arg_index))
     list_cols = list(df_imputation_optics.columns.values)
-    list_cols.extend(['labels', 'reachability'])
+    list_cols.extend(['labels', 'reachability', 'nclusters', 'n_noise_', 'percent_of_noise'])
     # list_cols.extend(['labels', 'reachability', 'labels_050', 'labels_200'])
     df_imputation_optics_arg = pd.DataFrame(columns=list_cols)
 
     for i, row in df_imputation_optics.iterrows():
-        print("X:\n", df_imputation_optics.iloc[i]['X'])
+        # print("X:\n", df_imputation_optics.iloc[i]['X'])
         X = df_imputation_optics.iloc[i]['X']
 
         # # Pairwise distances between observations in n-dimensional space.
@@ -145,13 +161,17 @@ def clustering_by_optics(df_imputation_optics):
         MIN_SAMPLES_ARG = df_imputation_optics.iloc[i]['MIN_SAMPLES_ARG']
         XI_ARG = df_imputation_optics.iloc[i]['XI_ARG']
         MIN_CLUSTER_SIZE_ARG = df_imputation_optics.iloc[i]['MIN_CLUSTER_SIZE_ARG']
+        OPTICS_MIN_CLUSTERS_ARG = df_imputation_optics.iloc[i]['OPTICS_MIN_CLUSTERS_ARG']
+        OPTICS_MAX_NOISE_PERCENT_ARG = df_imputation_optics.iloc[i]['OPTICS_MAX_NOISE_PERCENT_ARG']
+        print("OPTICS_MIN_CLUSTERS_ARG:", OPTICS_MIN_CLUSTERS_ARG)
+        print("OPTICS_MAX_NOISE_PERCENT_ARG:", OPTICS_MAX_NOISE_PERCENT_ARG)
 
         # optics = OPTICS(min_samples=5, min_cluster_size=0.5).fit(X)
         # min_samples: is minimum number of samples of the input. For example input has 18 samples. Then min_samples must less than 18.
         # min_cluster_size: percent of Minimum number of samples in an OPTICS cluster
         # xi: Determines the minimum steepness on the reachability plot that constitutes a cluster boundary.
         #   For example, an upwards point in the reachability plot is defined by the ratio from one point to its successor being at most 1-xi.
-        print("Current METRIC_ARG:", METRIC_ARG)
+        # print("Current METRIC_ARG:", METRIC_ARG)
         if METRIC_ARG == 'DTWDistance':
             # The code below is equivalent the above but with one more option to choose 3rd argument
             clust = OPTICS(metric=lambda X, Y: DTWDistance(X, Y, w=5), min_samples=4, xi=.01, min_cluster_size=.01)
@@ -164,21 +184,37 @@ def clustering_by_optics(df_imputation_optics):
 
         reachability = clust.reachability_[clust.ordering_]
         labels = clust.labels_[clust.ordering_]
-        print("labels-labels:", labels)
+        # print("labels-labels:", labels)
 
         # Options to plot clusters or not
         # plot_current_cluster(X, clust)
 
+        nclusters = len(list(np.unique(labels)))
+        n_noise_ = list(labels).count(-1)
+        total_number_of_store = len(labels)
+        percent_of_noise = percentage(n_noise_, total_number_of_store, 2)
+        # print('================= RESULTS ========================')
+        # print('labels                 : \n {}'.format(labels))
+        # print('Number of the clusters : {}'.format(nclusters))
+        # print('Number of noise points : {}'.format(n_noise_))
+        # print('Percent_of_noise       : {}'.format(percent_of_noise))
 
-        df_imputation_optics_arg.loc[imputation_optics_arg_index] = [df_imputation_optics.iloc[i]['X_first_column']] + [df_imputation_optics.iloc[i]['X']]\
-                    + [df_imputation_optics.iloc[i]['ALGORITHMS_ARG']] + [df_imputation_optics.iloc[i]['RES_DATASET_ARG']]\
-                    + [df_imputation_optics.iloc[i]['SPLIT_FIRST_BY_ARG']] + [df_imputation_optics.iloc[i]['RESAMPLING_METHOD_ARG']]\
-                    + [df_imputation_optics.iloc[i]['IMPUTATION_METHOD_ARG']] + [df_imputation_optics.iloc[i]['MAX_MISSING_PERCENTAGE_ARG']]\
-                    + [METRIC_ARG] + [MIN_SAMPLES_ARG] + [XI_ARG] + [MIN_CLUSTER_SIZE_ARG]\
-                    + [labels] + [reachability]
-                    # + [labels] + [reachability] + [labels_050] + [labels_200]
+        if (nclusters > OPTICS_MIN_CLUSTERS_ARG) & (percent_of_noise < OPTICS_MAX_NOISE_PERCENT_ARG):
+        # if True:
+
+            df_imputation_optics_arg.loc[imputation_optics_arg_index] = [df_imputation_optics.iloc[i]['X_first_column']] + [df_imputation_optics.iloc[i]['X']]\
+                        + [df_imputation_optics.iloc[i]['ALGORITHMS_ARG']] + [df_imputation_optics.iloc[i]['RES_DATASET_ARG']]\
+                        + [df_imputation_optics.iloc[i]['SPLIT_FIRST_BY_ARG']] + [df_imputation_optics.iloc[i]['RESAMPLING_METHOD_ARG']]\
+                        + [df_imputation_optics.iloc[i]['IMPUTATION_METHOD_ARG']] + [df_imputation_optics.iloc[i]['MAX_MISSING_PERCENTAGE_ARG']]\
+                        + [METRIC_ARG] + [MIN_SAMPLES_ARG] + [XI_ARG] + [MIN_CLUSTER_SIZE_ARG]\
+                        + [OPTICS_MIN_CLUSTERS_ARG] + [OPTICS_MAX_NOISE_PERCENT_ARG]\
+                        + [labels] + [reachability] + [nclusters] + [n_noise_] + [percent_of_noise]
+
+
+                        # + [labels] + [reachability] + [labels_050] + [labels_200]
         imputation_optics_arg_index = imputation_optics_arg_index + 1
 
+    df_imputation_optics_arg = df_imputation_optics_arg.reset_index(drop=True)
     # print("Dataframe after imputation and optics clustering - df_imputation_optics_arg: \n", df_imputation_optics_arg)
     # # df_imputation_optics_arg.to_csv('df_imputation_optics_arg.csv')
     return df_imputation_optics_arg
