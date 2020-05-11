@@ -32,7 +32,6 @@ df_asi = data['asi']
 df_avd = data['avd']
 df_hsi = data['hsi']
 df_hr = data['hr']
-# df_test = data['test']
 
 genre_name = 'genre_name'
 area_name = 'area_name'
@@ -77,9 +76,6 @@ def DTWDistance(s1, s2, w):
 
 #  LB Keogh lower bound of dynamic time warping to increase speed
 def LB_Keogh(s1, s2, r):
-    # print("s1 s1:", s1)
-    # print("s2 s2:", s2)
-    # print("r r:", r)
     LB_sum=0
     for ind,i in enumerate(s1):
 
@@ -118,10 +114,8 @@ def convert_assigments_to_labels(assignments):
 #  k-means clustering
 def k_means_clust(data, num_clust, num_iter, window_size):
     print("data:\n", data)
-    # print("type of data:", type(data))
     # centroids is the random members of the data
     centroids = random.sample(list(data), num_clust)
-    # print("centroids before loop:", centroids)
     centroids_backup = centroids
     # counter is number of iteration, which we use to recalculate the centroids
     counter = 0
@@ -136,47 +130,25 @@ def k_means_clust(data, num_clust, num_iter, window_size):
             min_dist = float('inf')
             closest_clust = None
             for c_ind, j in enumerate(centroids):
-                # print("i values:", i)
-                # print("centroids inside loop:", centroids)
-                # print("data j before calculate distance:", j)
-                # print("LB_Keogh(i, j, 5):", LB_Keogh(i, j, 5))
-                # print("closest_clust    :", closest_clust)
                 if LB_Keogh(i, j, 5) < min_dist:
                     cur_dist = DTWDistance(i, j, window_size)
                     if cur_dist < min_dist:
                         min_dist = cur_dist
                         closest_clust = c_ind
-            #     print("c_ind         :", c_ind)
-            # print("closest_clust         :", closest_clust)
-            # print("assignments:", assignments)
             if closest_clust in assignments:
                 assignments[closest_clust].append(ind)
             else:
                 assignments[closest_clust] = []
                 assignments[closest_clust].append(ind)
-        # assignments is a set of labels and their member timeseries
-        # print("assignments:", assignments)
-        # print("==============================")
 
         #recalculate centroids of clusters
         for key in assignments:
-            # print("assignments:", assignments)
-            # print("key:", key)
             clust_sum = 0
             for k in assignments[key]:
-                # clust_sum = clust_sum + data[k]
                 clust_sum = np.sum([clust_sum, data[k]], axis=0)
-                # clust_sum = np.vstack((clust_sum, data[k]))
-                # print("assignments[", key, "]:", assignments[key])
-                # print("data[", k, "]         :", data[k])
-                # print("clust_sum[", k, "]    :", clust_sum)
-                # for m in list(clust_sum):
-                #     print("m value:", m)
-            # centroids[key]=[m/len(assignments[key]) for m in list(clust_sum)]
             divisor = len(assignments[key])
             centroids[key] = np.divide(clust_sum, divisor)
             np.rint(centroids[key])
-            # print("centroids[", key, "]:", centroids[key])
 
     lables = convert_assigments_to_labels(assignments)
     return centroids, lables
@@ -275,7 +247,6 @@ def clustering_by_kmeans_auto(df_imputation_kmeans_auto):
             + [labels] + [centroids]
         imputation_kmeans_arg_index = imputation_kmeans_arg_index + 1
 
-    print("Dataframe after imputation and kmeans clustering - df_imputation_kmeans_arg: \n", df_imputation_kmeans_arg)
+    # print("Dataframe after imputation and kmeans clustering - df_imputation_kmeans_arg: \n", df_imputation_kmeans_arg)
     # df_imputation_kmeans_arg.to_csv('df_imputation_kmeans_arg.csv')
-    # sys.exit()
     return df_imputation_kmeans_arg

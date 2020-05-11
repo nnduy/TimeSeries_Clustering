@@ -1,10 +1,66 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="BookmarkManager">
-    <bookmark url="file://$PROJECT_DIR$/test.py" description="#check for missing datetimeindex values based on r..." line="15" />
+    <bookmark url="file://$PROJECT_DIR$/main.py" line="1143" mnemonic="9" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="bf7527e1-00c9-4e60-830b-7c73ec66c6a6" name="Default Changelist" comment="" />
+    <list default="true" id="bf7527e1-00c9-4e60-830b-7c73ec66c6a6" name="Default Changelist" comment="Restructure main file with new arguments and fucntions">
+      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mall_Customers.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backup.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backup_Dec10.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backup_Dec19.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backup_Nov18.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/df_genre_clusters.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/df_merge_id1.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/example.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/hpg_reserve_visitor_format.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/input/Cafe-Sweet.xlsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/input/Italian-French.xlsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/input/Izakaya.xlsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/input/air_reserve.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/input/air_store_info.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/input/air_store_info1.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/input/air_visit_data.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/input/date_info.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/input/hpg_reserve.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/input/hpg_store_info.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/input/sample_submission.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/input/store_id_relation.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/input/surveys.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/logs/log.txt" beforeDir="false" afterPath="$PROJECT_DIR$/logs/log.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/map_hsi.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out.txt" beforeDir="false" afterPath="$PROJECT_DIR$/git" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/output.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/output_visitor.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/reports/output/Facility_Included/36heatmap.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/reports/output/Facility_Included/39heatmap.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/reports/output/Facility_Included/42heatmap.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/reports/output/Facility_Included/44heatmap.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/reports/output/Facility_Included/46heatmap.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/reports/output/Facility_Included/50heatmap.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/reports/output/Facility_Included/SKUFinalModelFeatureWeights.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/reports/output/Facility_Included/SKUFinalModelOptics.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/reports/output/Facility_Included/SKUFinalScoring.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/reports/output/Facility_Included/output.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/reports/output/Facility_Removed/16heatmap.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/reports/output/Facility_Removed/17heatmap.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/reports/output/Facility_Removed/19heatmap.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/reports/output/Facility_Removed/20heatmap.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/reports/output/Facility_Removed/22heatmap.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/reports/output/Facility_Removed/24heatmap.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/reports/output/Facility_Removed/SKUFinalModelFeatureWeights.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/reports/output/Facility_Removed/SKUFinalModelOptics.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/reports/output/Facility_Removed/SKUFinalScoring.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/reports/output/Facility_Removed/output.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/reports/output/README.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/temp_df_first_col.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/test.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/testA.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/testB.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/testing.py" beforeDir="false" />
+    </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -16,126 +72,58 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/main.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="173">
-              <caret line="859" column="24" selection-start-line="859" selection-start-column="24" selection-end-line="859" selection-end-column="24" />
-              <folding>
-                <element signature="e#983#1046#0" />
-                <element signature="e#6069#6119#0" />
-                <element signature="e#8156#8495#0" />
-                <element signature="e#9122#9209#0" />
-                <element signature="e#11713#11736#0" />
-                <element signature="e#12063#12207#0" />
-                <element signature="e#12252#12454#0" />
-                <element signature="e#12456#12530#0" />
-                <element signature="e#16730#18469#0" />
-                <element signature="e#21593#21636#0" />
-                <element signature="e#38057#38087#0" />
-                <element signature="e#50630#50761#0" />
-                <element signature="e#53809#55461#0" />
-                <element signature="e#55495#56152#0" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://C:/Python/Python36/Lib/site-packages/pandas/core/indexing.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="171">
-              <caret line="204" selection-start-line="204" selection-end-line="204" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://C:/Python/Python36/Lib/site-packages/sklearn/cluster/dbscan_.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="243">
-              <caret line="318" column="8" selection-start-line="318" selection-start-column="8" selection-end-line="318" selection-end-column="8" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/testA.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="335">
-              <caret line="55" column="40" selection-start-line="55" selection-start-column="40" selection-end-line="55" selection-end-column="40" />
-              <folding>
-                <element signature="e#0#15#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/testB.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="66">
-              <caret line="5" column="32" selection-start-line="5" selection-start-column="32" selection-end-line="5" selection-end-column="32" />
-              <folding>
-                <element signature="e#0#14#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://C:/Python/Python36/Lib/site-packages/pandas/core/internals/blocks.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="494">
-              <caret line="127" selection-start-line="127" selection-end-line="127" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/testing.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="494">
-              <caret line="129" column="22" selection-start-line="129" selection-start-column="22" selection-end-line="129" selection-end-column="22" />
-              <folding>
-                <element signature="e#0#46#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/backup.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="494">
-              <caret line="105" column="38" selection-start-line="105" selection-start-column="38" selection-end-line="105" selection-end-column="38" />
-              <folding>
-                <element signature="e#4081#5216#0" />
-                <element signature="e#5280#7943#0" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/backup_Nov18.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="233">
-              <caret line="1046" column="22" selection-start-line="1046" selection-start-column="2" selection-end-line="1046" selection-end-column="22" />
+            <state relative-caret-position="312">
+              <caret line="1311" column="34" lean-forward="true" selection-start-line="1311" selection-start-column="34" selection-end-line="1311" selection-end-column="34" />
               <folding>
                 <element signature="e#38#53#0" expanded="true" />
-                <element signature="e#941#1004#0" />
-                <element signature="e#20963#21006#0" />
-                <element signature="e#31095#31113#0" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/backup_Dec19.py">
+        <entry file="file://$PROJECT_DIR$/hierachy_algorithm.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="233">
-              <caret line="1132" column="22" selection-start-line="1132" selection-start-column="2" selection-end-line="1132" selection-end-column="22" />
+            <state relative-caret-position="2222">
+              <caret line="104" column="37" selection-start-line="104" selection-start-column="37" selection-end-line="104" selection-end-column="37" />
               <folding>
-                <element signature="e#38#53#0" expanded="true" />
+                <element signature="e#38#68#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/optics_algorithm.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="3674">
+              <caret line="177" column="35" selection-start-line="177" selection-start-column="35" selection-end-line="177" selection-end-column="35" />
+              <folding>
+                <element signature="e#0#40#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/kmeans_algorithm.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="5390">
+              <caret line="251" column="16" selection-start-line="251" selection-start-column="16" selection-end-line="251" selection-end-column="16" />
+              <folding>
+                <element signature="e#38#49#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/dbscan_algorithm.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="3212">
+              <caret line="154" column="27" selection-start-line="154" selection-start-column="27" selection-end-line="154" selection-end-column="27" />
+              <folding>
+                <element signature="e#38#49#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -152,40 +140,49 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>res</find>
-      <find>get_3_equal_location_size_sampling</find>
-      <find>average_first_moment_timepoint</find>
-      <find>visitor_df_transposed</find>
-      <find>NUM_OF_HC_CLUSTER_ARG</find>
-      <find>labeling_hierachy_cluster</find>
-      <find>type of one element in dataset_ts_arg:</find>
-      <find>ALGORITHMS_ARG</find>
-      <find>df_corelation_genre_clusters:</find>
-      <find>tuple:</find>
-      <find>tuple [</find>
-      <find>=================================== START =============================================================</find>
-      <find>eries['visitors'] before</find>
-      <find>visitor</find>
-      <find>pairwise_manhattan</find>
-      <find>visitor_matrix</find>
-      <find>cluster_dbscan</find>
+      <find>corelation_genre_clusters</find>
+      <find>df_clustered:</find>
+      <find>new_cluster_percentages_pivot</find>
+      <find>evaluating_pitvot</find>
+      <find>HIERACHY</find>
+      <find>HIER</find>
+      <find>new_cluster_percentages_pivot:</find>
+      <find>new_cluster_percentages_pivot shape 0 - row</find>
+      <find>DBSCAN</find>
+      <find>LINKAGE</find>
+      <find>================= RESULTS ========================</find>
+      <find>df_imputation_hierachy_clustered</find>
+      <find>df_imputation_dbscan</find>
+      <find>missing_values_clustering</find>
+      <find>sys</find>
+      <find>df_imputation_hierachy</find>
+      <find>test</find>
+      <find>METRIC_ARG</find>
+      <find>KMEANS_DTW</find>
+      <find>ITERATIONS_ARG</find>
+      <find>imputation_kmeans_index:</find>
+      <find>RESAMPLING_METHOD</find>
+      <find>RESAMPLING_METHOD_ARG</find>
       <find>clustering_by_dbscan</find>
-      <find>pairwise_euclidean</find>
-      <find>split_asi_9_groups</find>
-      <find>visitor_df.describe():</find>
-      <find>pairwise_distance_calculated:</find>
-      <find>df_3genres_3locations</find>
-      <find>Restaurants in 3 main genres with 3 main locations:</find>
-      <find>series['visitors'] after:</find>
-      <find>series['visitors'] before:</find>
-      <find>flow</find>
-      <find>============================== ARGUMENTS LIST ======================================================</find>
-      <find>clustering_by_hierachy</find>
-      <find>Final dataframe of time series and their clusters:</find>
+      <find>plot_all_ts</find>
+      <find>plot_each_group_ts</find>
+      <find>plot</find>
+      <find>k_means_clust_auto</find>
+      <find>AgglomerativeClustering</find>
+      <find>visitor_matrix</find>
     </findStrings>
     <replaceStrings>
       <replace>average_last_moment_timepoint</replace>
+      <replace>HIERARCHICAL</replace>
     </replaceStrings>
+  </component>
+  <component name="Git.Rebase.Settings">
+    <option name="ONTO" value="refs/heads/master" />
+  </component>
+  <component name="Git.Settings">
+    <option name="UPDATE_TYPE" value="MERGE" />
+    <option name="ROOT_SYNC" value="DONT_SYNC" />
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
@@ -194,16 +191,26 @@
         <option value="$PROJECT_DIR$/example.py" />
         <option value="$PROJECT_DIR$/src/__init__.py" />
         <option value="$PROJECT_DIR$/__init__.py" />
-        <option value="$PROJECT_DIR$/test.py" />
         <option value="$PROJECT_DIR$/visualize_input.py" />
-        <option value="$PROJECT_DIR$/testing.py" />
         <option value="$PROJECT_DIR$/Test_Hierachy.py" />
-        <option value="$PROJECT_DIR$/Hierarchical_Clustering.py" />
         <option value="$PROJECT_DIR$/backup_Nov18.py" />
         <option value="$PROJECT_DIR$/backup_Dec19.py" />
         <option value="$PROJECT_DIR$/backup_Dec10.py" />
-        <option value="$PROJECT_DIR$/testA.py" />
         <option value="$PROJECT_DIR$/testB.py" />
+        <option value="$PROJECT_DIR$/testA.py" />
+        <option value="$PROJECT_DIR$/kmean_algorithm.py" />
+        <option value="$PROJECT_DIR$/testing.py" />
+        <option value="$PROJECT_DIR$/test.py" />
+        <option value="$PROJECT_DIR$/testOversampling.py" />
+        <option value="$PROJECT_DIR$/TestC.py" />
+        <option value="$PROJECT_DIR$/TestD.py" />
+        <option value="$PROJECT_DIR$/kmedoids_algorithm.py" />
+        <option value="$PROJECT_DIR$/dbscan_algorithm.py" />
+        <option value="$PROJECT_DIR$/kmeans_algorithm.py" />
+        <option value="$PROJECT_DIR$/optics_algorithm.py" />
+        <option value="$PROJECT_DIR$/main02.py" />
+        <option value="$PROJECT_DIR$/hierachy_algorithm.py" />
+        <option value="$PROJECT_DIR$/Hierarchical_Clustering.py" />
         <option value="$PROJECT_DIR$/main.py" />
       </list>
     </option>
@@ -221,12 +228,15 @@
     <option name="width" value="1082" />
     <option name="height" value="1085" />
   </component>
-  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
   <component name="ProjectView">
     <navigator proportions="" version="1">
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Course" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -238,12 +248,11 @@
           <select />
         </subPane>
       </pane>
-      <pane id="Course" />
     </panes>
   </component>
   <component name="PropertiesComponent">
-    <property name="last_opened_file_path" value="F:/" />
-    <property name="settings.editor.selected.configurable" value="settings.github" />
+    <property name="last_opened_file_path" value="$USER_HOME$" />
+    <property name="settings.editor.selected.configurable" value="vcs.Git" />
   </component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
@@ -287,7 +296,7 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="backup_Nov18" type="PythonConfigurationType" factoryName="Python" temporary="true">
+    <configuration name="TestD" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="TimeSeries" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -299,7 +308,28 @@
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/backup_Nov18.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/TestD.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="dbscan_algorithm" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <module name="TimeSeries" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/dbscan_algorithm.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -309,8 +339,6 @@
       <method v="2" />
     </configuration>
     <configuration name="main" type="PythonConfigurationType" factoryName="Python" temporary="true">
-      <output_file path="$PROJECT_DIR$/logs/log.txt" is_save="true" />
-      <log_file alias="main" path="$PROJECT_DIR$/logs" />
       <module name="TimeSeries" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -331,7 +359,7 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="testA" type="PythonConfigurationType" factoryName="Python" temporary="true">
+    <configuration name="main02" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="TimeSeries" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -343,28 +371,7 @@
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/testA.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
-    <configuration name="testB" type="PythonConfigurationType" factoryName="Python" temporary="true">
-      <module name="TimeSeries" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/testB.py" />
+      <option name="SCRIPT_NAME" value="F:\Duy\Semester 3\Thesis\Project\TimeSeries\main.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -374,105 +381,73 @@
       <method v="2" />
     </configuration>
     <list>
-      <item itemvalue="Python.Hierarchical_Clustering" />
+      <item itemvalue="Python.main02" />
+      <item itemvalue="Python.TestD" />
+      <item itemvalue="Python.dbscan_algorithm" />
       <item itemvalue="Python.main" />
-      <item itemvalue="Python.backup_Nov18" />
-      <item itemvalue="Python.testA" />
-      <item itemvalue="Python.testB" />
+      <item itemvalue="Python.Hierarchical_Clustering" />
     </list>
     <recent_temporary>
       <list>
         <item itemvalue="Python.main" />
-        <item itemvalue="Python.testB" />
-        <item itemvalue="Python.testA" />
-        <item itemvalue="Python.backup_Nov18" />
         <item itemvalue="Python.Hierarchical_Clustering" />
+        <item itemvalue="Python.main02" />
+        <item itemvalue="Python.TestD" />
+        <item itemvalue="Python.dbscan_algorithm" />
       </list>
     </recent_temporary>
   </component>
   <component name="SvnConfiguration">
-    <configuration />
+    <configuration>C:\Users\Daniel\AppData\Roaming\Subversion</configuration>
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.16332982" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.16332982" />
       <window_info id="Structure" order="1" weight="0.25" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
-      <window_info anchor="bottom" id="Run" order="2" weight="0.47562298" />
+      <window_info anchor="bottom" id="Run" order="2" weight="0.43987" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" />
-      <window_info anchor="bottom" id="Version Control" order="7" weight="0.32936078" />
-      <window_info anchor="bottom" id="Educational.CheckDetails" order="8" />
-      <window_info anchor="bottom" id="Terminal" order="9" visible="true" weight="0.32936078" />
+      <window_info anchor="bottom" id="Educational.CheckDetails" order="7" />
+      <window_info anchor="bottom" id="Version Control" order="8" weight="0.45720476" />
+      <window_info active="true" anchor="bottom" id="Terminal" order="9" visible="true" weight="0.32936078" />
       <window_info anchor="bottom" id="Python Console" order="10" weight="0.32936078" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
     </layout>
   </component>
+  <component name="Vcs.Log.History.Properties">
+    <option name="COLUMN_ORDER">
+      <list>
+        <option value="0" />
+        <option value="2" />
+        <option value="3" />
+        <option value="1" />
+      </list>
+    </option>
+  </component>
   <component name="VcsManagerConfiguration">
     <ignored-roots>
       <path value="$PROJECT_DIR$" />
     </ignored-roots>
+    <MESSAGE value="Restructure main file with new arguments and fucntions: Filtering missing value as the first step." />
+    <MESSAGE value="DBSCAN algorithm added to main application." />
+    <MESSAGE value="dbscan with 2 tier of arguments" />
+    <MESSAGE value="dbscan pivot finished" />
+    <MESSAGE value="Running dbscan without errors" />
+    <MESSAGE value="Running test OK for dbscan and hierachy algorithms" />
+    <MESSAGE value="Adding Kmeans algorithm with DWT distance and normal distance." />
+    <MESSAGE value="Oversampling implementation included." />
+    <MESSAGE value="Update: Over-sampling and testing" />
+    <MESSAGE value="Restructure main file with new arguments and fucntions" />
+    <option name="LAST_COMMIT_MESSAGE" value="Restructure main file with new arguments and fucntions" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://C:/ProgramData/Anaconda3/envs/Example/Lib/site-packages/sklearn/utils/mocking.py" />
-    <entry file="file://C:/ProgramData/Anaconda3/envs/Example/Lib/site-packages/numpy/lib/shape_base.py" />
-    <entry file="file://C:/ProgramData/Anaconda3/envs/Example/Lib/site-packages/sklearn/cluster/dbscan_.py" />
-    <entry file="file://$PROJECT_DIR$/optics.py" />
-    <entry file="file://C:/ProgramData/Anaconda3/envs/Example/Lib/site-packages/pandas/core/frame.py" />
-    <entry file="file://$PROJECT_DIR$/OPTICS/optics1.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="968">
-          <caret line="46" selection-start-line="46" selection-end-line="46" />
-          <folding>
-            <element signature="e#1773#1790#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/__init__.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-1569">
-          <caret line="22" selection-start-line="22" selection-end-line="22" />
-          <folding>
-            <element signature="e#0#27#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://C:/ProgramData/Anaconda3/envs/Example/Lib/site-packages/sklearn/metrics/pairwise.py" />
-    <entry file="file://$PROJECT_DIR$/OPTICS/optics.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="7876">
-          <caret line="369" column="72" selection-start-line="369" selection-start-column="54" selection-end-line="369" selection-end-column="72" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/OPTICS/__init__.py">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://C:/Python/Python36/Lib/site-packages/pandas/core/arrays/categorical.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="34848">
-          <caret line="1644" column="8" selection-start-line="1644" selection-start-column="8" selection-end-line="1644" selection-end-column="8" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://C:/Python/Python36/Lib/site-packages/plotnine/layer.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="6556">
-          <caret line="311" selection-start-line="311" selection-end-line="311" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/__init__.py">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
     <entry file="file://C:/Python/Python36/Lib/site-packages/plotnine/ggplot.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="16038">
@@ -487,26 +462,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/OPTICS/optics.py">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/kmedoids.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="44">
-          <caret line="3" column="4" selection-start-line="3" selection-start-column="4" selection-end-line="3" selection-end-column="4" />
-          <folding>
-            <element signature="e#0#18#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://C:/Python/Python36/Lib/site-packages/pandas/core/indexes/datetimes.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="149">
-          <caret line="1392" selection-start-line="1392" selection-end-line="1392" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/src/OPTICS/optics.py" />
     <entry file="file://C:/Python/Python36/Lib/site-packages/pandas/core/tools/datetimes.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="149">
@@ -522,44 +478,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/example.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="462">
-          <caret line="24" column="15" selection-start-line="24" selection-start-column="11" selection-end-line="24" selection-end-column="15" />
-          <folding>
-            <element signature="e#16#71#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://C:/Python/Python36/Lib/site-packages/pandas/core/indexes/base.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="150">
-          <caret line="2896" selection-start-line="2896" selection-end-line="2896" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://C:/Python/Python36/Lib/site-packages/pandas/core/reshape/merge.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="149">
-          <caret line="52" column="4" selection-start-line="52" selection-start-column="4" selection-end-line="52" selection-end-column="4" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://C:/Python/Python36/Lib/site-packages/pandas/core/generic.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="149">
-          <caret line="7893" selection-start-line="7893" selection-end-line="7893" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://C:/Python/Python36/Lib/site-packages/sklearn/utils/validation.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="11550">
-          <caret line="541" selection-start-line="541" selection-end-line="541" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/example.py" />
     <entry file="file://$PROJECT_DIR$/visualize_input.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="2354">
@@ -570,45 +489,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$USER_HOME$/.PyCharmEdu2018.3/system/python_stubs/-1338941227/builtins.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="81334">
-          <caret line="3697" column="8" selection-start-line="3697" selection-start-column="8" selection-end-line="3697" selection-end-column="8" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://C:/Python/Python36/Lib/site-packages/pandas/core/groupby/groupby.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="164">
-          <caret line="390" selection-start-line="390" selection-end-line="390" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://C:/Python/Python36/Lib/site-packages/pandas/core/groupby/grouper.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="348">
-          <caret line="628" column="50" lean-forward="true" selection-start-line="628" selection-start-column="50" selection-end-line="628" selection-end-column="50" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Hierarchical_Clustering.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="88">
-          <caret line="4" column="31" selection-start-line="4" selection-start-column="31" selection-end-line="4" selection-end-column="31" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://C:/Python/Python36/Lib/site-packages/pandas/core/base.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="5170">
           <caret line="267" selection-start-line="267" selection-end-line="267" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://C:/Python/Python36/Lib/site-packages/pandas/core/series.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="494">
-          <caret line="312" selection-start-line="312" selection-end-line="312" />
         </state>
       </provider>
     </entry>
@@ -619,37 +503,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://C:/Python/Python36/Lib/site-packages/pandas/core/internals/blocks.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="494">
-          <caret line="127" selection-start-line="127" selection-end-line="127" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/testing.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="494">
-          <caret line="129" column="22" selection-start-line="129" selection-start-column="22" selection-end-line="129" selection-end-column="22" />
-          <folding>
-            <element signature="e#0#46#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://C:/Python/Python36/Lib/site-packages/pandas/core/frame.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="494">
-          <caret line="3524" selection-start-line="3524" selection-end-line="3524" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://C:/Python/Python36/Lib/site-packages/sklearn/cluster/hierarchical.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="161">
-          <caret line="807" selection-start-line="807" selection-end-line="807" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://C:/Python/Python36/Lib/site-packages/sklearn/base.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="179">
@@ -657,127 +510,219 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/test.py">
+    <entry file="file://$PROJECT_DIR$/backup_Dec10.py" />
+    <entry file="file://C:/Python/Python36/Lib/site-packages/pandas/__init__.py">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$USER_HOME$/.PyCharmEdu2018.3/system/python_stubs/-1338941227/math.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="308">
-          <caret line="15" selection-start-line="15" selection-end-line="16" selection-end-column="58" />
-          <folding>
-            <element signature="e#0#19#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="179">
+          <caret line="172" column="4" selection-start-line="172" selection-start-column="4" selection-end-line="172" selection-end-column="4" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/backup_Dec10.py">
+    <entry file="file://C:/Python/Python36/Lib/site-packages/pandas/core/indexes/datetimes.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <folding>
-            <element signature="e#983#1046#0" />
-            <element signature="e#6069#6119#0" />
-            <element signature="e#8269#8608#0" />
-            <element signature="e#9235#9322#0" />
-            <element signature="e#11672#11818#0" />
-            <element signature="e#11820#11843#0" />
-            <element signature="e#12170#12314#0" />
-            <element signature="e#12359#12561#0" />
-            <element signature="e#12563#12637#0" />
-            <element signature="e#13070#14820#0" />
-            <element signature="e#14822#14895#0" />
-            <element signature="e#15278#16715#0" />
-            <element signature="e#16837#18576#0" />
-            <element signature="e#21772#21815#0" />
-            <element signature="e#37844#37874#0" />
-            <element signature="e#46261#46287#0" />
-          </folding>
+        <state relative-caret-position="22">
+          <caret line="1425" column="4" selection-start-line="1425" selection-start-column="4" selection-end-line="1425" selection-end-column="4" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/testA.py">
+    <entry file="file://C:/Python/Python36/Lib/site-packages/pandas/core/groupby/groupby.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="335">
-          <caret line="55" column="40" selection-start-line="55" selection-start-column="40" selection-end-line="55" selection-end-column="40" />
-          <folding>
-            <element signature="e#0#15#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="362">
+          <caret line="2522" lean-forward="true" selection-start-line="2522" selection-end-line="2522" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/testB.py">
+    <entry file="file://C:/Python/Python36/Lib/site-packages/pandas/core/groupby/grouper.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="66">
-          <caret line="5" column="32" selection-start-line="5" selection-start-column="32" selection-end-line="5" selection-end-column="32" />
-          <folding>
-            <element signature="e#0#14#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="172">
+          <caret line="620" selection-start-line="620" selection-end-line="620" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/backup.py">
+    <entry file="file://C:/Python/Python36/Lib/site-packages/sklearn/metrics/pairwise.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="494">
-          <caret line="105" column="38" selection-start-line="105" selection-start-column="38" selection-end-line="105" selection-end-column="38" />
-          <folding>
-            <element signature="e#4081#5216#0" />
-            <element signature="e#5280#7943#0" />
-          </folding>
+        <state relative-caret-position="201">
+          <caret line="1461" column="22" selection-start-line="1461" selection-start-column="4" selection-end-line="1461" selection-end-column="22" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/backup_Nov18.py">
+    <entry file="file://C:/Python/Python36/Lib/site-packages/pandas/core/reshape/merge.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="233">
-          <caret line="1046" column="22" selection-start-line="1046" selection-start-column="2" selection-end-line="1046" selection-end-column="22" />
-          <folding>
-            <element signature="e#38#53#0" expanded="true" />
-            <element signature="e#941#1004#0" />
-            <element signature="e#20963#21006#0" />
-            <element signature="e#31095#31113#0" />
-          </folding>
+        <state relative-caret-position="136">
+          <caret line="974" selection-start-line="974" selection-end-line="974" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/backup_Dec19.py">
+    <entry file="file://C:/Python/Python36/Lib/site-packages/pandas/core/internals/blocks.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="233">
-          <caret line="1132" column="22" selection-start-line="1132" selection-start-column="2" selection-end-line="1132" selection-end-column="22" />
-          <folding>
-            <element signature="e#38#53#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="499">
+          <caret line="127" selection-start-line="127" selection-end-line="127" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://C:/Python/Python36/Lib/site-packages/sklearn/metrics/cluster/unsupervised.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2332">
+          <caret line="116" selection-start-line="116" selection-end-line="116" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://C:/Python/Python36/Lib/site-packages/sklearn/cluster/hierarchical.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="176">
+          <caret line="763" column="8" selection-start-line="763" selection-start-column="8" selection-end-line="763" selection-end-column="8" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/backup.py" />
+    <entry file="file://$PROJECT_DIR$/backup_Nov18.py" />
+    <entry file="file://$PROJECT_DIR$/backup_Dec19.py" />
+    <entry file="file://C:/Python/Python36/Lib/site-packages/pandas/core/series.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="155">
+          <caret line="211" selection-start-line="211" selection-end-line="211" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://C:/Python/Python36/Lib/site-packages/pandas/core/internals/construction.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="155">
+          <caret line="223" selection-start-line="223" selection-end-line="223" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://C:/Python/Python36/Lib/site-packages/pandas/core/indexes/base.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="147">
+          <caret line="518" selection-start-line="518" selection-end-line="518" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/testA.py" />
+    <entry file="file://$USER_HOME$/.PyCharmEdu2018.3/system/python_stubs/-1338941227/builtins.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="198">
+          <caret line="3620" column="20" selection-start-line="3620" selection-start-column="20" selection-end-line="3620" selection-end-column="20" />
         </state>
       </provider>
     </entry>
     <entry file="file://C:/Python/Python36/Lib/site-packages/sklearn/cluster/dbscan_.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="243">
-          <caret line="318" column="8" selection-start-line="318" selection-start-column="8" selection-end-line="318" selection-end-column="8" />
+        <state relative-caret-position="7480">
+          <caret line="348" selection-start-line="348" selection-end-line="348" />
         </state>
       </provider>
     </entry>
-    <entry file="file://C:/Python/Python36/Lib/site-packages/pandas/core/indexing.py">
+    <entry file="file://C:/Python/Python36/Lib/site-packages/sklearn/utils/validation.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="210">
+          <caret line="541" selection-start-line="541" selection-end-line="541" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://C:/Python/Python36/Lib/site-packages/scipy/spatial/distance.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="171">
-          <caret line="204" selection-start-line="204" selection-end-line="204" />
+          <caret line="1735" column="4" selection-start-line="1735" selection-start-column="4" selection-end-line="1735" selection-end-column="4" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://C:/Python/Python36/Lib/site-packages/pandas/core/frame.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="222">
+          <caret line="4104" column="34" lean-forward="true" selection-start-line="4104" selection-start-column="34" selection-end-line="4104" selection-end-column="34" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://C:/Python/Python36/Lib/site-packages/pandas/core/generic.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="199">
+          <caret line="3227" selection-start-line="3227" selection-end-line="3227" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://C:/Python/Python36/Lib/site-packages/scipy/stats/mstats.py">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/TestC.py" />
+    <entry file="file://$PROJECT_DIR$/testOversampling.py" />
+    <entry file="file://$PROJECT_DIR$/test.py" />
+    <entry file="file://C:/Python/Python36/Lib/site-packages/pandas/core/indexing.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="176">
+          <caret line="1423" selection-start-line="1423" selection-end-line="1423" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/kmedoids.py" />
+    <entry file="file://$PROJECT_DIR$/kmedoids_algorithm.py" />
+    <entry file="file://$PROJECT_DIR$/TestD.py" />
+    <entry file="file://C:/Python/Python36/Lib/site-packages/sklearn/cluster/optics_.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-2603">
+          <caret line="26" column="61" lean-forward="true" selection-start-line="26" selection-start-column="61" selection-end-line="26" selection-end-column="61" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Hierarchical_Clustering.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="198">
+          <caret line="29" column="50" selection-start-line="29" selection-start-column="36" selection-end-line="29" selection-end-column="50" />
+          <folding>
+            <element signature="e#62#80#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/main.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="173">
-          <caret line="859" column="24" selection-start-line="859" selection-start-column="24" selection-end-line="859" selection-end-column="24" />
+        <state relative-caret-position="312">
+          <caret line="1311" column="34" lean-forward="true" selection-start-line="1311" selection-start-column="34" selection-end-line="1311" selection-end-column="34" />
           <folding>
-            <element signature="e#983#1046#0" />
-            <element signature="e#6069#6119#0" />
-            <element signature="e#8156#8495#0" />
-            <element signature="e#9122#9209#0" />
-            <element signature="e#11713#11736#0" />
-            <element signature="e#12063#12207#0" />
-            <element signature="e#12252#12454#0" />
-            <element signature="e#12456#12530#0" />
-            <element signature="e#16730#18469#0" />
-            <element signature="e#21593#21636#0" />
-            <element signature="e#38057#38087#0" />
-            <element signature="e#50630#50761#0" />
-            <element signature="e#53809#55461#0" />
-            <element signature="e#55495#56152#0" />
+            <element signature="e#38#53#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/hierachy_algorithm.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2222">
+          <caret line="104" column="37" selection-start-line="104" selection-start-column="37" selection-end-line="104" selection-end-column="37" />
+          <folding>
+            <element signature="e#38#68#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/optics_algorithm.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="3674">
+          <caret line="177" column="35" selection-start-line="177" selection-start-column="35" selection-end-line="177" selection-end-column="35" />
+          <folding>
+            <element signature="e#0#40#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/kmeans_algorithm.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="5390">
+          <caret line="251" column="16" selection-start-line="251" selection-start-column="16" selection-end-line="251" selection-end-column="16" />
+          <folding>
+            <element signature="e#38#49#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/dbscan_algorithm.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="3212">
+          <caret line="154" column="27" selection-start-line="154" selection-start-column="27" selection-end-line="154" selection-end-column="27" />
+          <folding>
+            <element signature="e#38#49#0" expanded="true" />
           </folding>
         </state>
       </provider>

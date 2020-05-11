@@ -98,21 +98,14 @@ def hierachy_clustering(dataset_ts_arg, affinity_arg, linkage_arg):
 
 def get_main_label(df, lables):
     df['hc'] = lables.tolist()
-    print("df_merge_id:111\n", df.head())
-    # df_merge_id = df_merge_id.groupby(["air_genre_name"]).count()
-    # df_merge_id= df_merge_id.groupby('air_genre_name').air_genre_name.count()
 
     df = df.groupby(['genre_name', 'hc']).size()
     df = df.to_frame(name = 'size').reset_index()
-    print("df_merge_id:222\n", df)
 
     idx = df.groupby(['genre_name'])['size'].transform(max) == df['size']
     df = df[idx]
-    print("df_merge_id:333\n", df)
     df = df.groupby('genre_name')['hc'].apply(lambda x: ','.join(map(str, x))).reset_index()
-    # print("df_merge_id:", df)
     df = df[['hc']]
-    # print("df_merge_id:", df)
     return df
 
 # If linkage is “ward”, only “euclidean” is accepted. If “precomputed”,
@@ -121,11 +114,7 @@ def get_main_label(df, lables):
 linkage_list = ['ward', 'complete', 'average', 'single']
 
 temp_df = df_merge_id
-print("temp_df:=====\n", temp_df)
 
-# df_genre_clusters = temp_df.groupby(['air_genre_name']).size().reset_index()
-# # print("list(my_dataframe.columns.values):", list(df_genre_clusters.columns.values))
-# print("temp_df_first_col:==============\n", df_genre_clusters.head())
 
 for lnk in linkage_list:
     if lnk=='ward':
@@ -140,16 +129,3 @@ for lnk in linkage_list:
 
 
 
-# print("df_genre_clusters:", df_genre_clusters.head())
-# df_genre_clusters.to_csv('df_genre_clusters.csv')
-
-# 5 Visualizing the clusters. This code is similar to k-means visualization code.
-# We only replace the y_kmeans vector name to y_hc for the hierarchical clustering
-#
-# plt.scatter(dataset_ts[y_hc==0, 0], dataset_ts[y_hc==0, 1], s=100, c='red', label ='Cluster 1')
-# plt.scatter(dataset_ts[y_hc==1, 0], dataset_ts[y_hc==1, 1], s=100, c='blue', label ='Cluster 2')
-# plt.scatter(dataset_ts[y_hc==2, 0], dataset_ts[y_hc==2, 1], s=100, c='green', label ='Cluster 3')
-# plt.title('Clusters of Customers (Hierarchical Clustering Model)')
-# plt.xlabel('Annual Income(k$)')
-# plt.ylabel('Spending Score(1-100')
-# plt.show()

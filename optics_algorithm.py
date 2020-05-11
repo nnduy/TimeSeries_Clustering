@@ -57,30 +57,11 @@ def DTWDistance(s1, s2, w=5):
 #       X: input matrix
 #       clust: cluster after using OPTICs algorithm
 def plot_current_cluster(X, clust):
-    # np.random.seed(0)
-    # n_points_per_cluster = 250
-    # C1 = [-5, -2] + .8 * np.random.randn(n_points_per_cluster, 2)
-    # C2 = [4, -1] + .1 * np.random.randn(n_points_per_cluster, 2)
-    # C3 = [1, -2] + .2 * np.random.randn(n_points_per_cluster, 2)
-    # C4 = [-2, 3] + .3 * np.random.randn(n_points_per_cluster, 2)
-    # C5 = [3, -2] + 1.6 * np.random.randn(n_points_per_cluster, 2)
-    # C6 = [5, 6] + 2 * np.random.randn(n_points_per_cluster, 2)
-    # X = np.vstack((C1, C2, C3, C4, C5, C6))
 
     space = np.arange(len(X))
     reachability = clust.reachability_[clust.ordering_]
     labels = clust.labels_[clust.ordering_]
     print("labels-labels:", labels)
-
-    # # Create 2 labels using dbscan for the same dataset clustering as above. Which we can find the comparisions.
-    # labels_050 = cluster_optics_dbscan(reachability=clust.reachability_,
-    #                        core_distances=clust.core_distances_,
-    #                        ordering=clust.ordering_, eps=0.5)
-    # labels_200 = cluster_optics_dbscan(reachability=clust.reachability_,
-    #                                    core_distances=clust.core_distances_,
-    #                                    ordering=clust.ordering_, eps=2)
-
-
 
     plt.figure(figsize=(10, 7))
     G = gridspec.GridSpec(2, 3)
@@ -109,21 +90,6 @@ def plot_current_cluster(X, clust):
     ax2.plot(X[clust.labels_ == -1, 0], X[clust.labels_ == -1, 1], 'k+', alpha=0.1)
     ax2.set_title('Automatic Clustering\nOPTICS')
 
-    # # DBSCAN at 0.5
-    # colors = ['b', 'greenyellow', 'olive', 'r', 'g', 'c']
-    # for klass, color in zip(range(0, 6), colors):
-    #     Xk = X[labels_050 == klass]
-    #     ax3.plot(Xk[:, 0], Xk[:, 1], color, alpha=0.3, marker='.', markersize=16)
-    # ax3.plot(X[labels_050 == -1, 0], X[labels_050 == -1, 1], 'k+', alpha=0.1)
-    # ax3.set_title('Clustering at 0.5 epsilon cut\nDBSCAN')
-    #
-    # # DBSCAN at 2.
-    # colors = ['b.', 'm.', 'y.', 'c.']
-    # for klass, color in zip(range(0, 4), colors):
-    #     Xk = X[labels_200 == klass]
-    #     ax4.plot(Xk[:, 0], Xk[:, 1], color, alpha=0.3, markersize=16)
-    # ax4.plot(X[labels_200 == -1, 0], X[labels_200 == -1, 1], 'k+', alpha=0.1)
-    # ax4.set_title('Clustering at 2.0 epsilon cut\nDBSCAN')
 
     plt.tight_layout()
     plt.show()
@@ -166,25 +132,18 @@ def clustering_by_optics(df_imputation_optics):
         print("OPTICS_MIN_CLUSTERS_ARG:", OPTICS_MIN_CLUSTERS_ARG)
         print("OPTICS_MAX_NOISE_PERCENT_ARG:", OPTICS_MAX_NOISE_PERCENT_ARG)
 
-        # optics = OPTICS(min_samples=5, min_cluster_size=0.5).fit(X)
-        # min_samples: is minimum number of samples of the input. For example input has 18 samples. Then min_samples must less than 18.
-        # min_cluster_size: percent of Minimum number of samples in an OPTICS cluster
-        # xi: Determines the minimum steepness on the reachability plot that constitutes a cluster boundary.
-        #   For example, an upwards point in the reachability plot is defined by the ratio from one point to its successor being at most 1-xi.
-        # print("Current METRIC_ARG:", METRIC_ARG)
         if METRIC_ARG == 'DTWDistance':
             # The code below is equivalent the above but with one more option to choose 3rd argument
             clust = OPTICS(metric=lambda X, Y: DTWDistance(X, Y, w=5), min_samples=4, xi=.01, min_cluster_size=.01)
             # clust = OPTICS(metric=DTWDistance, min_samples=7, xi=.01, min_cluster_size=.01)
 
         else:
-            clust = OPTICS(metric=METRIC_ARG, min_samples=4, xi=.01, min_cluster_size=.01)
+            clust = OPTICS(metric=METRIC_ARG, min_samples=4, cluster_method='xi', xi=.01, min_cluster_size=.01)
         # Run the fit
         clust.fit(X)
 
         reachability = clust.reachability_[clust.ordering_]
         labels = clust.labels_[clust.ordering_]
-        # print("labels-labels:", labels)
 
         # Options to plot clusters or not
         # plot_current_cluster(X, clust)
@@ -216,6 +175,5 @@ def clustering_by_optics(df_imputation_optics):
 
     df_imputation_optics_arg = df_imputation_optics_arg.reset_index(drop=True)
     # print("Dataframe after imputation and optics clustering - df_imputation_optics_arg: \n", df_imputation_optics_arg)
-    # # df_imputation_optics_arg.to_csv('df_imputation_optics_arg.csv')
     return df_imputation_optics_arg
 

@@ -6,116 +6,38 @@ import numpy as np
 import pandas as pd
 from datetime import date
 import itertools
-# from pandas import Timestamp
 from sklearn import *
 from datetime import datetime
-# from xgboost import XGBRegressor
 import math
 import statistics
-import kmedoids
+# import kmedoids
 import random
 from math import floor
 import matplotlib.pyplot as plt
 # from .visualize_input import *
 import matplotlib.patches as mpatches
 from pylab import rcParams
-
-
-# import sklearn
+from dbscan_algorithm import *
+from optics_algorithm import *
+from hierachy_algorithm import *
+from kmeans_algorithm import *
+import copy
 from sklearn.cluster import DBSCAN
-# from sklearn.cluster import OPTICS, cluster_optics_dbscan
 from OPTICS.optics import *
-
+import sys
+import uuid
+pd.set_option('precision', 0)
+import pandas as pd
 from sklearn import metrics
 from sklearn.datasets.samples_generator import make_blobs
 from sklearn.preprocessing import StandardScaler
 from scipy.stats.mstats import gmean
 from scipy.stats.mstats import gmean
-# from collections import Counter
 from sklearn.metrics.pairwise import cosine_similarity
 from scipy import sparse
 from sklearn.metrics import pairwise_distances
 
 
-
-# TypeError: unsupported operand type(s) for +: 'int' and 'str'
-# print(ts1)
-
-# e_distance = euclid_dist(ts1, ts2)
-# print("e_distance:", e_distance)
-
-# x=np.linspace(0,50,100)
-# ts1=pd.Series(3.1*np.sin(x/1.5)+3.5)
-# ts2=pd.Series(2.2*np.sin(x/3.5+2.4)+3.2)
-# ts3=pd.Series(0.04*x+3.0)
-#
-# ts1.plot()
-# ts2.plot()
-# ts3.plot()
-#
-# plt.ylim(-2,10)
-# plt.legend(['ts1','ts2','ts3'])
-# plt.show()
-# ============ Experiements ==============
-# # print(data['hr'].shape)
-# # Get only additional hpg_reserve data which have id as in air_reserve id by innner join
-# print("data['hpg_reserve'].shape - before merge:", data['hr'].shape)
-# data['hr'] = pd.merge(data['hr'], data['id'], how='inner', on=['hpg_store_id'])
-# print("data['store_id_relation'].shape:", data['id'].shape)
-# print("data['hpg_reserve'].shape - after merge:", data['hr'].shape)
-# print("data['hpg_reserve'].tail {nl}:", data['hr'].tail())
-#
-# # Removing hpg_store_id column in the new
-# data['hr'].drop('hpg_store_id', axis=1, inplace=True)
-# print("data['hpg_reserve'].tail {nl}:", data['hr'].tail())
-#
-# for df in ['ar','hr']:
-#     data[df]['visit_datetime'] = pd.to_datetime(data[df]['visit_datetime'])
-#     data[df]['visit_datetime'] = data[df]['visit_datetime'].dt.date
-#     data[df]['reserve_datetime'] = pd.to_datetime(data[df]['reserve_datetime'])
-#     data[df]['reserve_datetime'] = data[df]['reserve_datetime'].dt.date
-#     # data[df]['reserve_datetime_diff'] = data[df].apply(lambda r: (r['visit_datetime'] - r['reserve_datetime']).days, axis=1)
-#     # tmp1 = data[df].groupby(['air_store_id','visit_datetime'], as_index=False)[['reserve_datetime_diff', 'reserve_visitors']].sum().rename(columns={'visit_datetime':'visit_date', 'reserve_datetime_diff': 'rs1', 'reserve_visitors':'rv1'})
-#     # tmp2 = data[df].groupby(['air_store_id','visit_datetime'], as_index=False)[['reserve_datetime_diff', 'reserve_visitors']].mean().rename(columns={'visit_datetime':'visit_date', 'reserve_datetime_diff': 'rs2', 'reserve_visitors':'rv2'})
-#     # data[df] = pd.concat(tmp1, tmp2, how='inner', on=['air_store_id','visit_date'])
-#
-# # print(tmp1.shape)
-# # print(tmp2.shape)
-# data[df] = pd.concat([data['ar'], data['hr']], sort=True)
-#
-# # print(data[df].head())
-# # print(data[df].tail())
-#
-#
-# # Convert air_visit_data field visit_date to date type and split them to year, month, dayofweek
-# data['tra']['visit_date'] = pd.to_datetime(data['tra']['visit_date'])
-# data['tra']['dow'] = data['tra']['visit_date'].dt.dayofweek
-# data['tra']['year'] = data['tra']['visit_date'].dt.year
-# data['tra']['month'] = data['tra']['visit_date'].dt.month
-# data['tra']['visit_date'] = data['tra']['visit_date'].dt.date
-#
-# # Split the sample submission file to 2 main field air_store_id and date. Then split date to year, month, dayofweek
-# data['tes']['visit_date'] = data['tes']['id'].map(lambda x: str(x).split('_')[2])
-#
-# # print(data['tes']['visit_date'].tail())
-# data['tes']['air_store_id'] = data['tes']['id'].map(lambda x: '_'.join(x.split('_')[:2]))
-#
-# # print(data['tes']['air_store_id'].tail())
-# data['tes']['visit_date'] = pd.to_datetime(data['tes']['visit_date'])
-# data['tes']['dow'] = data['tes']['visit_date'].dt.dayofweek
-# data['tes']['year'] = data['tes']['visit_date'].dt.year
-# data['tes']['month'] = data['tes']['visit_date'].dt.month
-# data['tes']['visit_date'] = data['tes']['visit_date'].dt.date
-#
-# # get the unique stores from sample submission file base on air_store_id, preparing for forecasting
-# unique_stores = data['tes']['air_store_id'].unique()
-# print("data['tes']['air_store_id'].tail():", data['tes']['air_store_id'].tail())
-#
-# # There are 821 unique store needed to forecast
-# print("unique_stores.shape:", unique_stores.shape)
-#
-# stores = pd.concat([pd.DataFrame({'air_store_id': unique_stores, 'dow': [i]*len(unique_stores)}) for i in range(7)], axis=0, ignore_index=True).reset_index(drop=True)
-# print("stores.tail():", stores.tail())
 
 # This option help to print out all data columns of a dataframe
 pd.set_option('display.expand_frame_repr', False)
@@ -140,31 +62,22 @@ data = {
 
 
 df_ar = data['ar']
-
-
 df_sidr = data['sidr']
-
-
-# print("df_avd.describe():\n", df_avd.describe())
-# Total = df_avd['visitors'].sum()
-# print("sumf of df_avd:", Total)
-#
-# print("df_ar.describe():\n", df_ar.describe())
-# Total = df_ar['reserve_visitors'].sum()
-# print("sumf of df_ar:", Total)
-#
-# print("df_hr.describe():\n", df_hr.describe())
-# Total = df_hr['reserve_visitors'].sum()
-# print("sumf of df_hr:", Total)
+df_asi = data['asi']
+df_avd = data['avd']
+df_hsi = data['hsi']
+df_hr = data['hr']
 
 genre_name = 'genre_name'
 area_name = 'area_name'
 store_id = 'store_id'
+visit_date = 'visit_date'
+visitors = 'visitors'
 
-
-
+# This function will restructure or reformat and group hpg store info. Remove unnecessary columns ['latitude', 'longitude']
 def store_info_format(df):
-    df = df.drop(['latitude', 'longitude'], axis = 1)
+    if set(['latitude', 'longitude']).issubset(df.columns):
+        df = df.drop(['latitude', 'longitude'], axis = 1)
     # convert non-ascii characters by ignore them
     df[area_name] = df[area_name].apply(lambda x: x.\
                                               encode('ascii', 'ignore').\
@@ -188,86 +101,41 @@ def air_reserve_visitor_format(df):
     )
     return df
 
-# This function will format and group hpg reserver file
+# This function will restructure or reformat and group hpg reserve file
 # output:
 #   df: dataframe for hpg visit dataset.
-def hpg_reserve_visitor_format(df):
+def hpg_reserve_visitor_format(df, df_hsi):
     df['visit_datetime'] = pd.to_datetime(df['visit_datetime'], format="%Y/%m/%d").dt.date
     df = (df.groupby(['hpg_store_id','visit_datetime'])
         .agg({'reserve_visitors': 'sum'})
         .reset_index()
         .rename(columns={'hpg_store_id':'store_id', 'visit_datetime':'visit_date', 'reserve_visitors':'visitors'})
     )
-    Total = df['visitors'].sum()
-    print("Sum of df hpg reserve visitors:\n", Total)
-    print("hpg_reserve_visitor_format:\n", df)
+    # Total = df['visitors'].sum()
+    # print("Sum of df hpg reserve visitors:\n", Total)
+    # print("hpg_reserve_visitor_format:\n", df)
+
+    print("df_hsi-----------:\n", df_hsi)
+    mask_store_id = df_hsi[store_id].unique()
+    print("mask_store_id-----------:\n", mask_store_id)
+    print("mask_store_id type      :\n", type(mask_store_id))
+    # Convert array to list
+    mask_store_id = mask_store_id.tolist()
+    # df = df[mask_store_id].reset_index(drop=True)
+    print("df_hr of all stores from hpg reserve:\n", df)
+    # Get only store with store id in the mask. Because store id dataset has 4689 store, but df_hr has many more store.
+    # We need to trim all those stores without genres and areas. Because we need those properties for splitting later.
+    df = df[df[store_id].isin(mask_store_id)].reset_index(drop=True)
+    print("df_hr after trimming store which are not exist in store id dataset:\n", df)
     return df
 
-# # This function will merge hpg reserver file with store id relationship with air file
-# # output will be used to merge again with air visit date and air reserve
-# # output:
-# #   df - hpg visit date and it is merged with store id relationship. Which will be used to merge with air system
-# # to get mixed dataset
-# #   df_hvd: dataframe for hpg visit dataset.
-# def hpg_reserve_visitor_format(df, df_sidr):
-#     df['visit_datetime'] = pd.to_datetime(df['visit_datetime'], format="%Y/%m/%d").dt.date
-#     df = (df.groupby(['hpg_store_id','visit_datetime'])
-#         .agg({'reserve_visitors': 'sum'})
-#         .reset_index()
-#         .rename(columns={'hpg_store_id':'store_id', 'visit_datetime':'visit_date', 'reserve_visitors':'visitors'})
-#     )
-#     # print("df_sidr:", df_sidr)
-#     print("df hpg reserve before merged:\n", df)
-#     Total = df['visitors'].sum()
-#     print("sum of df hpg reserve visitors before merged:\n", Total)
-#     # This is the dataframe of only hpg reserve system without merging with air system
-#     df_hvd = df
-#
-#     df = pd.merge(df, df_sidr, on=['hpg_store_id'], how='inner')
-#     print("hpg_reserve_visitor_format merge with store id relation with air:\n", df)
-#     return df, df_hvd
-#
-# # Method use: merge air visit date and air reserve after groupby and hpg reserve after groupby
-# def all_reserve_visitor(df, air, hpg):
-#     print("df:", df)
-#     print("air:", air)
-#     df['visit_date'] = pd.to_datetime(df['visit_date'])
-#     air['visit_date'] = pd.to_datetime(air['visit_date'])
-#     hpg['visit_date'] = pd.to_datetime(hpg['visit_date'])
-#     df = pd.merge(df, air, on=['air_store_id', 'visit_date'], how='inner')
-#     df = pd.merge(df, hpg, on=['air_store_id', 'visit_date'], how='inner')
-#     df['reserve_visitors'] = df['reserve_visitors_air'] + df['reserve_visitors_hpg']
-#     df = df[['air_store_id', 'hpg_store_id', 'visit_date', 'reserve_visitors_air',
-#              'reserve_visitors_hpg', 'visitors', 'reserve_visitors']]
-#     print("df:", df)
-#     return df
-
-
-# df_ar = air_reserve_visitor_format(df_ar)
-
-# hpg_rvg, df_hvd = hpg_reserve_visitor_format(df_hr, df_sidr)
-# all_rsv_visitor = all_reserve_visitor(df_avd, df_ar, hpg_rvg)
-
-
-
-# ============ Step 01: Split dataframe air - hpg store info to 9 groups ==============
 # Get 3 first values of the first column in a dataframe
 def get_first_3values_from_df(df):
+    # print("type of df:", type(df))
     location_1st = df.iloc[0][0]
     location_2nd = df.iloc[1][0]
     location_3rd = df.iloc[2][0]
     return location_1st, location_2nd, location_3rd
-
-# Method: Undersampling
-# input: dataframe of time series which are needed to reduce number of samples.
-# size: size of the new sample
-# Due to randomly choosing in undersampling method, location or area of those series will be shuffle as well.
-# This action will affect in choosing 3 largest areas in the next step
-def under_sampling(df, size):
-    # Shuffle dataset in row
-    df = df.sample(frac=1).reset_index(drop=True)
-    df = df.iloc[0:size] # first size rows of dataframe
-    return df
 
 def format_arename_col_first_word(df):
     # Get first letter from area name column
@@ -276,383 +144,274 @@ def format_arename_col_first_word(df):
     df.drop('new_col', axis=1, inplace=True)
     return df
 
-# Get a new dataframe which contain equal size of restaurants for 3 genres
-# by resampling dataset by undersampling or oversampling
-# Input:
-# df: full dataset of 3 genres
-# gerne_1st, gerne_2nd, gerne_3rd: 3 max gernes of the full input dataframe
-# Output:
-# df_genre: Full dataframe with 3 gernes after sampling,
-# df_genre_1st, df_genre_2nd, df_genre_3rd: and 3 dataframes for 3 types of genres for further processing on area
-def get_3_equal_genre_size_sampling(df, gerne_1st, gerne_2nd, gerne_3rd, RESAMPLING_METHOD_ARG):
-    # df_genre = df.loc[df[genre_name].isin([gerne_1st, gerne_2nd, gerne_3rd])].reset_index(drop=True)
-    # Full store id list
-    df_genre_1st = df.loc[df[genre_name].isin([gerne_1st])].reset_index(drop=True)
-    df_genre_2nd = df.loc[df[genre_name].isin([gerne_2nd])].reset_index(drop=True)
-    df_genre_3rd = df.loc[df[genre_name].isin([gerne_3rd])].reset_index(drop=True)
+# method: under sampling by shuffling and getting only first size
+#   input:
+#       df: dataframe for under sampling
+#       size: maximum remain size of dataframe
+#   output:
+#       df: contains only rows with size
+def under_sampling(df, size):
+    # Shuffle dataset in row
+    df = df.sample(frac=1).reset_index(drop=True)
+    df = df.iloc[0:size] # first size rows of dataframe
+    return df
 
-    if RESAMPLING_METHOD_ARG == 'under':
-        size = df_genre_3rd.shape[0]
-        df_genre_1st = under_sampling(df_genre_1st, size)
-        # Due to randomly choosing in undersampling method, location or area of those series will be shuffle as well.
-        # This action will affect in choosing 3 largest areas in the next step
-        print("df_genre_1st:\n", df_genre_1st)
-        print("df_genre_1st shape 0 :", df_genre_1st.shape[0])
+# method: over sampling by shuffling and generate new timeseries base on the existing timeseries
+#   input:
+#       df: input dataframe for over sampling
+#       size: maximum size of new dataframe
+#       attrib_1_type: is the type of the gerne_name or area_name
+#       attrib_1_val : is the val  of the gerne or area. Ex: Izakaya, Cafe/Sweets or Dining bar
+#   output:
+#       df: contain exisiting dataframe and a new generated one
+#       df_vd_added: is the new generated dataframe
+def over_sampling(df, df_vd, size_max, attrib_1, attrib_2):
+    size_current_df = df.shape[0]
+    # Get 2 values of 2 attributes, which are be used for creating columns for df_store_info_added
+    attrib_1_val = df.iloc[0][attrib_1]
+    attrib_2_val = df.iloc[0][attrib_2]
 
-        df_genre_2nd = under_sampling(df_genre_2nd, size)
-        print("df_genre_2nd:\n", df_genre_2nd)
-        print("df_genre_2nd shape:", df_genre_2nd.shape[0])
-
-    else:
-    #     sampling method == 'over'
-    #     size = df_genre_1st.shape[0]
-    #     df_genre_2nd = over_sampling(df_genre_2nd, size)
-    #     df_genre_3rd = over_sampling(df_genre_3rd, size)
-        print("Oversampling data: temporary not implemented due to diversity of clusters")
-
-    frames_after_sampling = [df_genre_1st, df_genre_2nd, df_genre_3rd]
-    df_genre = pd.concat(frames_after_sampling).reset_index(drop=True)
-
-    df_genre = format_arename_col_first_word(df_genre).reset_index(drop=True)
-    df_genre_1st = format_arename_col_first_word(df_genre_1st)
-    df_genre_2nd = format_arename_col_first_word(df_genre_2nd)
-    df_genre_3rd = format_arename_col_first_word(df_genre_3rd)
-
-    return df_genre, df_genre_1st, df_genre_2nd, df_genre_3rd
-
-# Get a new dataframe which contain equal size of restaurants for 3 areas
-# by resampling dataset by undersampling or oversampling
-# Input:
-# df: full dataset of 1 genre
-# location_1st, location_2nd, location_3rd: 3 max gernes of the full input dataframe
-# size: size of the least number of restaurant of 3 areas. By this we have 3 equal-sized areas
-# Output:
-def get_3_equal_location_size_sampling(df, location_1st, location_2nd, location_3rd, size, RESAMPLING_METHOD_ARG):
-    df_location_1st = df.loc[df[area_name].isin([location_1st])].reset_index(drop=True)
-    df_location_2nd = df.loc[df[area_name].isin([location_2nd])].reset_index(drop=True)
-    df_location_3rd = df.loc[df[area_name].isin([location_3rd])].reset_index(drop=True)
-
-    print("Test df_location_1st:\n", df_location_1st)
-    print("Default size need to be cut of from the main part:", size)
-
-    if RESAMPLING_METHOD_ARG == 'under':
-        df_location_1st = under_sampling(df_location_1st, size)
-        print("df_location_1st:\n", df_location_1st)
-        print("df_location_1st shape 0 :", df_location_1st.shape[0])
-
-        df_location_2nd = under_sampling(df_location_2nd, size)
-        print("df_location_2nd:\n", df_location_2nd)
-        print("df_location_2nd shape:", df_location_2nd.shape[0])
-
-        df_location_3rd = under_sampling(df_location_3rd, size)
-        print("df_location_3rd:", df_location_3rd)
-        print("df_location_3rd shape:", df_location_3rd.shape[0])
-
-    # else:
-    # #     sampling method == 'over'
-    #     size = df_location_1st.shape[0]
-    #     df_location_2nd = over_sampling(df_location_2nd, size)
-    #     df_location_3rd = over_sampling(df_location_3rd, size)
-
-    frames_after_sampling = [df_location_1st, df_location_2nd, df_location_3rd]
-    df_location = pd.concat(frames_after_sampling).reset_index(drop=True)
-    print("Full df_location for 1 genre:\n", df_location)
-
-    return df_location
-
-# Left join 3 dataframes to get a new dataframe with maximium rows.
-def left_join_df(df_left, df_middle, df_right):
-    print("==== Left join function ===")
-    # Fitering 2 first columns of dataframe for easier to work with area name and sum
-    df_left   = df_left.iloc[:,0:2]
-    df_middle = df_middle.iloc[:,0:2]
-    df_right  = df_right.iloc[:,0:2]
+    # Create a new dataframe store information, which contains genre and area for further processing in upcoming steps
+    n = size_max-size_current_df
+    df_si_added = pd.DataFrame()
+    df_original = df.copy()
 
 
-    # Get the shape of 3 dataframes for left join
-    left   = df_left.shape[0]
-    middle = df_middle.shape[0]
-    right  = df_right.shape[0]
+    # Create a mask, then apply it for greater group of stores is df_vd
+    mask_store_id = df[store_id].unique()
+    # Convert array to list
+    mask_store_id = mask_store_id.tolist()
+    # Get only store with store id in the mask. Because store id dataset has 4689 store, but df_hr has many more store.
+    # We need to trim all those stores without genres and areas. Because we need those properties for splitting later.
+    df = df_vd[df_vd[store_id].isin(mask_store_id)].reset_index(drop=True)
+    df = df.pivot(index=store_id, columns='visit_date', values='visitors')
 
-    # Finding maximum number of the
-    num = [left, middle, right]
-    max1 = max(num)
-    if max1 == middle:
-        df_left, df_middle, = df_middle, df_left
-    elif max1 == right:
-        df_left, df_right, = df_right, df_left
+    # Creating empty dataframe as visit date
+    df_vd_added = pd.DataFrame()
+    df_si_added = pd.DataFrame()
 
-    # print("df_left   df:\n", df_left)
-    # print("df_middle df:\n", df_middle)
-    # print("df_right  df:\n", df_right)
+    # In case df has size is the same with maximum of 9 groups: return the old df.
+    if size_max == size_current_df:
+        print("Current size of dataframe equals size to upsampling: return old df")
+        return df_original, df_vd_added, df_si_added
 
-    df_left_join = df_left.merge(df_middle,how='left', left_on=area_name, right_on=area_name)
-    df_left_join = df_left_join.merge(df_right,how='left', left_on=area_name, right_on=area_name)
-    df_left_join = df_left_join.fillna(0)
-    print("df_left_join df_left_join:\n", df_left_join)
-    df = df_left_join[area_name]
-    print("df df:\n", df)
-    df_left_join = df_left_join.min(axis = 1, skipna = True)
-    df_left_join = pd.concat([df, df_left_join], axis=1)
-    # list all column names of the dataframe
-    print("list(df_left_join.columns.values):", list(df_left_join.columns.values))
+    else: # Current size of dataframe is not equals with size to upsampling --> over-sampling
+        columns = list(df)
 
-    # Rename column by position
-    df_left_join.rename(columns={ df_left_join.columns[1]: "restaurants_count" }, inplace = True)
-    df_left_join = df_left_join.sort_values('restaurants_count', ascending=False).reset_index(drop=True)
-    df_left_join["restaurants_count"] = df_left_join["restaurants_count"].astype(int)
-    print("df_left_join df_left_join -----:\n", df_left_join)
+        for j in range(n):
+            my_list = []
+            # Iterating through columns of dataframe then get one random value from that column.
+            for i in columns:
+                my_list.append(random.choice(df[i].values))
+            id = 'over_' + uuid.uuid4().hex[:16]
+            # Create a new dataframe with column name as a id, which is used as store id for new upsamples
+            df1 = pd.DataFrame(my_list, columns=[id])
+            # Concatenate multiple dataframes
+            df_vd_added = pd.concat([df_vd_added, df1], axis=1)
 
-    return df_left_join
+        # Transposing the concatenated dataframe and assign new columns by the above dataframe df
+        df_vd_added = df_vd_added.transpose()
+        df_vd_added.columns = df.columns
 
-# Method to split dataset to 3 genres groups and 9 genre-area groups.
-# input: df - input store info file with full genre, area. This file did not include time series
-# output:  df_genre, df_3genres_3locations
-# This 2 outputs will be used to verify cluster number twice
-def split_asi_9_groups(df, RESAMPLING_METHOD_ARG):
-    print("split_asi_9_groups df:\n", df)
-    # Group by air_genre_name or hpg_genre_name and count unique values with pandas per groups for air_store_info.csv,
-    # air_store_info.csv or mixing between air and hpg
-    # df_groups = df.groupby(genre_name)[store_id].nunique().sort_values(store_id)
-    df_groups = df.groupby(genre_name).count().sort_values(store_id, ascending=False).reset_index()
-    print('\n=== LIST OUT ALL GENRE GROUPS ASCENDING df_groups: === \n', df_groups)
+        # Concatening new dataframe with the existed one to form up a bigger dataframe
+
+        df_vd_added = df_vd_added.reset_index()
+        df_vd_added.rename(columns={'index': 'store_id'}, inplace=True)
+        df_vd_added = df_vd_added.set_index('store_id')
+        df_vd_added = df_vd_added.stack().reset_index()
+        df_vd_added.columns=['store_id', 'visit_date', 'visitors']
+
+        df_si_added = df_vd_added[['store_id']].copy()
+        df_si_added = df_si_added.drop_duplicates('store_id').reset_index()
+        df_si_added = df_si_added.assign(attrib_1=attrib_1_val)
+        df_si_added = df_si_added.assign(attrib_2=attrib_2_val)
+        df_si_added.rename(columns={'attrib_1':attrib_1, 'attrib_2':attrib_2}, inplace=True)
+        df_si_added = df_si_added.drop(columns = ['index'])
+
+
+        df = pd.merge(df_original, df_si_added, on=[store_id, attrib_1, attrib_2], how='outer')
+    return df, df_vd_added, df_si_added
+
+# Method: get 3 equal size of sampling
+#   input:
+#       df
+#       attrib_1_1st, attrib_1_2nd, attrib_1_3rd: 3 first values of the first feature or attribute
+#       attrib_1, attrib_2  : 2 features
+#       RESAMPLING_METHOD_ARG : Method for sampling
+#   output:
+#       df_attrib_1: All stores after under-sampling or over-sampling
+#       df_attrib_1_1st, df_attrib_1_2nd, df_attrib_1_3rd
+def get_3_equal_attrib_1_size_sampling(df, attrib_1_1st, attrib_1_2nd, attrib_1_3rd, attrib_1, attrib_2, df_vd):
+    df_attrib_1_1st = df.loc[df[attrib_1].isin([attrib_1_1st])].reset_index(drop=True)
+    df_attrib_1_2nd = df.loc[df[attrib_1].isin([attrib_1_2nd])].reset_index(drop=True)
+    df_attrib_1_3rd = df.loc[df[attrib_1].isin([attrib_1_3rd])].reset_index(drop=True)
+
+    # if RESAMPLING_METHOD_ARG == 'under':
+    size = df_attrib_1_3rd.shape[0]
+    df_attrib_1_1st = under_sampling(df_attrib_1_1st, size)
+    # Due to randomly choosing in undersampling method, location or area of those series will be shuffle as well.
+    # This action will affect in choosing 3 largest areas in the next step
+    print("df_attrib_1_1st:\n", df_attrib_1_1st)
+    print("df_attrib_1_1st shape 0 :", df_attrib_1_1st.shape[0])
+
+    df_attrib_1_2nd = under_sampling(df_attrib_1_2nd, size)
+    print("df_attrib_1_2nd:\n", df_attrib_1_2nd)
+    print("df_attrib_1_2nd shape:", df_attrib_1_2nd.shape[0])
+
+    frames_after_sampling = [df_attrib_1_1st, df_attrib_1_2nd, df_attrib_1_3rd]
+    df_attrib_1 = pd.concat(frames_after_sampling).reset_index(drop=True)
+
+    return df_attrib_1, df_attrib_1_1st, df_attrib_1_2nd, df_attrib_1_3rd
+
+# Method: get 3 upsampling_df
+#   input:
+#       df
+#       attrib_1_1st, attrib_1_2nd, attrib_1_3rd: 3 first values of the first feature or attribute
+#       attrib_1, attrib_2  : 2 features
+#       RESAMPLING_METHOD_ARG : Method for sampling
+#   output:
+#       df_si_sampled: Stores after over-sampling
+#       df_vd_added: Stores visit date added after over-sampling
+#       df_si_added: Stores information added after over-sampling
+def get_upsampling_df(df, attrib_1_1st, attrib_1_2nd, attrib_1_3rd, attrib_1, attrib_2, df_vd):
+    df_attrib_1_1st = df.loc[df[attrib_1].isin([attrib_1_1st])].reset_index(drop=True)
+    df_attrib_1_2nd = df.loc[df[attrib_1].isin([attrib_1_2nd])].reset_index(drop=True)
+    df_attrib_1_3rd = df.loc[df[attrib_1].isin([attrib_1_3rd])].reset_index(drop=True)
+
+
+    df_attrib_1_1st_groupby_attrib_2 = df_attrib_1_1st.groupby(attrib_2).count().sort_values(store_id, ascending=False).reset_index()
+
+    attrib_1_1st_2_1st, attrib_1_1st_2_2nd, attrib_1_1st_2_3rd = get_first_3values_from_df(df_attrib_1_1st_groupby_attrib_2)
+
+    # These 9 dataframes below cover all rows of 9 groups - 3 for first attrib product with 3 for second attrib
+    # Filtering from 3 groups of data for first feature, which have second feature
+    df_attrib_1_1st_2_1st = df_attrib_1_1st.loc[df_attrib_1_1st[attrib_2] == attrib_1_1st_2_1st].reset_index(drop=True)
+    df_attrib_1_1st_2_2nd = df_attrib_1_1st.loc[df_attrib_1_1st[attrib_2] == attrib_1_1st_2_2nd].reset_index(drop=True)
+    df_attrib_1_1st_2_3rd = df_attrib_1_1st.loc[df_attrib_1_1st[attrib_2] == attrib_1_1st_2_3rd].reset_index(drop=True)
+
+    df_attrib_1_2nd_2_1st = df_attrib_1_2nd.loc[df_attrib_1_2nd[attrib_2] == attrib_1_1st_2_1st].reset_index(drop=True)
+    df_attrib_1_2nd_2_2nd = df_attrib_1_2nd.loc[df_attrib_1_2nd[attrib_2] == attrib_1_1st_2_2nd].reset_index(drop=True)
+    df_attrib_1_2nd_2_3rd = df_attrib_1_2nd.loc[df_attrib_1_2nd[attrib_2] == attrib_1_1st_2_3rd].reset_index(drop=True)
+
+    df_attrib_1_3rd_2_1st = df_attrib_1_3rd.loc[df_attrib_1_3rd[attrib_2] == attrib_1_1st_2_1st].reset_index(drop=True)
+    df_attrib_1_3rd_2_2nd = df_attrib_1_3rd.loc[df_attrib_1_3rd[attrib_2] == attrib_1_1st_2_2nd].reset_index(drop=True)
+    df_attrib_1_3rd_2_3rd = df_attrib_1_3rd.loc[df_attrib_1_3rd[attrib_2] == attrib_1_1st_2_3rd].reset_index(drop=True)
+
+    # Get standard size of the maximum of both 1st attrib and 2nd attrib
+    size_1_1st_max = max(df_attrib_1_1st_2_1st.shape[0], df_attrib_1_1st_2_2nd.shape[0], df_attrib_1_1st_2_3rd.shape[0])
+    size_1_2nd_max = max(df_attrib_1_2nd_2_1st.shape[0], df_attrib_1_2nd_2_2nd.shape[0], df_attrib_1_2nd_2_3rd.shape[0])
+    size_1_3rd_max = max(df_attrib_1_3rd_2_1st.shape[0], df_attrib_1_3rd_2_2nd.shape[0], df_attrib_1_3rd_2_3rd.shape[0])
+    max_size_9_groups = max(size_1_1st_max, size_1_2nd_max, size_1_3rd_max)
+
+    print("max_size_9_groups:", max_size_9_groups)
+
+    # Oversampling 8 dataframes base on the first maximum dataframe
+    df_attrib_1_1st_2_1st, df_vd_added_01, df_hsi_added_01 = over_sampling(df_attrib_1_1st_2_1st, df_vd, max_size_9_groups, attrib_1, attrib_2)
+    df_attrib_1_1st_2_2nd, df_vd_added_02, df_hsi_added_02 = over_sampling(df_attrib_1_1st_2_2nd, df_vd, max_size_9_groups, attrib_1, attrib_2)
+    df_attrib_1_1st_2_3rd, df_vd_added_03, df_hsi_added_03 = over_sampling(df_attrib_1_1st_2_3rd, df_vd, max_size_9_groups, attrib_1, attrib_2)
+
+    df_attrib_1_2nd_2_1st, df_vd_added_04, df_hsi_added_04 = over_sampling(df_attrib_1_2nd_2_1st, df_vd, max_size_9_groups, attrib_1, attrib_2)
+    df_attrib_1_2nd_2_2nd, df_vd_added_05, df_hsi_added_05 = over_sampling(df_attrib_1_2nd_2_2nd, df_vd, max_size_9_groups, attrib_1, attrib_2)
+    df_attrib_1_2nd_2_3rd, df_vd_added_06, df_hsi_added_06 = over_sampling(df_attrib_1_2nd_2_3rd, df_vd, max_size_9_groups, attrib_1, attrib_2)
+
+
+    df_attrib_1_3rd_2_1st, df_vd_added_07, df_hsi_added_07 = over_sampling(df_attrib_1_3rd_2_1st, df_vd, max_size_9_groups, attrib_1, attrib_2)
+    df_attrib_1_3rd_2_2nd, df_vd_added_08, df_hsi_added_08 = over_sampling(df_attrib_1_3rd_2_2nd, df_vd, max_size_9_groups, attrib_1, attrib_2)
+    df_attrib_1_3rd_2_3rd, df_vd_added_09, df_hsi_added_09 = over_sampling(df_attrib_1_3rd_2_3rd, df_vd, max_size_9_groups, attrib_1, attrib_2)
+
+    # Concatenate list of frames for 9 groups
+    frames_9_groups = [df_attrib_1_1st_2_1st, df_attrib_1_1st_2_2nd, df_attrib_1_1st_2_3rd,
+                      df_attrib_1_2nd_2_1st, df_attrib_1_2nd_2_2nd, df_attrib_1_2nd_2_3rd,
+                      df_attrib_1_3rd_2_1st, df_attrib_1_3rd_2_2nd, df_attrib_1_3rd_2_3rd]
+    df_si_sampled = pd.concat(frames_9_groups).reset_index(drop=True)
+
+
+    frames_vd_added = [df_vd_added_01, df_vd_added_02, df_vd_added_03,
+                      df_vd_added_04, df_vd_added_05, df_vd_added_06,
+                      df_vd_added_07, df_vd_added_08, df_vd_added_09]
+    df_vd_added = pd.concat(frames_vd_added).reset_index(drop=True)
+
+    frames_si_added = [df_hsi_added_01, df_hsi_added_02, df_hsi_added_03,
+                      df_hsi_added_04, df_hsi_added_05, df_hsi_added_06,
+                      df_hsi_added_07, df_hsi_added_08, df_hsi_added_09]
+    df_si_added = pd.concat(frames_si_added).reset_index(drop=True)
+
+    # print("df_si_sampled:", df_si_sampled)
+    # print("df_vd_added:", df_vd_added)
+    # print("df_si_added:", df_si_added)
+
+    return df_si_sampled, df_vd_added, df_si_added
+
+# Method use: Get store info dataset and visit dataset of 2 datasouces
+# input:
+#   RES_DATASET_ARG: resource dataset argument
+# output:
+def get_storeinfo_visitdata(df_asi, df_avd, df_hsi, df_hr, RES_DATASET_ARG):
+    print("RES_DATASET_ARG:", RES_DATASET_ARG)
+
+    if RES_DATASET_ARG == 'air':
+        df_asi = store_info_format(df_asi)
+        return df_asi, df_avd
+
+    else: # RES_DATASET_ARG == 'hpg':
+        df_hsi = store_info_format(df_hsi)
+        df_hr = hpg_reserve_visitor_format(df_hr, df_hsi)
+        return df_hsi, df_hr
+
+
+# Method use: Merging store_info_dataset with visit data from one of the resource
+# input:
+#   store_info_dataset, df_vd
+# output:
+#   df_merged_storeid_visits: dataset after merging store_info_dataset, df_vd
+def merge_store_visit_2nd(store_info_dataset, df_vd):
+    print("Store id dataset before merging - store_info_dataset - store_info_dataset:\n", store_info_dataset)
+    print("Store id dataset and visitor data before merging - df_vd:\n", df_vd)
+
+    df_merged_storeid_visits = pd.merge(store_info_dataset, df_vd, how='inner', on=['store_id'])
+    print("Store id dataset and visitor data after  merging:\n", df_merged_storeid_visits)
+    df_merged_storeid_visits = format_arename_col_first_word(df_merged_storeid_visits)
+    print("df_merged_storeid_visits after format first area_name column :\n", df_merged_storeid_visits)
+    return df_merged_storeid_visits
+
+# Method use: Merging store_info_dataset with visit data from one of the resource
+# input:
+#   RES_DATASET_ARG: resource dataset argument
+# output:
+#
+def split_store_visit_2nd(df_merged, RES_DATASET_ARG, RESAMPLING_METHOD_ARG, df_asi, df_avd, df_hsi, df_hr):
+    print("df_merged:\n", df_merged)
+    df_groups_store_id = df_merged
+    df_groups_store_id = df_groups_store_id.drop(['visit_date', 'visitors'], axis=1)
+    df_groups_store_id = df_groups_store_id.drop_duplicates().reset_index()
+    print("df_groups_store_id:\n", df_groups_store_id)
+
+    df_groups = df_groups_store_id.groupby(genre_name).count().sort_values(store_id, ascending=False).reset_index()
+    print('=== LIST OUT ALL GENRE GROUPS ASCENDING df_groups: === \n', df_groups)
+
+    store_info_dataset, df_vd = get_storeinfo_visitdata(df_asi, df_avd, df_hsi, df_hr, RES_DATASET_ARG)
 
     # ========= Overall of 3 genres and 3 locations =========
     # Filtering air_store_info df to 3 main genres
+
+
     gerne_1st, gerne_2nd, gerne_3rd = get_first_3values_from_df(df_groups)
     print("gerne_1st:", gerne_1st)
     print("gerne_2nd:", gerne_2nd)
     print("gerne_3rd:", gerne_3rd)
 
-    # df_genre: full of 3 equal genre dataframe
-    df_genre, df_genre_1st, df_genre_2nd, df_genre_3rd = get_3_equal_genre_size_sampling(df, gerne_1st, gerne_2nd, gerne_3rd, RESAMPLING_METHOD_ARG)
+    print("store_info_dataset:\n", store_info_dataset)
+    df_genre, df_genre_1st, df_genre_2nd, df_genre_3rd = get_3_equal_attrib_2_size_sampling(df_groups_store_id,
+                                                                gerne_1st, gerne_2nd, gerne_3rd, RESAMPLING_METHOD_ARG)
 
     print("=== ALL RESTAURANTS OF 3 MAIN GENRES AFTER SAMPLING - BEGIN: ===\n")
-    print(df_genre)
+    print("df_genre:\n",df_genre)
+    print("df_genre_1st:\n",df_genre_1st)
+    print("df_genre_2nd:\n",df_genre_2nd)
+    print("df_genre_3rd:\n",df_genre_3rd)
     print('Total number of restaurants in three equalled-size main genres:', df_genre.shape[0])
     print("=== ALL RESTAURANTS OF 3 MAIN GENRES AFTER SAMPLING - END:   ===\n")
 
-    # 01 Back up this implementation line for further debugging
-    # df_genre_area = df_genre_1st.groupby(area_name).count().sort_values(store_id, ascending=False).reset_index()
-
-    # Group by area for 3 genres df_genre_1st, df_genre_2nd, df_genre_area_3rd then pipe it to input for
-    # equallizing size of area
-    df_genre_area_1st = df_genre_1st.groupby(area_name).count().sort_values(store_id, ascending=False).reset_index()
-    print("df_genre_area_1st:\n", df_genre_area_1st)
-    df_genre_area_2nd = df_genre_2nd.groupby(area_name).count().sort_values(store_id, ascending=False).reset_index()
-    print("df_genre_area_2nd:\n", df_genre_area_2nd)
-    df_genre_area_3rd = df_genre_3rd.groupby(area_name).count().sort_values(store_id, ascending=False).reset_index()
-    print("df_genre_area_3rd:\n", df_genre_area_3rd)
-
-    # Create left join dataframe to get merge of 3 genres and 3 areas.
-    # With this dataframe, we can identify 3 top areas with the least number of restaurants of the third place
-    df_left_join = left_join_df(df_genre_area_1st, df_genre_area_2nd, df_genre_area_3rd)
-    # print("df_left_join:\n", df_left_join)
-
-    # 01 Back up this implementation line for further debugging
-    # location_1st, location_2nd, location_3rd = get_first_3values_from_df(df_genre_area)
-    location_1st, location_2nd, location_3rd = get_first_3values_from_df(df_left_join)
-    print("location_1st:", location_1st)
-    print("location_2nd:", location_2nd)
-    print("location_3rd:", location_3rd)
-
-    # Get the size of the least areas in top 3 most areas
-    genre_area_size = df_left_join.iloc[2][1]
-    print("genre_area_size:", genre_area_size)
-
-    # ---Filtering df_genre to 3 main genres---
-
-    # Method 01: search all locations
-    # search_for_loc = [location_1st, location_2nd, location_3rd]df_location_2nd shape
-    # df_genre_location = df_genre.loc[df_genre[area_name].str.contains('|'.join(search_for_loc))].reset_index(drop=True)
-
-    # total_num_res_gerne_location = df_genre_location.shape[0]
-    # print('Total number of restaurants in three main genres with three main locations:', total_num_res_gerne_location)
-    # print("df_genre_location:====\n", df_genre_location)
-    #
-    # print('\n=== LIST OUT 3 LARGEST GROUP NAMES: ===')
-    # # Split air_store_info to 3 main genres: Italian/French, Izakaya, Cafe/Sweets
-    # df_gerne3rd = df[df[genre_name] == gerne_3rd]
-    # df_gerne1st = df[df[genre_name] == gerne_1st]
-    # df_gerne2nd = df[df[genre_name] == gerne_2nd]
-    #
-    # # Split each genre to 3 main locations
-    # mask_location1st = df_gerne1st[area_name].str.contains(location_1st)
-    # mask_location2nd = df_gerne1st[area_name].str.contains(location_2nd)
-    # mask_location3rd = df_gerne1st[area_name].str.contains(location_3rd)
-    # df_gerne1st_location1st = df_gerne1st[mask_location1st].reset_index(drop=True)
-    # df_gerne1st_location2nd = df_gerne1st[mask_location2nd].reset_index(drop=True)
-    # df_gerne1st_location3rd = df_gerne1st[mask_location3rd].reset_index(drop=True)
-    # print("Total number of restaurants from df_gerne1st_location1st, df_gerne1st_location2nd and df_gerne1st_location3rd:",
-    #       df_gerne1st_location1st.shape[0], df_gerne1st_location2nd.shape[0], df_gerne1st_location3rd.shape[0])
-    #
-    # # Split each genre to 3 main locations
-    # mask_location1st = df_gerne2nd[area_name].str.contains(location_1st)
-    # mask_location2nd = df_gerne2nd[area_name].str.contains(location_2nd)
-    # mask_location3rd = df_gerne2nd[area_name].str.contains(location_3rd)
-    # df_gerne2nd_location1st = df_gerne2nd[mask_location1st].reset_index(drop=True)
-    # df_gerne2nd_location2nd = df_gerne2nd[mask_location2nd].reset_index(drop=True)
-    # df_gerne2nd_location3rd = df_gerne2nd[mask_location3rd].reset_index(drop=True)
-    # print("Total number of restaurants from df_gerne2nd_location1st, df_gerne2nd_location2nd and df_gerne2nd_location3rd:",
-    #       df_gerne2nd_location1st.shape[0], df_gerne2nd_location2nd.shape[0], df_gerne2nd_location3rd.shape[0])
-    #
-    # # Split each genre to 3 main locations
-    # mask_location1st = df_gerne3rd[area_name].str.contains(location_1st)
-    # mask_location2nd = df_gerne3rd[area_name].str.contains(location_2nd)
-    # mask_location3rd = df_gerne3rd[area_name].str.contains(location_3rd)
-    # df_gerne3rd_location1st = df_gerne3rd[mask_location1st].reset_index(drop=True)
-    # df_gerne3rd_location2nd = df_gerne3rd[mask_location2nd].reset_index(drop=True)
-    # df_gerne3rd_location3rd = df_gerne3rd[mask_location3rd].reset_index(drop=True)
-    # print("Total number of restaurants from df_gerne3rd_location1st, df_gerne3rd_location2nd and df_gerne3rd_location3rd:",
-    #       df_gerne3rd_location1st.shape[0], df_gerne3rd_location2nd.shape[0], df_gerne3rd_location3rd.shape[0])
-    #
-    # # Full store id list
-    # frames = [df_gerne3rd_location1st, df_gerne3rd_location2nd, df_gerne3rd_location3rd,
-    #           df_gerne1st_location1st, df_gerne1st_location2nd, df_gerne1st_location3rd,
-    #           df_gerne2nd_location1st, df_gerne2nd_location2nd, df_gerne2nd_location3rd]
-    # df_3genres_3locations = pd.concat(frames)
-    # print("df_3genres_3locations:===\n", df_3genres_3locations)
-    # print('Total number of restaurants in 3 main genres with 3 main locations:', df_3genres_3locations.shape[0], '\n')
-
-    # return df_genre_location, df_3genres_3locations
-
-    # Method 02: search each of them, equalize 3 proportions
-    df_genre_location_1st = get_3_equal_location_size_sampling(df_genre_1st, location_1st, location_2nd, location_3rd, genre_area_size, RESAMPLING_METHOD_ARG)
-    df_genre_location_2nd = get_3_equal_location_size_sampling(df_genre_2nd, location_1st, location_2nd, location_3rd, genre_area_size, RESAMPLING_METHOD_ARG)
-    df_genre_location_3rd = get_3_equal_location_size_sampling(df_genre_3rd, location_1st, location_2nd, location_3rd, genre_area_size, RESAMPLING_METHOD_ARG)
-
-    # Full store id list
-    frames = [df_genre_location_1st, df_genre_location_2nd, df_genre_location_3rd]
-    df_3genres_3locations = pd.concat(frames).reset_index(drop=True)
-    # print("df_3genres_3locations:===\n", df_3genres_3locations)
-    print('Total number of restaurants in 3 main genres with 3 main locations:', df_3genres_3locations.shape[0], '\n')
-    # print('Restaurants in 3 main genres with 3 main locations:\n', df_3genres_3locations, '\n')
-
-    return df_genre, df_3genres_3locations
-
-
-
-# ============ Step 02: Check missing values ==============
-# Method use:
-# input:
-#   df_3genres_3locations - list of store names of 3 genres and 3 locations
-#   df_hr_format - list of all visit of visitor of all stores
-# output:
-#   df_ts_visits - List of all chosen timeseries and their visitors
-def get_avd_3genres_3locations(df_3genres, df_3genres_3locations, df_avd, SPLIT_GROUPS_ARG):
-    # print("df_3genres_3locations - df_3genres_3locations:\n", df_3genres_3locations)
-    # air_visit_data.csv
-    print("Full dataframe of air visit data rows - df_avd:\n", df_avd)
-    if SPLIT_GROUPS_ARG == 3:
-        df = df_3genres
-    else: # SPLIT_GROUPS_ARG == 9
-        df = df_3genres_3locations
-
-    print("dataframe from 3 genres or 3genres/3locations:\n", df)
-    # Filtering dataframe air_visit_data based on the column value of another dataframe df_3genres_3locations
-    mask_air_store_id = df_avd.store_id.isin(df.store_id)
-    df_ts_visits = df_avd[mask_air_store_id].reset_index(drop=True)
-    print("Dataframe of air visit data from chosen time series:", df_ts_visits.shape[0])
-    # print("df_ts_visits:\n", df_ts_visits)
-    return df_ts_visits
-
-# Method use: Filtering only time series base on 3 genres / 3 genres and 3 locations
-# input:
-# df_3genres_3locations - list of store names of 3 genres and 3 locations
-# df_hvd - list of all visit of visitor of all stores
-# output:
-# df_ts_visits - List of all chosen timeseries and their visitors
-def get_hvd_3genres_3locations(df_3genres, df_3genres_3locations, df_hvd, SPLIT_GROUPS_ARG):
-    print("Dataframe contains all  3 genres of 3 locations - df_3genres_3locations:\n", df_3genres_3locations)
-    print("Standard format of HPG restaurants time series - visit date is grouped - df_hvd:\n", df_hvd)
-
-    if SPLIT_GROUPS_ARG == 3:
-        df = df_3genres
-    else: # SPLIT_GROUPS_ARG == 9
-        df = df_3genres_3locations
-
-    # Filtering dataframe hpg_visit_data based on the column value of another dataframe df_3genres_3locations
-    # df_3genres_3locations: Dataframe contains a list of serie store names which are in 3 main genres and 3 main areas
-    # Create a mask of hpg_store_id between df.hpg_store_id and df_3genres_3locations.hpg_store_id
-    mask_hpg_store_id = df_hvd.store_id.isin(df.store_id)
-    # Get all series with the accordingly series name
-    df_ts_visits = df_hvd[mask_hpg_store_id].reset_index(drop=True)
-
-    print("====================================================")
-    print("Filtering HPG restaurants time series only chosen restaurants:", df_ts_visits.shape[0])
-
-
-    # print("df_ts_visits:\n", df_ts_visits)
-    return df_ts_visits
-
-# if res == 'air':
-#     df_store_and_visit = get_avd_3genres_3locations(df_3genres, df_3genres_3locations, df_avd)
-#     # This line below is used to test for 3 genres only without spliting it in to 9 groups.
-#     # This line should be checked again for input and output
-#     # df_vd_3genres_3locations = get_avd_3genres_3locations(df_3genres)
-#     print("df_store_and_visit:\n", df_store_and_visit)
-#     print("====================================================")
-# else:
-#     df_store_and_visit = get_hvd_3genres_3locations(df_3genres, df_3genres_3locations, df_hvd)
-#     print("df_store_and_visit:\n", df_store_and_visit)
-#     print("====================================================")
-
-def get_vd_3genres_3locations(RES_DATASET_ARG, RESAMPLING_METHOD_ARG, SPLIT_GROUPS_ARG):
-    if RES_DATASET_ARG == 'air':
-        store_info_dataset = data['asi']
-        store_info_dataset = store_info_format(store_info_dataset)
-        df_3genres, df_3genres_3locations = split_asi_9_groups(store_info_dataset, RESAMPLING_METHOD_ARG)
-        print("Dataframe contains all  3 genres of 3 locations - df_3genres_3locations:\n", df_3genres_3locations)
-        print("Dataframe contains only 3 genres - df_3genres:\n", df_3genres)
-        # print("df_genre_location:\n", df_genre_location)
-
-        df_avd = data['avd']
-
-        df_store_and_visit = get_avd_3genres_3locations(df_3genres, df_3genres_3locations, df_avd, SPLIT_GROUPS_ARG)
-
-    elif RES_DATASET_ARG == 'hpg':
-        store_info_dataset = data['hsi']
-        store_info_dataset = store_info_format(store_info_dataset)
-        df_3genres, df_3genres_3locations = split_asi_9_groups(store_info_dataset, RESAMPLING_METHOD_ARG)
-        print("Dataframe contains all  3 genres of 3 locations - df_3genres_3locations:\n", df_3genres_3locations)
-        print("Dataframe contains only 3 genres - df_3genres:\n", df_3genres)
-        # print("df_genre_location:\n", df_genre_location)
-
-        df_hr = data['hr']
-        df_hvd = hpg_reserve_visitor_format(df_hr)
-
-        df_store_and_visit = get_hvd_3genres_3locations(df_3genres, df_3genres_3locations, df_hvd, SPLIT_GROUPS_ARG)
-
-    print('Total number of restaurants in three main genres:', df_3genres.shape[0])
-    print('Total number of restaurants in three main genres with three main locations:', df_3genres_3locations.shape[0])
-    return df_store_and_visit, store_info_dataset
-
-
-
-# air = df.loc[df['air_store_id'] == 'air_25e9888d30b386df']
-# print(air['visit_date'].min(), air['visit_date'].max())
-# print(air)
-
-# At this point of coding, we can find that we have missing values on each time series
-
-# # Find the list of all starting moment of all series
-# def data_moment_list(store_id, j):
-#     series = df.loc[df['air_store_id'] == store_id]
-#     # series = series.set_index('visit_date')
-#     # series.index = pd.DatetimeIndex(series.index)
-#     # series = series.reindex(index)
-#     first_moment = series['visit_date'].iloc[0]
-#     # str1 = str(store_id)
-#     # str1 = str1 + ' ' + str(j) +' visitors'
-#     # print('type:', type(first_moment))
-#     return first_moment
-#
-# list_first_moments=[]
-# for i, j in zip(store_id_list, range(len(store_id_list))):
-#     list_first_moments.append(data_moment_list(i, j))
-# # print('list_first_moments:', list_first_moments)
-# # statistics.median(list_first_moments)
-# # pd.Timestamp.fromordinal(int(list_first_moments.apply(lambda x: x.toordinal()).median()))
 
 # === Find the first and the last moments of a time serie
 # input:
@@ -674,15 +433,6 @@ def first_last_moments(df_sav):
     last_moment  = full_series.groupby(store_id).tail(1).reset_index(drop=True)
     return first_moment, last_moment
 
-
-
-
-# # Format datetime column to date column
-# def format_datetime_df(df):
-#     df['visit_date'] = pd.to_datetime(df['visit_date'], format="%Y/%m/%d").dt.date
-#     # df.rename(columns={'visit_datetime':'visit_date'}, inplace=True)
-#     return df
-
 # This function get input of a df of visit date and get the average from visit date column
 # input:
 #   fm  : first moment dataframe
@@ -700,13 +450,300 @@ def average_first_last_moments(fm, lm):
     print('Median value of last  moment dataframe:', average_lm)
     return average_fm, average_lm
 
+# Method: This function get input of a df of visit date and get the first and last from visit date column
+# input:
+#   fm  : first moment dataframe
+#   lm  : last moment dataframe
+# output:
+#   min_fm: min time point of first moment
+#   max_lm: max time point of last  moment
+def min_max_first_last_moments(fm, lm):
+    min_fm = fm["visit_date"].min()
+    max_lm = lm["visit_date"].max()
+    min_fm = min_fm.strftime('%m-%d-%Y')
+    max_lm = max_lm.strftime('%m-%d-%Y')
 
-# ============ Step 03 and 04: Data Imputation and start at the same moments ==============
+    print('Min value of first moment dataframe:', min_fm)
+    print('Max value of last  moment dataframe:', max_lm)
+    return min_fm, max_lm
 
 def percentage(part, whole, digits):
     val = float(part)/float(whole)
     val *= 10 ** (digits + 2)
     return (floor(val) / 10 ** digits)
+
+# Method used: Get the differences betweend 2 date
+# input:
+#   last_timepoint : last  time point
+#   first_timepoint: first time point
+# output:
+#   days_diff: differences in days
+def get_days_different(last_timepoint, first_timepoint):
+    last_timepoint  = datetime.strptime(last_timepoint, "%m-%d-%Y")
+    first_timepoint = datetime.strptime(first_timepoint, "%m-%d-%Y")
+    days_diff = abs((last_timepoint - first_timepoint).days)
+    print("Days different between first day and last day:", days_diff)
+    return days_diff
+
+# Method used: Find the missing percentage of df_store_and_visit
+# input:
+#   df: contains all stores and all visits
+#   fm: first moment dataframe of all stores
+#   lm: last  moment dataframe of all stores
+# output:
+#   Total missing percentage of all stores base on first and last moment date range
+def missing_percentage(df, first_timepoint, last_timepoint):
+    # date_range_idx = pd.date_range(min_date, max_date)
+
+    # print("---------------df\n", df)
+    current_num_store_and_visit = df.shape[0]
+    print("---------------total_num_rows including stores and visitors:", current_num_store_and_visit)
+
+    total_num_store = df[store_id].nunique()
+    print("---------------total_num_store:", total_num_store)
+
+    last_timepoint  = datetime.strptime(last_timepoint, "%m-%d-%Y")
+    first_timepoint = datetime.strptime(first_timepoint, "%m-%d-%Y")
+    days_diff = abs((last_timepoint - first_timepoint).days)
+
+    # Total number of possible day for all stores
+    total_num_possible_day = total_num_store*days_diff
+    return percentage(current_num_store_and_visit, total_num_possible_day, 2)
+
+
+
+# method: Filtering visitor data of high missing percentage of stores
+# input:
+#   df_vd
+#   MAX_MISSING_PERCENTAGE_ARG: Percent of top stores values
+# output:
+#   df_vd after filtering high missing percentage
+def filtering_high_missing_rate_store(df_vd, MAX_MISSING_PERCENTAGE_ARG):
+    print("+++Filtering_high_missing_rate_store function+++")
+    print("input visitor data from air or hpg - df_vd:\n", df_vd)
+    print("input MAX_MISSING_PERCENTAGE_ARG:", MAX_MISSING_PERCENTAGE_ARG)
+
+    # Get the first_moment and last_moment dataframe of all stores
+    first_moment, last_moment = first_last_moments(df_vd)
+
+    # Get the min date and max date from first moment and last moment
+    min_date, max_date = min_max_first_last_moments(first_moment, last_moment)
+
+    # Total missing rate percent
+    miss_percent = missing_percentage(df_vd, min_date, max_date)
+    print("Overall missing percentage of all stores:", miss_percent)
+
+    # Create new temporary dataframe to contain percentage for each store
+    df_store_percentage = df_vd
+    # Adding one more column, which counts number of appearance of in store id for each store. And call it as 'store_count'
+    df_store_percentage = df_store_percentage[['store_id']].groupby(['store_id']).store_id.agg('count').to_frame('store_day_count').reset_index()
+    days_different = get_days_different(max_date, min_date)
+    # Create a new column as store percentage by calculate number of store id over
+    df_store_percentage['store_percentage'] = np.vectorize(percentage)(df_store_percentage['store_day_count'],days_different, 2)
+
+    # Sort values of percentage from max to min and reset index for this dataframe
+    df_store_percentage = df_store_percentage.sort_values(by=['store_percentage'], ascending=False).reset_index(drop=True)
+    # Get only MAX_MISSING_PERCENTAGE_ARG percent of top values
+    df_store_percentage = df_store_percentage.head(int(len(df_store_percentage)*(MAX_MISSING_PERCENTAGE_ARG/100)))
+    print("Stores after getting only MAX_MISSING_PERCENTAGE_ARG percent from df_store_percentage:\n", df_store_percentage)
+    print("Describing current dataframe as data analysis:\n", df_store_percentage.describe())
+    return df_store_percentage
+
+# Left join 3 dataframes to get a new dataframe with maximium rows.
+def left_join_df(df_left, df_middle, df_right, attrib_2):
+    print("==== Left join function ===")
+    # Fitering 2 first columns of dataframe for easier to work with area name and sum
+    df_left   = df_left.iloc[:,0:2]
+    df_middle = df_middle.iloc[:,0:2]
+    df_right  = df_right.iloc[:,0:2]
+
+
+    # Get the shape of 3 dataframes for left join
+    left   = df_left.shape[0]
+    middle = df_middle.shape[0]
+    right  = df_right.shape[0]
+
+    # Finding maximum number of the
+    num = [left, middle, right]
+    max1 = max(num)
+    if max1 == middle:
+        df_left, df_middle, = df_middle, df_left
+    elif max1 == right:
+        df_left, df_right, = df_right, df_left
+
+    df_left_join = df_left.merge(df_middle,how='left', left_on=attrib_2, right_on=attrib_2)
+    df_left_join = df_left_join.merge(df_right,how='left', left_on=attrib_2, right_on=attrib_2)
+    df_left_join = df_left_join.fillna(0)
+    print("df_left_join df_left_join:\n", df_left_join)
+    df = df_left_join[attrib_2]
+    # print("df df:\n", df)
+    df_left_join = df_left_join.min(axis = 1, skipna = True)
+    df_left_join = pd.concat([df, df_left_join], axis=1)
+    # list all column names of the dataframe
+    print("list(df_left_join.columns.values):", list(df_left_join.columns.values))
+
+    # Rename column by position
+    df_left_join.rename(columns={ df_left_join.columns[1]: "restaurants_count" }, inplace = True)
+    df_left_join = df_left_join.sort_values('restaurants_count', ascending=False).reset_index(drop=True)
+    df_left_join["restaurants_count"] = df_left_join["restaurants_count"].astype(int)
+    print("df_left_join df_left_join -----:\n", df_left_join)
+
+    return df_left_join
+
+# Get a new dataframe which contain equal size of restaurants for 3 areas
+# by resampling dataset by undersampling or oversampling
+# Input:
+#   df: full dataset of 1 genre or area
+#   attrib_2_1st, attrib_2_2nd, attrib_2_3rd: 3 max gernes or are of the full input dataframe
+#   size: size of the least number of restaurant of 3 areas. By this we have 3 equal-sized areas
+# Output:
+def get_3_equal_attrib_2_size_sampling(df, attrib_2_1st, attrib_2_2nd, attrib_2_3rd, size, RESAMPLING_METHOD_ARG, attrib_2):
+    df_attrib_2_1st = df.loc[df[attrib_2].isin([attrib_2_1st])].reset_index(drop=True)
+    df_attrib_2_2nd = df.loc[df[attrib_2].isin([attrib_2_2nd])].reset_index(drop=True)
+    df_attrib_2_3rd = df.loc[df[attrib_2].isin([attrib_2_3rd])].reset_index(drop=True)
+
+    print("Test df_attrib_2_1st:\n", df_attrib_2_1st)
+    print("Default size need to be cut of from the main part:", size)
+
+    if RESAMPLING_METHOD_ARG == 'under':
+        df_attrib_2_1st = under_sampling(df_attrib_2_1st, size)
+        print("df_attrib_2_1st:\n", df_attrib_2_1st)
+        print("df_attrib_2_1st shape 0 :", df_attrib_2_1st.shape[0])
+
+        df_attrib_2_2nd = under_sampling(df_attrib_2_2nd, size)
+        print("df_attrib_2_2nd:\n", df_attrib_2_2nd)
+        print("df_attrib_2_2nd shape:", df_attrib_2_2nd.shape[0])
+
+        df_attrib_2_3rd = under_sampling(df_attrib_2_3rd, size)
+        print("df_attrib_2_3rd:", df_attrib_2_3rd)
+        print("df_attrib_2_3rd shape:", df_attrib_2_3rd.shape[0])
+
+    frames_after_sampling = [df_attrib_2_1st, df_attrib_2_2nd, df_attrib_2_3rd]
+    df_genre_area = pd.concat(frames_after_sampling).reset_index(drop=True)
+    print("Full df_genre_area for 1 genre:\n", df_genre_area)
+
+    return df_genre_area
+
+# Method to split dataset to 3 genres/area groups and 9 genre-area/area-genre groups.
+#   input: df - input store info file with full genre, area. This file did not include time series
+#   output:  df_attrib_1, df_attrib_1_attrib_2
+def split_to_9_groups(df, df_vd, df_si, SPLIT_FIRST_BY_ARG, RESAMPLING_METHOD_ARG):
+    if SPLIT_FIRST_BY_ARG == 'genre':
+        attrib_1 = 'genre_name'
+        attrib_2 = 'area_name'
+    else: # SPLIT_FIRST_BY_ARG == 'are'
+        attrib_1 = 'area_name'
+        attrib_2 = 'genre_name'
+
+    print("input dataframe of split_to_9_groups function:\n", df)
+    # Group by attrib_1 and count unique values with pandas per groups for air_store_info.csv,
+    df_groups = df.groupby(attrib_1).count().sort_values(store_id, ascending=False).reset_index()
+    print('=== LIST OUT ALL GROUPS ASCENDING BY: ', attrib_1, '===\n', df_groups)
+
+    # Get names of 3 first columns (col1). These three variables are type of string
+    attrib_1_1st, attrib_1_2nd, attrib_1_3rd = get_first_3values_from_df(df_groups)
+    print("attrib_1_1st:", attrib_1_1st)
+    print("attrib_1_2nd:", attrib_1_2nd)
+    print("attrib_1_3rd:", attrib_1_3rd)
+
+
+    # df_genre: full of 3 equal attribute 1 dataframe
+    if RESAMPLING_METHOD_ARG == 'under':
+        df_attrib_1, df_attrib_1st, df_attrib_2nd, df_attrib_3rd = get_3_equal_attrib_1_size_sampling(df,
+                            attrib_1_1st, attrib_1_2nd, attrib_1_3rd, attrib_1, attrib_2, df_vd)
+
+        print("=== ALL RESTAURANTS OF 3 MAIN", attrib_1, "AFTER SAMPLING ===\n")
+        print(df_attrib_1)
+        print('Total number of restaurants in three equalled-size main by ', attrib_1, ':', df_attrib_1.shape[0])
+
+        # Group by area for 3 genres df_attrib_1st, df_attrib_2nd, df_attrib_3rd then pipe it to input for
+        # equallizing size of area or genre
+        df_genre_area_1st = df_attrib_1st.groupby(attrib_2).count().sort_values(store_id, ascending=False).reset_index()
+        print("df_genre_area_1st:\n", df_genre_area_1st)
+        df_genre_area_2nd = df_attrib_2nd.groupby(attrib_2).count().sort_values(store_id, ascending=False).reset_index()
+        print("df_genre_area_2nd:\n", df_genre_area_2nd)
+        df_genre_area_3rd = df_attrib_3rd.groupby(attrib_2).count().sort_values(store_id, ascending=False).reset_index()
+        print("df_genre_area_3rd:\n", df_genre_area_3rd)
+
+        # Create left join dataframe to get merge of 3 genres and 3 areas.
+        # With this dataframe, we can identify 3 top areas with the LEAST number of restaurants of the third place
+        df_left_join = left_join_df(df_genre_area_1st, df_genre_area_2nd, df_genre_area_3rd, attrib_2)
+        print("df_left_join:\n", df_left_join)
+
+        # Get first 3 attributes from the df_left_join above
+        attrib_2_1st, attrib_2_2nd, attrib_2_3rd = get_first_3values_from_df(df_left_join)
+        print("attrib_2_1st:", attrib_2_1st)
+        print("attrib_2_2nd:", attrib_2_2nd)
+        print("attrib_2_3rd:", attrib_2_3rd)
+
+        # Get the size of the least areas in top 3 most areas
+        genre_area_size = df_left_join.iloc[2][1]
+        print("genre_area_size:", genre_area_size)
+
+        # Method 02: search in each of df_genre_area_3rd, equalize 3 proportions
+        df_attrib_1_attrib_2_1st = get_3_equal_attrib_2_size_sampling(df_attrib_1st, attrib_2_1st, attrib_2_2nd, attrib_2_3rd, genre_area_size, RESAMPLING_METHOD_ARG, attrib_2)
+        df_attrib_1_attrib_2_2nd = get_3_equal_attrib_2_size_sampling(df_attrib_2nd, attrib_2_1st, attrib_2_2nd, attrib_2_3rd, genre_area_size, RESAMPLING_METHOD_ARG, attrib_2)
+        df_attrib_1_attrib_2_3rd = get_3_equal_attrib_2_size_sampling(df_attrib_3rd, attrib_2_1st, attrib_2_2nd, attrib_2_3rd, genre_area_size, RESAMPLING_METHOD_ARG, attrib_2)
+
+        # Full store id list
+        frames = [df_attrib_1_attrib_2_1st, df_attrib_1_attrib_2_2nd, df_attrib_1_attrib_2_3rd]
+        df_si_sampled = pd.concat(frames).reset_index(drop=True)
+        print("df_si_sampled:===\n", df_si_sampled)
+        print('Total number of restaurants in 3 main ', attrib_1,' with 3 main', attrib_2,':', df_si_sampled.shape[0], '\n')
+
+        return df_si_sampled, df_vd, df_si
+    else: # sampling method == 'over'
+        df_si_sampled, df_vd_added, df_si_added = get_upsampling_df(df,
+                            attrib_1_1st, attrib_1_2nd, attrib_1_3rd, attrib_1, attrib_2, df_vd)
+        # df_attrib_1_attrib_2, df_vd_added, df_si_added
+
+
+
+        print("df_si original from air or hpg:\n", df_si)
+        print("df_si_added:\n", df_si_added)
+        # sys.exit()
+        df_vd = pd.merge(df_vd, df_vd_added, on=[store_id, visit_date, visitors], how='outer')
+        df_si = pd.merge(df_si, df_si_added, on=[store_id, attrib_1, attrib_2], how='outer')
+
+        return df_si_sampled, df_vd, df_si
+
+# method: Filtering, merging and splitting dataset to get visitor matrix
+# input:
+#   df_asi, df_avd, df_hsi, df_hr: input dataset
+#   RES_DATASET_ARG
+#   MAX_MISSING_PERCENTAGE_ARG
+#   SPLIT_BY_ARG
+#   RESAMPLING_METHOD_ARG
+# output:
+#   visitor matrix for clustering methods
+def filtering_splitting_merging(df_asi, df_avd, df_hsi, df_hr,
+                                    RES_DATASET_ARG, MAX_MISSING_PERCENTAGE_ARG,
+                                    SPLIT_FIRST_BY_ARG, RESAMPLING_METHOD_ARG):
+    # Getting appropriate dataset resources
+    df_si, df_vd = get_storeinfo_visitdata(df_asi, df_avd, df_hsi, df_hr, RES_DATASET_ARG)
+
+    # Filtering visistor data from dataframe base on MAX_MISSING_PERCENTAGE_ARG
+    df_vd_high_missing_filtered = filtering_high_missing_rate_store(df_vd, MAX_MISSING_PERCENTAGE_ARG)
+
+    # Merging store info dataset and visit data to one dataframe
+    df_merged = merge_store_visit_2nd(df_si, df_vd_high_missing_filtered)
+
+    # Splitting store infodataset by genres or by area
+    df_si_sampled, df_vd, df_si = split_to_9_groups(df_merged, df_vd, df_si, SPLIT_FIRST_BY_ARG, RESAMPLING_METHOD_ARG)
+
+
+    # Merging df_attrib_1, df_attrib_1_attrib_2 with df_vd which preparing for imputation step
+    print("df_si_sampled before merging:\n", df_si_sampled)
+    print("df_vd dataframe contains all visit date added if oversampling:\n", df_vd)
+    print("df_si dataframe contains all store information including added if oversampling:\n", df_si)
+
+    # df_attrib_1 = pd.merge(df_attrib_1, df_vd, on=[store_id], how='inner')
+    df_si_sampled = pd.merge(df_si_sampled, df_vd, on=[store_id], how='inner')
+    print("df_si_sampled after  merging:\n", df_si_sampled)
+
+    # Delete multiple columns from the dataframe
+    df_si_sampled = df_si_sampled.drop(["genre_name", "area_name", "store_day_count", "store_percentage"], axis=1)
+    return df_si_sampled, df_vd, df_si
 
 # Method uses: Imputation for only one time series.
 # input:
@@ -718,35 +755,28 @@ def percentage(part, whole, digits):
 #   column: column for imputing
 #   j:
 def imputing_one_timeseries(df, sid, dr_idx, method, column, j):
-    # print("imputing_one_timeserie - df:111\n", df)
-    # print("imputing_one_timeserie - sid:", sid)
+    # print("Input of imputing_one_timeserie function:111\n", df)
+    # print("Imputing one timeseries:", sid)
     series = df.loc[df[store_id] == sid]
 
     series = series.set_index('visit_date')
     series.index = pd.DatetimeIndex(series.index)
-    # print("imputing_one_timeserie - series 111:\n", series)
     series = series.reindex(dr_idx)
-    # print("imputing_one_timeserie - series 222:\n", series)
 
     if method == 'mean':
-        # Mean values imputation method
         # print("series['visitors'] before:\n",series['visitors'])
         series[column] = series[column].fillna(series[column].mean())
         # roundup and convert to int
         series['visitors'] = series['visitors'].apply(lambda x: round(x, 0)).astype(int)
-        # print("series['visitors'] after:\n",series['visitors'])
     elif method == 'median':
         # Median values imputation method
         series['visitors'] = series['visitors'].fillna(series['visitors'].median())
-    # Implemenation by interpolate dataframe, this is important step.
     elif method == 'linear':
         # Please note that only method='linear' is supported for DataFrame
-        # print("series['visitors'] before:\n", series['visitors'])
         upsampled = series['visitors']
         interpolated = upsampled.interpolate(method='linear', limit=None, limit_direction='both')
         series['visitors'] = interpolated
         series['visitors'] = series['visitors'].astype(np.int64)
-        # print("series['visitors'] after:\n", series['visitors'])
 
     else:
         # By choosing method, we can conclude that, dataset can be filled in order:
@@ -758,20 +788,10 @@ def imputing_one_timeseries(df, sid, dr_idx, method, column, j):
         # ‘ffill’ stands for ‘forward fill’ and will propagate last valid observation forward.
         # Pandas dataframe.bfill() is used to backward fill the missing values in the dataset.
         # print("series['visitors'] before:\n", series['visitors'])
-        # sum0 = series['visitors'].isna().sum()
-        # series['visitors'] = series['visitors'].interpolate(method='polynomial', order=1, limit=None, limit_direction='both')
-        # sum1 = series['visitors'].isna().sum()
-        # series['visitors'] = series['visitors'].interpolate(method='polynomial', order=1, limit=None, limit_direction='both').ffill()
-        # sum2 = series['visitors'].isna().sum()
         series['visitors'] = series['visitors'].interpolate(method=method, order=1, limit=None, limit_direction='both').ffill().bfill()
-        # sum3 = series['visitors'].isna().sum()
-        # print("sum0, sum1 and sum2 sum3:", sum0, sum1, sum2, sum3)
-
         series['visitors'] = series['visitors'].astype(np.int64)
         # print("series['visitors'] after:\n", series['visitors'])
 
-    # series['visitors'] = series['visitors'].astype(np.int64)
-    # series.drop([store_id], axis=1)
     # drop store_id column
     series = series.drop(store_id, 1)
     # rename the column with the id of the store id("core_samples_mask=== :", core_samples_mask)
@@ -779,546 +799,7 @@ def imputing_one_timeseries(df, sid, dr_idx, method, column, j):
     # str1 = str1 + ' ' + str(j) +' visitors'
     # print("j value:", j)
     series.rename(columns={'visitors':str1}, inplace=True)
-    # print("imputing_one_timeserie - series 333:\n", series)
     return series
-
-# Method: finding missing values of
-# input:
-#   df - df_store_and_visit:
-#   sid: store id of the specific restaurant
-#   df_standard_range: dataframe with standard range. This range is extracted
-#       to cage all timeseries from first to last time point
-def finding_missing_values(df_store_and_visit, sid, df_standard_range):
-    df_missing_values_series = df_store_and_visit.loc[df_store_and_visit[store_id] == sid]
-    df_missing_values_series = df_missing_values_series.set_index('visit_date')
-    #check for missing datetimeindex values based on reference index (with all values)
-    missing_dates = df_standard_range.index[~df_standard_range.index.isin(df_missing_values_series.index)]
-    return len(missing_dates)
-
-# Python program to get average of a list
-def Average(lst):
-    return sum(lst) / len(lst)
-
-# Create new visitor dataframe
-# input:
-# df - df_store_and_visit : dataframe contains the merge of all store and visits,
-#   which is used as input to create distance matrix of all time series
-# dr_idx            : date range of for the index
-# method            : method for imputation -- we can use a lot of other types of method -- mean, ...
-# floor_percentage  : create new dataframe base only on series has missing percentage less than floor_percentage
-# output:
-# list_removed_timeseries_index: list of timeseries which are removed for high missing percentage rate
-def imputing_all_timeseries(df_store_and_visit, method, floor_percentage):
-    # Find date rang index from average first moment and average last moment
-    first_moment, last_moment = first_last_moments(df_store_and_visit)
-    average_first_moment_timepoint, average_last_moment_timepoint = average_first_last_moments(first_moment, last_moment)
-    date_range_idx = pd.date_range(average_first_moment_timepoint, average_last_moment_timepoint)
-
-    miss_percent = missing_percentage(df_store_and_visit, average_first_moment_timepoint, average_last_moment_timepoint)
-    print("miss_percent miss_percent", miss_percent)
-
-    print("Step 03: data imputation - imputing_all_timeseries\n")
-    print("df_store_and_visit\n", df_store_and_visit)
-
-    # store_id_list     : store id list of all series
-    store_id_list = df_store_and_visit[store_id].tolist()
-    # Removing duplicate values
-    store_id_list = list(set(store_id_list))
-    print('Length of Store id list of input dataframe:', len(store_id_list))
-    store_id_list = np.asarray(store_id_list)
-
-    # Create an empty dataframe in creating new dataframe by adding one by one of imputed time series
-    all_imputed_timeseries = pd.DataFrame()
-    total_num_missing_values = 0
-    # Create an empty dataframe to be standard of date range index
-    # print("dr_idx:", dr_idx)
-    df_standard_range = pd.DataFrame(index=date_range_idx)
-    # Length of standard dataframe
-    len_std_df = len(df_standard_range)
-
-    # Create a list of one-timeseries dataframe. Then I concatenate all of them.
-    list_timeseries = []
-    list_removed_timeseries_index = []
-    list_percents = []
-    for i, j in zip(store_id_list, range(len(store_id_list))):
-        # print("List item:", i)
-        # Proceeding data imputation for each of timeseries by the chosen imputation method
-        one_imputed_timeseries = imputing_one_timeseries(df_store_and_visit, i, date_range_idx, method, 'visitors', j)
-        num_missing_values     = finding_missing_values(df_store_and_visit, i, df_standard_range)
-        # Adding only series with missing percentage less than the input percentage
-        percent = percentage(num_missing_values, len_std_df, 2)
-        list_percents.append(percent)
-        # print("num_missing_values_df of serie with percentage:", num_missing_values, i, percent)
-
-        # all_imputed_timeseries = pd.concat([all_imputed_timeseries, one_imputed_timeseries], axis=1)
-
-        # Backup for moving floor_percentage argument before splitting groups
-        if percent < floor_percentage:
-            total_num_missing_values = total_num_missing_values + num_missing_values
-            # Concatenate a list of of series to form up an dataframe
-            all_imputed_timeseries = pd.concat([all_imputed_timeseries, one_imputed_timeseries], axis=1)
-            list_timeseries.append(one_imputed_timeseries)
-            # Just to show the last id list
-            # if i==store_id_list[-1]:
-        else:
-            list_removed_timeseries_index.append(int(j))
-
-    # del(store_id_list[list_removed_timeseries_index])
-    average_percent = Average(list_percents)
-    print("Average percent of the list of missing percents:", round(average_percent, 2))
-    print("List of removed timeseries - list_removed_timeseries_index:", list_removed_timeseries_index)
-    print("Total number of timeseries before removing (store_id_list)        :", len(store_id_list))
-    print("Total number of removed timeseries (list_removed_timeseries_index):", len(list_removed_timeseries_index))
-
-    num_remained_series = len(store_id_list) - len(list_removed_timeseries_index)
-    print('Total number of restaurants in three main genres with three main locations after removing high missing rate series:',
-          num_remained_series)
-
-    print("Length of standard dataframe:", len_std_df)
-
-
-    # # It seems this del command is used to remove those time series which are in the removed list
-    # # It seems there is no need for using it right now. There is an error in deleting: ValueError: cannot delete array elements
-    #     # for index in sorted(list_removed_timeseries_index, reverse=True):
-    #     #     del store_id_list[index]
-    # print("store_id_list after removing:", store_id_list)
-
-    print("Total number of missing values:", total_num_missing_values)
-    # Calculate the maxium of all time points in all time series.
-    # It is calculated by multiply the standard dataframe with number of remained series after removing
-    maximum_num_values_of_all_remained_series = len_std_df*num_remained_series
-    print("Maximum number of times series points of all remained series:", maximum_num_values_of_all_remained_series)
-    print("Percentage of missing values:", percentage(total_num_missing_values, maximum_num_values_of_all_remained_series, 2))
-
-    return all_imputed_timeseries
-
-
-
-
-# Method used: Find the missing percentage of df_store_and_visit
-# input:
-#   df_store_and_visit: contains all stores and all visits
-#   fm: first moment dataframe of all stores
-#   lm: last  moment dataframe of all stores
-# output:
-#   missing percentage of all stores according to first and last moment
-def missing_percentage(df, first_timepoint, last_timepoint):
-    # print("---------------df", df)
-    current_num_store_and_visit = df.shape[0]
-    print("---------------total_num_rows ", current_num_store_and_visit)
-
-    total_num_store = df[store_id].nunique()
-    print("---------------total_num_store", total_num_store)
-    # Finding the min and max day of a column
-    # d1 = df.visit_date.min()
-    # d2 = df.visit_date.max()
-
-    last_timepoint  = datetime.strptime(last_timepoint, "%m-%d-%Y")
-    first_timepoint = datetime.strptime(first_timepoint, "%m-%d-%Y")
-    print("type last_timepoint", type(last_timepoint))
-    days_diff = abs((last_timepoint - first_timepoint).days)
-    print("days_diff:", days_diff)
-
-    # Total number of possible day for all stores
-    total_num_possible_day = total_num_store*days_diff
-    return percentage(current_num_store_and_visit, total_num_possible_day, 2)
-
-
-
-# Check value of concatenated dataframe and list of series
-# ============== Using multiple method to control the imputation steps
-# ============== We can use others method like mean, median or
-# ============== method : {‘linear’, ‘time’, ‘index’, ‘values’, ‘nearest’, ‘zero’, ‘slinear’, ‘quadratic’, ‘cubic’,
-# ============== ‘barycentric’, ‘krogh’, ‘polynomial’, ‘spline’, ‘piecewise_polynomial’, ‘from_derivatives’, ‘pchip’, ‘akima’}
-# imputation_method = ['linear', 'time', 'index', 'values', 'nearest', 'zero', 'slinear', 'quadratic', 'cubic', 'barycentric',
-#           'krogh', 'polynomial', 'spline', 'piecewise_polynomial', 'from_derivatives', 'pchip', 'akima']
-
-
-
-# Plot example dataframe =============================================
-def plot_visitor(df):
-    df.plot(legend=False)
-    plt.show()
-
-# plot_visitor(visitor_df)
-
-# # ============ Step 05: Clustering using DBSCAN and Pairwise Similarity Evaluation ==============
-#
-# visitor_matrix = visitor_df.values
-# original_visitor_df = visitor_df
-# print('visitor_matrix X :\n {} \n'.format(visitor_matrix))
-#
-# # Transpose the matrix for timeseries as row and timestamps as column
-# visitor_matrix_transposed = visitor_matrix.transpose()
-# print('visitor_matrix after transposed :\n {} \n'.format(visitor_matrix))
-#
-#
-#
-# # pairwise_manhattan = pairwise_distances(visitor_matrix_transposed, metric='manhattan')
-# # print('pairwise_distances manhattan:\n {} \n'.format(pairwise_manhattan))
-# #
-# # pairwise_euclidean = pairwise_distances(visitor_matrix_transposed, metric='euclidean')
-# # print('pairwise_distances euclidean:\n {} \n'.format(pairwise_euclidean))
-# #
-# # similarities = cosine_similarity(visitor_matrix_transposed)
-# # print('pairwise cosine_similarity:\n {}\n'.format(similarities))
-# #
-# # # pairwise_DTW = pairwise_distances(visitor_matrix_transposed, metric='euclidean')
-# # # print('pairwise_distances euclidean:\n {} \n'.format(pairwise_euclidean))
-
-# #############################################################################
-# Perform DBSCAN clustering from vector array or distance matrix.
-# input:
-#       eps: float - The maximum distance between two samples for one to be considered as in the neighborhood of the other.
-#       distance_measure: string - The metric to use when calculating distance between instances in a feature array.
-#       min_samples: int - The number of samples (or total weight) in a neighborhood for a point to be considered
-#           as a core point. This includes the point itself.
-def cluster_dbscan(matrix, distance_measure, eps, minS):
-    dbs = DBSCAN(eps=eps, metric=distance_measure, min_samples=minS)
-    # Perform DBSCAN clustering from features, or distance matrix.
-    cluster_labels = dbs.fit_predict(matrix)
-    core_samples_mask = np.zeros_like(dbs.labels_, dtype=bool)
-    #
-    core_samples_mask[dbs.core_sample_indices_] = True
-    # print("core_samples_mask=== :", core_samples_mask)
-    return cluster_labels, core_samples_mask
-
-# input:
-#       distance_measure: string - The metric to use when calculating distance between instances in a feature array.
-def run_cluster(matrix, distance_measure, param_min = 0.01, param_max = 1, param_step = 0.01, minS = 1):
-    nrows = matrix.shape[0]
-    if nrows <= 1:
-        raise ValueError("Time-series matrix contains no information. " \
-                         "Was all of your data filtered out?")
-
-    normal_matrix = matrix
-    max_nclusters = 0
-    max_eps = 0
-    prev_nclusters = 0
-    break_out = False
-    parameter_range = np.arange(param_min, param_max, param_step)
-    actual_parameters = []
-    cluster_label_matrix = np.empty(shape = (nrows, len(parameter_range)), dtype=int)
-    for ind, eps in enumerate(parameter_range):
-        actual_parameters.append(eps)
-        cluster_labels, core_samples_mask = cluster_dbscan(normal_matrix,
-                                            distance_measure,
-                                            eps, minS)
-
-        nclusters = len(list(np.unique(cluster_labels)))
-        n_noise_ = list(cluster_labels).count(-1)
-
-        cluster_label_matrix[:, ind] = cluster_labels
-        if nclusters > 1:
-            break_out = True
-        if (prev_nclusters != nclusters):
-            # print('cluster_labels index: {}'.format(ind))
-            # print('cluster_labels list : \n {}'.format(cluster_labels))
-            print('cluster_labels eps     : {}'.format(eps))
-            print('number of the clusters : {}'.format(nclusters))
-            print('Noise points           : {}'.format(n_noise_))
-            print('=====================================')
-        if (prev_nclusters == 1) & (nclusters == 1) & break_out:
-          param_max = eps
-          break
-        else:
-          prev_nclusters = nclusters
-    #Print out the clusters with their sequence IDs
-    # print('cluster_label_matrix:\n {} \n'.format(cluster_label_matrix))
-    for i in range(0, cluster_label_matrix.shape[0]):
-        encoded_labels = [ str(x).encode() for x \
-                in cluster_label_matrix[i, 0:len(actual_parameters)] ]
-    return cluster_labels, nclusters, core_samples_mask
-    # print("encoded_labels:", encoded_labels)
-
-def clustering_by_dbscan(X, pairwise_distance_array, df_3genres_3locations):
-    # labels, nclusters = run_cluster(pairwise_manhattan, 'euclidean', param_min = 18040, param_max = 18051, param_step = 10, minS = 1)
-    # cluster_labels eps  : 18040
-    # number of the clusters : 7
-
-    # labels, nclusters = run_cluster(pairwise_manhattan, 'euclidean', param_min = 16000, param_max = 18000, param_step = 50, minS = 2)
-    # labels, nclusters = run_cluster(pairwise_manhattan, 'euclidean', param_min = 3000, param_max = 6000, param_step = 300, minS = 5)
-    # labels, nclusters = run_cluster(pairwise_manhattan, 'manhattan', param_min = 90000, param_max = 150000, param_step = 300, minS = 5)
-    # labels, nclusters = run_cluster(pairwise_euclidean, 'euclidean', param_min = 280, param_max = 300, param_step = 20, minS = 5)
-    # labels, nclusters = run_cluster(pairwise_euclidean, 'euclidean', param_min = 500, param_max = 1100, param_step = 20, minS = 2)
-
-    # labels, nclusters = run_cluster(pairwise_euclidean, 'euclidean', param_min = 100, param_max = 1200, param_step = 20, minS = 1)
-    # labels, nclusters = run_cluster(pairwise_euclidean, 'euclidean', param_min = 100, param_max = 1200, param_step = 20, minS = 2)
-    # labels, nclusters = run_cluster(pairwise_euclidean, 'euclidean', param_min = 100, param_max = 1200, param_step = 20, minS = 3)
-
-    # labels, nclusters = run_cluster(pairwise_distance_array, 'euclidean', param_min = 960, param_max = 961, param_step = 20, minS = 1)
-    # labels, nclusters, core_samples_mask = run_cluster(pairwise_distance_array, 'euclidean', param_min = 1190, param_max = 1191, param_step = 5, minS = 2)
-
-    labels, nclusters, core_samples_mask = run_cluster(pairwise_distance_array, 'euclidean', param_min = 1190, param_max = 1191, param_step = 5, minS = 2)
-    check_central_majority(df_3genres_3locations, labels)
-
-    # plot_all_ts(X, labels)
-    # plot_each_group_ts(X, labels, core_samples_mask)
-
-def check_central_majority(df_genre_location, labels):
-    df = df_genre_location
-    nclusters = len(list(np.unique(labels)))
-    unique_labels = set(labels)
-    print("Type of nclusters    :", type(nclusters))
-    print("Type of unique_labels:", type(unique_labels))
-    print("Type   of labels:", type(labels))
-    print("Length of labels:", len(labels))
-    df = df.copy()
-    print("df dataframe:\n", df)
-    df.loc[:,'labels'] = labels
-    # print('df_genre_location        :\n {} \n'.format(df))
-    # df.loc[df.air_area_name == '', 'make'] = df.air_area_name.str.split().str.get(0)
-    df['first_word'] = df['air_area_name'].str.split().str[0]
-    # print('df_genre_location        :\n {} \n'.format(df))
-    # df.iloc[0:df[df.labels == '0'].index[0]]
-    # For each k-th cluster in a set of clusters
-    for k in unique_labels:
-        df_label = df.loc[df['labels'] == k]
-        print('df_genre_location new column labels :\n {} \n'.format(df_label))
-        df_groups = df_label.groupby('first_word').count().sort_values('first_word', ascending=False)
-        # print('df_groups first_word:\n {} \n'.format(df_groups))
-        df_groups['perc']= df_groups['labels']/df_groups['labels'].sum()
-        print('df_groups group_percent:\n {} \n'.format(df_groups))
-    return True
-
-def plot_each_group_ts(X, labels, core_samples_mask):
-    unique_labels = set(labels)
-    colors = [plt.cm.Spectral(each)
-              for each in np.linspace(0, 1, len(unique_labels))]
-    # print('core_samples_mask : {}'.format(core_samples_mask))
-
-    for k, col in zip(unique_labels, colors):
-        if k == -1:
-            # Black used for noise.
-            col = [0, 0, 0, 1]
-
-        class_member_mask = (labels == k)
-        # print('k             : {}'.format(k))
-        # print('unique_labels : {}'.format(unique_labels))
-        # print('class_member_mask : {}'.format(class_member_mask))
-        # print('length of class_member_mask : {}'.format(len(class_member_mask)))
-        # print('length of core_samples_mask : {}'.format(len(core_samples_mask)))
-        # print('length of X : {}'.format(len(X.columns)))
-        # print("Type of X:", type(X))
-
-        current_group_index = X.columns[class_member_mask]
-        # print("Type of current_group_index:", type(current_group_index))
-        # print("current_group_index:", current_group_index)
-
-        current_group_columns = X[current_group_index]
-        # print("Type of current_group_columns:", type(current_group_columns))
-        # print('current_group_columns: {}'.format(current_group_columns.head()))
-        current_group_columns.plot(legend=False, color=colors)
-
-        color_list_patch = []
-        for k, col in zip(unique_labels, colors):
-            if k == -1:
-                color_list_patch.append(mpatches.Patch(color=col, label='Group Noise'))
-            else:
-                color_list_patch.append(mpatches.Patch(color=col, label='Group ' + str(k)))
-        plt.legend(handles=color_list_patch)
-        plt.show()
-
-def plot_all_ts(X, labels):
-    print('labels        :\n {} \n'.format(labels))
-    unique_labels = set(labels)
-    print('unique_labels : {}'.format(unique_labels))
-    colors = [plt.cm.Spectral(each)
-              for each in np.linspace(0, 1, len(unique_labels))]
-    # print('colors        : {}'.format(colors))
-    X.plot(legend=False, color=colors)
-    color_list_patch = []
-    for k, col in zip(unique_labels, colors):
-        if k == -1:
-            color_list_patch.append(mpatches.Patch(color=col, label='Group Noise'))
-        else:
-            color_list_patch.append(mpatches.Patch(color=col, label='Group ' + str(k)))
-
-    plt.legend(handles=color_list_patch)
-    plt.show()
-
-
-
-
-# # ============ Step 06: Clustering using Pairwise Similarity Evaluation DWT ==============
-# # DTW Distance between 2 time series with fully window size complexity of O(nm)
-# def DTWDistance(s1, s2):
-#     DTW={}
-#
-#     for i in range(len(s1)):
-#         DTW[(i, -1)] = float('inf')
-#     for i in range(len(s2)):
-#         DTW[(-1, i)] = float('inf')
-#     DTW[(-1, -1)] = 0
-#
-#     for i in range(len(s1)):
-#         for j in range(len(s2)):
-#             dist= (s1[i]-s2[j])**2
-#             DTW[(i, j)] = dist + min(DTW[(i-1, j)],DTW[(i, j-1)], DTW[(i-1, j-1)])
-#
-#     return math.sqrt(DTW[len(s1)-1, len(s2)-1])
-#
-# # DTW Distance between 2 time series with specific window size w to increase speed
-# def DTWDistance(s1, s2,w):
-#     DTW={}
-#
-#     w = max(w, abs(len(s1)-len(s2)))
-#
-#     for i in range(-1,len(s1)):
-#         for j in range(-1,len(s2)):
-#             DTW[(i, j)] = float('inf')
-#     DTW[(-1, -1)] = 0
-#
-#     for i in range(len(s1)):
-#         for j in range(max(0, i-w), min(len(s2), i+w)):
-#             dist= (s1[i]-s2[j])**2
-#             DTW[(i, j)] = dist + min(DTW[(i-1, j)],DTW[(i, j-1)], DTW[(i-1, j-1)])
-#
-#     return math.sqrt(DTW[len(s1)-1, len(s2)-1])
-#
-# #  LB Keogh lower bound of dynamic time warping to increase speed
-# def LB_Keogh(s1,s2,r):
-#     LB_sum=0
-#     for ind,i in enumerate(s1):
-#
-#         lower_bound=min(s2[(ind-r if ind-r>=0 else 0):(ind+r)])
-#         upper_bound=max(s2[(ind-r if ind-r>=0 else 0):(ind+r)])
-#
-#         if i>upper_bound:
-#             LB_sum=LB_sum+(i-upper_bound)**2
-#         elif i<lower_bound:
-#             LB_sum=LB_sum+(i-lower_bound)**2
-#
-#     return math.sqrt(LB_sum)
-#
-#
-#
-# #  k-means clustering
-# def k_means_clust(data,num_clust,num_iter,w=5):
-#     centroids=random.sample(data,num_clust)
-#     counter=0
-#     for n in range(num_iter):
-#         counter+=1
-#         print(counter)
-#         assignments={}
-#         #assign data points to clusters
-#         for ind,i in enumerate(data):
-#             min_dist=float('inf')
-#             closest_clust=None
-#             for c_ind,j in enumerate(centroids):
-#                 if LB_Keogh(i,j,5)<min_dist:
-#                     cur_dist=DTWDistance(i,j,w)
-#                     if cur_dist<min_dist:
-#                         min_dist=cur_dist
-#                         closest_clust=c_ind
-#             if closest_clust in assignments:
-#                 assignments[closest_clust].append(ind)
-#             else:
-#                 assignments[closest_clust]=[]
-#
-#         #recalculate centroids of clusters
-#         for key in assignments:
-#             clust_sum=0
-#             for k in assignments[key]:
-#                 clust_sum=clust_sum+data[k]
-#             centroids[key]=[m/len(assignments[key]) for m in clust_sum]
-#
-#     return centroids
-#
-# def clustering_by_kmean(X, num_cluster, iteration):
-#     centroids=k_means_clust(X,num_cluster,iteration,4)
-#     for i in centroids:
-#         plt.plot(i)
-#     plt.show()
-#
-# # clustering_by_kmean(visitor_matrix, 9, 5)
-#
-# # ============ Step 07: Clustering using Pairwise Euclidean distance ==============
-# def clustering_by_kmedoids(vm, D, num_clusters):
-#     M, C = kmedoids.kMedoids(D, num_clusters)
-#     # print("type of D:", type(D))
-#
-#     print("M:", M)
-#     print("Type(M):", type(M))
-#     # print("C==================:", C)
-#     # print("C==================:", C[0])
-#     for i in C:
-#         print('----  :\n {} \n'.format(C[i]))
-#     # print("Type(C):", type(C))
-#
-#     # print('medoids:')
-#     # for point_idx in M:
-#     #     print("vm[point_idx]:", vm[[point_idx], :])
-#
-#     # print('')
-#     # print('clustering result:')
-#     # for label in C:
-#     #     for point_idx in C[label]:
-#     #         print("label {0}:　{1}".format(label, vm[[point_idx], :]))
-#     #         print("==============")
-#
-#
-#
-#
-# # ============ Step 08: Clustering using OPTICS algorithms ==============
-#
-#
-# def clustering_by_optics(vm):
-#     min_of = 2
-#     skuscores = pd.DataFrame(columns = ['Name', 'Perc_noise', 'Numclusters','Outliers' , 'DBCV'])
-#     skuclust = {}
-#
-#     # print('vm  :\n {} \n'.format(vm))
-#     pairwise_euclidean = pairwise_distances(vm, metric='euclidean')
-#     # optics = OPTICS(min_cluster_size=.03)
-#     optics = OPTICS(min_cluster_size=2, metric='euclidean')
-#     optics.fit(pairwise_euclidean)
-#
-#     # pc = pd.DataFrame(vm)
-#     # print('pc : {}'.format(pc))
-#
-#     score = {}
-#     score['Perc_noise'] = len(np.where(optics.labels_ == -1)[0]) / optics.labels_.shape[0]
-#     score['Numclusters']  = len(np.unique(optics.labels_)) - 1
-#
-#     # # score['Name'] = sku.transformation
-#     # score['DBCV'] = optics.validity
-#     # print('optics.labels_ : {}'.format(optics.labels_))
-#     print('optics.labels_  :\n {} \n'.format(optics.labels_))
-#     # print('optics.reachability_  :\n {} \n'.format(optics.reachability_))
-#     #
-#     # print('core_distances_  :\n {} \n'.format(optics.core_distances_))
-#
-#     # pc['cluster'] = optics.labels_
-#     # outlier_factor = optics.outlier_factor_
-#     # pc['of'] = outlier_factor
-#     # reachability = optics.reachability_
-#     # pc['reach'] = reachability
-#     # outliers = np.where(outlier_factor > min_of)
-#     # outliers = list(outliers[0].ravel())
-#     # # pc['cluster'][outliers] = -2
-#     # # pc.set_index(sku.indices, 'SKU',  inplace = True)
-#     # score['Outliers'] = len(outliers)
-#     # # score['ID'] = str(iterator)
-#     # score = pd.DataFrame(score, index = ['Name'])
-#     # # score['columns'] = [sku.columns]
-#     # score['num_components'] = pc.shape[1]
-#     # skuscores = skuscores.append(score)
-#     # # skuclust[str(iterator)] = pc
-#     print(score)
-#     # print('pc : {}'.format(pc))
-#
-#
-# # clustering_by_optics(visitor_matrix)
-#
-# clustering_by_dbscan(original_visitor_df, pairwise_euclidean)
-# # clustering_by_kmean(visitor_matrix, 9, 5)
-# # clustering_by_kmedoids(visitor_matrix, pairwise_euclidean, 9)
-
-
-
-# # ============ Step 09: Clustering using Hierachy algorithms ==============
-from sklearn.cluster import AgglomerativeClustering
 
 
 # Method used: Get values of all time series as matrix values
@@ -1328,215 +809,423 @@ from sklearn.cluster import AgglomerativeClustering
 #   matrix_values: Contain values of the input matrix
 def split_matrix_values(vmf):
     print("vmf:\n", vmf)
-    first_column_values = vmf.iloc[:, 0:1].values
-    matrix_values = vmf.iloc[:, 1:].values
+    # first_column_values = vmf.iloc[:, 0:1].values
+    # matrix_values = vmf.iloc[:, 1:].values
+
+    first_column_values = vmf.index
+    matrix_values = vmf.iloc[:, 0:].values
 
     # print("First column values:\n", first_column_values)
     print("Stacking all timeseries and use it as distance matrix values:\n", matrix_values)
     return first_column_values, matrix_values
 
-## ======== We need to remove this section of coding, because it was processed in the first part of coding =====
-
-# Method used: get labels from a dataset according to affinity and linkage
+# Create new visitor dataframe
 # input:
-#   dataset_ts_arg  : dataset of time series as argument
-#   affinity_arg    :
-#   linkage_arg     :
+# df - df_store_and_visit : dataframe contains the merge of all store and visits,
+#   which is used as input to create distance matrix of all time series
+#   dr_idx            : date range of for the index
+#   method            : method for imputation -- we can use a lot of other types of method -- mean, ...
 # output:
-#   labels_hc       : labels of hierachy cluster
-def labeling_hierachy_cluster(dataset_ts_arg, affinity_arg, linkage_arg, NUM_OF_HC_CLUSTER_ARG):
-    #3 Using the dendrogram to find the optimal numbers of clusters.
-    # First thing we're going to do is to import scipy library. scipy is an open source
-    # Python library that contains tools to do hierarchical clustering and building dendrograms.
+#   list_removed_timeseries_index: list of timeseries which are removed for high missing percentage rate
+def imputing_all_timeseries(df_store_and_visit, method):
+    # Find date rang index from average first moment and average last moment
+    # Get the first_moment and last_moment dataframe of all stores
+    first_moment, last_moment = first_last_moments(df_store_and_visit)
+    # print("first_moment dataframe:\n", first_moment)
+    # print("last_moment  dataframe:\n", last_moment)
 
-    #Lets create a dendrogram variable
-    # linkage is actually the algorithm itself of hierarchical clustering and then in
-    #linkage we have to specify on which data we apply and engage. This is X dataset
+    # Get the min date, max date from first moment and last moment then forming date range index
+    min_date, max_date = min_max_first_last_moments(first_moment, last_moment)
+    date_range_idx = pd.date_range(min_date, max_date)
 
-    # dendrogram = sch.dendrogram(sch.linkage(dataset_ts, method = "ward"))
-    # plt.title('Dendrogram')
-    # plt.xlabel('Series')
-    # plt.ylabel('Euclidean distances')
-    # plt.show()
+    # print("Dataframe before imputed - df_store_and_visit:\n", df_store_and_visit)
 
-    #4 Fitting hierarchical clustering to the Mall_Customes dataset
-    # There are two algorithms for hierarchical clustering: Agglomerative Hierarchical Clustering and
-    # Divisive Hierarchical Clustering. We choose Euclidean distance and ward method for our
-    # algorithm class
-    hc = AgglomerativeClustering(n_clusters=NUM_OF_HC_CLUSTER_ARG, affinity=affinity_arg, linkage=linkage_arg)
+    store_id_list = df_store_and_visit[store_id].tolist()
+    # Removing duplicate values
+    store_id_list = list(set(store_id_list))
+    print('Length of Store id list of input dataframe:', len(store_id_list))
+    store_id_list = np.asarray(store_id_list)
 
-    # Lets try to fit the hierarchical clustering algorithm  to dataset X while creating the
-    # clusters vector that tells for each customer which cluster the customer belongs to.
-    # print("type of one element in dataset_ts_arg:", dataset_ts_arg[0][0])
-    # print("type of one element in dataset_ts_arg:", type(dataset_ts_arg[0][0]))
-    labels_hc = hc.fit_predict(dataset_ts_arg)
-    # print("labels_hc:\n", labels_hc)
-    # print("labels_hc type:", type(labels_hc))
-    return labels_hc
+    # Create an empty dataframe in creating new dataframe by adding one by one of imputed time series
+    all_imputed_timeseries = pd.DataFrame()
+    df_standard_range = pd.DataFrame(index=date_range_idx)
+    # Create a list of one-timeseries dataframe. Then I concatenate all of them.
+    list_timeseries = []
+    for i, j in zip(store_id_list, range(len(store_id_list))):
+        # print("List item:", i)
+        # Proceeding data imputation for each of timeseries by the chosen imputation method
+        one_imputed_timeseries = imputing_one_timeseries(df_store_and_visit, i, date_range_idx, method, 'visitors', j)
+        # Concatenate a list of of series to form up an dataframe
+        all_imputed_timeseries = pd.concat([all_imputed_timeseries, one_imputed_timeseries], axis=1)
+        list_timeseries.append(one_imputed_timeseries)
 
-# # Method use: Attaching first 3 columns of store id, genres, locations and its labels.
-# # input:
-# #   df      : dataframe contains 3 columns of store id, genres, locations
-# #   labels  : array of labels
-# # output:
-# #   df      : dataframe contains 3 columns and its labels
-# def main_labelling_clustering(df, labels):
-#     labels = labels.tolist()
-#     print("df====== 000 :\n", df)
-#     df.loc[:,'hc'] = labels
-#
-#     print("df====== 111 :\n", df)
-#     # print("df_merge_id:", df.head())
-#     # df_merge_id = df_merge_id.groupby([genre_name]).count()
-#     # df_merge_id= df_merge_id.groupby(genre_name).air_genre_name.count()
-#
-#     df = df.groupby([genre_name, df.columns[3]]).size()
-#     print("df====== 222 :", df)
-#     df = df.to_frame(name = 'size').reset_index()
-#     print("df_merge_id:", df)
-#
-#     idx = df.groupby([genre_name])['size'].transform(max) == df['size']
-#     df = df[idx]
-#     print("df======: \n", df)
-#     df = df.groupby(genre_name)['hc'].apply(lambda x: ','.join(map(str, x))).reset_index()
-#     print("df_merge_id:", df)
-#     df = df[['hc']]
-#     print("df_merge_id:", df)
-#     return df
+    # Transpose the result
+    all_imputed_timeseries_transposed = all_imputed_timeseries.transpose()
+    print("Dataframe after imputed and transposed - all_imputed_timeseries_transposed:\n", all_imputed_timeseries_transposed)
+    return all_imputed_timeseries_transposed
 
-# Method use: Attaching first 3 columns of store id, genres, locations and its labels.
+
+
+
+
+
+# Method: Adding 4 more pivot columns
 # input:
-#   df      : dataframe contains 3 columns of store id, genres, locations
-#   labels  : array of labels
+#   df_clustered: This dataframe contains all possible columns to calculate pivot table
 # output:
-#   df      : dataframe contains 3 columns and its labels
-def main_labelling_clustering(df_empty, labels, aff, lnk):
-    # print("type of labels:", type(labels))
-    # print("labels:-----------", labels)
-    df_empty['hc_' + lnk + '_' + aff] = labels
-    # df_empty['hc'] = labels
-    # print("df_empty:-----------\n", df_empty)
-    return df_empty
-
-# Method used: Clustering by hierachy method
+#   df_clustered_pivot: Return new dataframe contains pivot table which has 4 flatted columns
+#       pivot_labels, pivot_..._1st, pivot_..._2nd, pivot_..._3rd
+# method: do the clustering for missing values of time series for 5 algorithms
 # input:
-#   vm_values : visitor matrix after formatted and get values
-#   df_merge  :
+#   df_imputation: dataframe contains first level of arguments:
+#       X_first_column, X ALGORITHMS_ARG, RES_DATASET_ARG, SPLIT_FIRST_BY_ARG, RESAMPLING_METHOD_ARG,
+#       IMPUTATION_METHOD_ARG, MAX_MISSING_PERCENTAGE_ARG
 # output:
-#
-def clustering_by_hierachy(vm_values, vm_first_col_values, store_info_dataset, NUM_OF_HC_CLUSTER_ARG):
-    # If linkage is “ward”, only “euclidean” is accepted. If “precomputed”,
-    # a distance matrix (instead of a similarity matrix) is needed as input for the fit method.
-    # linkage_list = ['ward']
-    linkage_list = ['ward', 'complete', 'average', 'single']
+#   df_imputation_clustered: Dataframe contains imputation from multiple algorithms: dbscan, hierachy, .., .., ..
+def missing_values_clustering(df_imputation):
+    print("df_imputation_level input missing_values_clustering:\n", df_imputation)
 
-    print("vm_values input: \n", vm_values)
+    imputation_dbscan_index   = 0
+    list_cols = list(df_imputation.columns.values)
+    list_cols.extend(['METRIC_ARG', 'EPSILON_MIN_ARG', 'EPSILON_MAX_ARG', 'EPSILON_STEP_ARG', 'MINS_ARG',
+                      'MIN_CLUSTERS_ARG', 'MAX_NOISE_PERCENT_ARG'])
+    df_imputation_dbscan = pd.DataFrame(columns=list_cols)
 
-    # print("df_merge  input: \n", df_merge)
-    # first_three_columns = df_merge
-    # first_three_columns = first_three_columns[[store_id, genre_name, area_name]]
-    # print("First 3 columns of store_id, genre and area after removing: \n", first_three_columns)
-    # df_genre_clusters = first_three_columns.groupby([genre_name]).size().reset_index()
-    # # print("list(my_dataframe.columns.values):", list(df_genre_clusters.columns.values))
-    # print("df_genre_clusters after  :============== \n", df_genre_clusters.head())
+    imputation_optics_index   = 0
+    list_cols_optics = list(df_imputation.columns.values)
+    list_cols_optics.extend(['METRIC_ARG', 'MIN_SAMPLES_ARG', 'XI_ARG', 'MIN_CLUSTER_SIZE_ARG',
+                             'OPTICS_MIN_CLUSTERS_ARG', 'OPTICS_MAX_NOISE_PERCENT_ARG'])
+    # list_cols_optics.extend(['METRIC_ARG', 'MIN_SAMPLES_ARG', 'XI_ARG', 'MIN_CLUSTER_SIZE_ARG'])
+    df_imputation_optics = pd.DataFrame(columns=list_cols_optics)
 
-    df_empty = pd.DataFrame({store_id: vm_first_col_values[:, 0]})
-    # print("First column of stord_id:\n", df_empty)
+    imputation_hierachy_index = 0
+    list_cols_hierachy = list(df_imputation.columns.values)
+    list_cols_hierachy.extend(['NUM_OF_HC_CLUSTER', 'LINKAGE', 'AFFINITY'])
+    df_imputation_hierachy = pd.DataFrame(columns=list_cols_hierachy)
 
-    for lnk in linkage_list:
-        if lnk=='ward':
-            affinity_list = ['euclidean']
-        else:
-            affinity_list = ['euclidean', 'l1', 'l2', 'manhattan', 'cosine']
+    imputation_kmeans_index   = 0
+    list_cols_kmeans = list(df_imputation.columns.values)
+    list_cols_kmeans.extend(['NUM_CLUSTERS_ARG', 'ITERATIONS_ARG', 'WINDOW_SIZE_ARG'])
+    df_imputation_kmeans = pd.DataFrame(columns=list_cols_kmeans)
 
-        for aff in affinity_list:
-            lables = labeling_hierachy_cluster(vm_values, aff, lnk, NUM_OF_HC_CLUSTER_ARG)
-            df_genre_clusters = main_labelling_clustering(df_empty, lables, aff, lnk)
-            # main_labels_df = main_labelling_clustering(first_three_columns, lables)
-            # df_genre_clusters['hc_' + lnk + '_' + aff] = main_labels_df
+    imputation_kmeans_auto_index   = 0
+    list_cols_kmeans_auto = list(df_imputation.columns.values)
+    list_cols_kmeans_auto.extend(['NUM_CLUSTERS_ARG', 'ITERATIONS_ARG'])
+    df_imputation_kmeans_auto = pd.DataFrame(columns=list_cols_kmeans_auto)
 
-            # main_labels_df = main_labelling_clustering(df_empty, lables)
-            # # main_labels_df = main_labelling_clustering(first_three_columns, lables)
-            # df_genre_clusters['hc_' + lnk + '_' + aff] = main_labels_df
+    for i, row in df_imputation.iterrows():
+        # Creating dataframe of arguments of Dbscan
+        if df_imputation.iloc[i]['ALGORITHMS_ARG'] == 'DBSCAN':
+            METRIC = ['euclidean']
+            # METRIC = ['dice', 'hamming', 'jaccard', 'kulsinski', 'l2', 'canberra', 'hamming',  'sqeuclidean']
+            # 'rogerstanimoto', 'russellrao', 'sokalmichener', 'sokalsneath',
+            # 'mahalanobis', 'matching', 'minkowski', 'rogerstanimoto', 'russellrao', 'seuclidean', 'sokalmichener',
+            #  'sokalsneath', 'sqeuclidean', 'yule']
+            EPSILON_MIN = [200]
+            EPSILON_MAX = [16000]
+            EPSILON_STEP = [10]
+            MINS = [3]
+            MIN_CLUSTERS = [3]
+            MAX_NOISE_PERCENT = [50]
+            for index, tuple in enumerate(itertools.product(METRIC, EPSILON_MIN, EPSILON_MAX, EPSILON_STEP, MINS,
+                                                            MIN_CLUSTERS, MAX_NOISE_PERCENT)):
+                # print("tuple [", index,  "]:", tuple)
+                METRIC_ARG, EPSILON_MIN_ARG, EPSILON_MAX_ARG, EPSILON_STEP_ARG, MINS_ARG, MIN_CLUSTERS_ARG, MAX_NOISE_PERCENT_ARG = tuple
+                df_imputation_dbscan.loc[imputation_dbscan_index] = [df_imputation.iloc[i]['X_first_column']] + [df_imputation.iloc[i]['X']]\
+                                                + [df_imputation.iloc[i]['ALGORITHMS_ARG']] + [df_imputation.iloc[i]['RES_DATASET_ARG']]\
+                                                + [df_imputation.iloc[i]['SPLIT_FIRST_BY_ARG']] + [df_imputation.iloc[i]['RESAMPLING_METHOD_ARG']]\
+                                                + [df_imputation.iloc[i]['IMPUTATION_METHOD_ARG']] + [df_imputation.iloc[i]['MAX_MISSING_PERCENTAGE_ARG']]\
+                                                + [METRIC_ARG] + [EPSILON_MIN_ARG] + [EPSILON_MAX_ARG] + [EPSILON_STEP_ARG] + [MINS_ARG]\
+                                                + [MIN_CLUSTERS_ARG] + [MAX_NOISE_PERCENT_ARG]
 
-    print("df_genre_clusters: \n", df_genre_clusters)
+                # print("imputation_dbscan_index:", imputation_dbscan_index)
+                # print("df_imputation_dbscan.iloc[imputation_dbscan_index]['X']:\n", df_imputation_dbscan.iloc[imputation_dbscan_index]['X'])
+                imputation_dbscan_index = imputation_dbscan_index + 1
 
+        # Creating dataframe of arguments of Dbscan
+        elif df_imputation.iloc[i]['ALGORITHMS_ARG'] == 'OPTICS':
+            METRIC = ['euclidean', 'manhattan']
+            # METRIC = ['DTWDistance']
+            # METRIC = ['cityblock', 'cosine', 'euclidean', 'l1', 'l2', 'manhattan']
+            # ['braycurtis', 'canberra', 'chebyshev', 'correlation', 'dice', 'hamming', 'jaccard',
+            # 'kulsinski', 'mahalanobis', 'minkowski', 'rogerstanimoto', 'russellrao', 'seuclidean',
+            # 'sokalmichener', 'sokalsneath', 'sqeuclidean', 'yule']
 
-    # Merging with store_info_dataset to get genre name and area name
-    df_genre_clusters = pd.merge(store_info_dataset, df_genre_clusters, how='inner', on=[store_id])
+            MIN_SAMPLES = [3]
+            XI = [0.01] # Determines the minimum steepness on the reachability plot that constitutes a cluster boundary.
+            MIN_CLUSTER_SIZE = [0.01]
+            OPTICS_MIN_CLUSTERS = [1]
+            OPTICS_MAX_NOISE_PERCENT = [100]
+            for index, tuple in enumerate(itertools.product(METRIC, MIN_SAMPLES, XI, MIN_CLUSTER_SIZE,
+                                                            OPTICS_MIN_CLUSTERS, OPTICS_MAX_NOISE_PERCENT)):
+                METRIC_ARG, MIN_SAMPLES_ARG, XI_ARG, MIN_CLUSTER_SIZE_ARG, OPTICS_MIN_CLUSTERS_ARG, OPTICS_MAX_NOISE_PERCENT_ARG = tuple
+                df_imputation_optics.loc[imputation_optics_index] = [df_imputation.iloc[i]['X_first_column']] + [df_imputation.iloc[i]['X']]\
+                                                + [df_imputation.iloc[i]['ALGORITHMS_ARG']] + [df_imputation.iloc[i]['RES_DATASET_ARG']]\
+                                                + [df_imputation.iloc[i]['SPLIT_FIRST_BY_ARG']] + [df_imputation.iloc[i]['RESAMPLING_METHOD_ARG']]\
+                                                + [df_imputation.iloc[i]['IMPUTATION_METHOD_ARG']] + [df_imputation.iloc[i]['MAX_MISSING_PERCENTAGE_ARG']]\
+                                                + [METRIC_ARG] + [MIN_SAMPLES_ARG] + [XI_ARG] + [MIN_CLUSTER_SIZE_ARG]\
+                                                + [OPTICS_MIN_CLUSTERS_ARG] + [OPTICS_MAX_NOISE_PERCENT_ARG]
 
-    # Get only the first word of area_name
-    df_genre_clusters = format_arename_col_first_word(df_genre_clusters).reset_index(drop=True)
-    print("Final dataframe of time series and their clusters:\n", df_genre_clusters)
-    # df_genre_clusters.to_csv('df_genre_clusters.csv')
-    return df_genre_clusters
+                # print("imputation_optics_index:", imputation_optics_index)
+                # print("df_imputation_optics.iloc[imputation_optics_index]['X']:\n", df_imputation_optics.iloc[imputation_optics_index]['X'])
+                imputation_optics_index = imputation_optics_index + 1
 
-# Method use: format visitor matrix by adding name "store_id" and resetting index column
+        elif df_imputation.iloc[i]['ALGORITHMS_ARG'] == 'HIERARCHICAL':
+            NUM_OF_HC_CLUSTER = [3]
+            # LINKAGE = ['complete', 'average', 'single']
+            # AFFINITY = ['euclidean', 'l1', 'l2', 'manhattan', 'cosine']
+            # LINKAGE_EXTENDED = ['ward']
+            # AFFINITY_EXTENDED = ['euclidean']
+
+            LINKAGE = ['ward', 'complete', 'average', 'single']
+            AFFINITY = ['euclidean']
+            # LINKAGE_EXTENDED = ['ward']
+            # AFFINITY_EXTENDED = ['euclidean']
+
+            for index, tuple in enumerate(itertools.product(NUM_OF_HC_CLUSTER, LINKAGE, AFFINITY)):
+                NUM_OF_HC_CLUSTER_ARG, LINKAGE_ARG, AFFINITY_ARG = tuple
+                df_imputation_hierachy.loc[imputation_hierachy_index] = [df_imputation.iloc[i]['X_first_column']] + [df_imputation.iloc[i]['X']]\
+                                                    + [df_imputation.iloc[i]['ALGORITHMS_ARG']] + [df_imputation.iloc[i]['RES_DATASET_ARG']]\
+                                                    + [df_imputation.iloc[i]['SPLIT_FIRST_BY_ARG']] + [df_imputation.iloc[i]['RESAMPLING_METHOD_ARG']]\
+                                                    + [df_imputation.iloc[i]['IMPUTATION_METHOD_ARG']] + [df_imputation.iloc[i]['MAX_MISSING_PERCENTAGE_ARG']]\
+                                                    + [NUM_OF_HC_CLUSTER_ARG] + [LINKAGE_ARG] + [AFFINITY_ARG]
+                imputation_hierachy_index = imputation_hierachy_index + 1
+
+            # for index, tuple in enumerate(itertools.product(NUM_OF_HC_CLUSTER, LINKAGE_EXTENDED, AFFINITY_EXTENDED)):
+            #     NUM_OF_HC_CLUSTER_ARG, LINKAGE_ARG, AFFINITY_ARG = tuple
+            #     df_imputation_hierachy.loc[imputation_hierachy_index] = [df_imputation.iloc[i]['X_first_column']] + [df_imputation.iloc[i]['X']]\
+            #                                         + [df_imputation.iloc[i]['ALGORITHMS_ARG']] + [df_imputation.iloc[i]['RES_DATASET_ARG']]\
+            #                                         + [df_imputation.iloc[i]['SPLIT_FIRST_BY_ARG']] + [df_imputation.iloc[i]['RESAMPLING_METHOD_ARG']]\
+            #                                         + [df_imputation.iloc[i]['IMPUTATION_METHOD_ARG']] + [df_imputation.iloc[i]['MAX_MISSING_PERCENTAGE_ARG']]\
+            #                                         + [NUM_OF_HC_CLUSTER_ARG] + [LINKAGE_ARG] + [AFFINITY_ARG]
+            #     imputation_hierachy_index = imputation_hierachy_index + 1
+
+        elif df_imputation.iloc[i]['ALGORITHMS_ARG'] == 'KMEANS_DTW':
+            NUM_CLUSTERS = [3]
+            ITERATIONS = [15]
+            WINDOW_SIZE = [5]
+            # NUM_CLUSTERS = [3, 9]
+            # ITERATIONS = [10]
+            # WINDOW_SIZE = [3]
+
+            for index, tuple in enumerate(itertools.product(NUM_CLUSTERS, ITERATIONS, WINDOW_SIZE)):
+                # print("tuple [", index,  "]:", tuple)
+                NUM_CLUSTERS_ARG, ITERATIONS_ARG, WINDOW_SIZE_ARG = tuple
+                df_imputation_kmeans.loc[imputation_kmeans_index] = [df_imputation.iloc[i]['X_first_column']] + [df_imputation.iloc[i]['X']]\
+                                                + [df_imputation.iloc[i]['ALGORITHMS_ARG']] + [df_imputation.iloc[i]['RES_DATASET_ARG']]\
+                                                + [df_imputation.iloc[i]['SPLIT_FIRST_BY_ARG']] + [df_imputation.iloc[i]['RESAMPLING_METHOD_ARG']]\
+                                                + [df_imputation.iloc[i]['IMPUTATION_METHOD_ARG']] + [df_imputation.iloc[i]['MAX_MISSING_PERCENTAGE_ARG']]\
+                                                + [NUM_CLUSTERS_ARG] + [ITERATIONS_ARG] + [WINDOW_SIZE_ARG]
+
+                print("imputation_kmeans_index:", imputation_kmeans_index)
+                print("df_imputation_kmeans.iloc[imputation_kmeans_index]['X']:\n", df_imputation_kmeans.iloc[imputation_kmeans_index]['X'])
+                imputation_kmeans_index = imputation_kmeans_index + 1
+
+        elif df_imputation.iloc[i]['ALGORITHMS_ARG'] == 'KMEANS_AUTO':
+            NUM_CLUSTERS = [3]
+            ITERATIONS = [20]
+            # NUM_CLUSTERS = [3]
+            # ITERATIONS = [10]
+
+            for index, tuple in enumerate(itertools.product(NUM_CLUSTERS, ITERATIONS)):
+                # print("tuple [", index,  "]:", tuple)
+                NUM_CLUSTERS_ARG, ITERATIONS_ARG = tuple
+                df_imputation_kmeans_auto.loc[imputation_kmeans_auto_index] = [df_imputation.iloc[i]['X_first_column']] + [df_imputation.iloc[i]['X']]\
+                                                + [df_imputation.iloc[i]['ALGORITHMS_ARG']] + [df_imputation.iloc[i]['RES_DATASET_ARG']]\
+                                                + [df_imputation.iloc[i]['SPLIT_FIRST_BY_ARG']] + [df_imputation.iloc[i]['RESAMPLING_METHOD_ARG']]\
+                                                + [df_imputation.iloc[i]['IMPUTATION_METHOD_ARG']] + [df_imputation.iloc[i]['MAX_MISSING_PERCENTAGE_ARG']]\
+                                                + [NUM_CLUSTERS_ARG] + [ITERATIONS_ARG]
+
+                print("imputation_kmeans_auto_index:", imputation_kmeans_auto_index)
+                print("df_imputation_kmeans.iloc[imputation_kmeans_auto_index]['X']:\n", df_imputation_kmeans_auto.iloc[imputation_kmeans_auto_index]['X'])
+                imputation_kmeans_auto_index = imputation_kmeans_auto_index + 1
+
+    # Get clustered from dbscan argumented dataframe
+    df_imputation_dbscan_clustered = clustering_by_dbscan(df_imputation_dbscan)
+    # print("DBSCAN ALGORITHMS:\n", df_imputation_dbscan_clustered)
+
+    # Get clustered from optics argumented dataframe
+    df_imputation_optics_clustered = clustering_by_optics(df_imputation_optics)
+    # print("OPTICS ALGORITHMS:\n", df_imputation_optics_clustered)
+
+    # Get clustered from hierachy argumented dataframe
+    df_imputation_hierachy_clustered = clustering_by_hierachy(df_imputation_hierachy)
+    # print("HIERARCHICAL ALGORITHMS", df_imputation_hierachy_clustered)
+
+    # Get clustered from kmeans DTW argumented dataframe
+    df_imputation_kmeans_clustered = clustering_by_kmeans(df_imputation_kmeans)
+    # print("KMEANS ALGORITHMS\n", df_imputation_kmeans_clustered)
+
+    # Get clustered from kmeans auto argumented dataframe
+    df_imputation_kmeans_auto_clustered = clustering_by_kmeans_auto(df_imputation_kmeans_auto)
+    # print("KMEANS ALGORITHMS\n", df_imputation_kmeans_auto_clustered)
+
+    # # This action will mergering in columns and in rows of multiple dataframes.
+    # # It will create new columns of this dataframe and add it to another one.
+    # df_all_algo_clustered = [df_imputation_dbscan_clustered, df_imputation_hierachy_clustered]
+    # df_all_algo_clustered = pd.concat(df_all_algo_clustered).reset_index(drop=True)
+
+    return df_imputation_dbscan_clustered, df_imputation_optics_clustered, df_imputation_hierachy_clustered, df_imputation_kmeans_clustered, df_imputation_kmeans_auto_clustered
+
+# method: get imputation matrix, which is preparing for clustering
 # input:
-#   vm: vistor_matrix
 # output:
-#   vm: visitor_matrix after formatting
-def format_visitor_matrix(vmt):
-    # Adding name "store_id" for visitor matrix
-    # print("visitor matrix transposed header:\n", vmt.head())
-    # print("list(visitor_matrix.columns.values):", list(vmt.columns.values))
-    vmt.index.name = store_id
-    # Resetting index coulumn for visitor matrix
-    vmt = vmt.reset_index()
-    # print("list(visitor_matrix.columns.values):", list(visitor_matrix_transposed.columns.values))
-    print("visitor_matrix transposed after formatting: ---- \n", vmt)
-    return vmt
+#   df_imputation_level: contain imputation level of input dataset arguments
+#                         ['X_first_column', 'ALGORITHMS_ARG', 'RES_DATASET_ARG', 'SPLIT_FIRST_BY_ARG',
+#                         'RESAMPLING_METHOD_ARG', 'IMPUTATION_METHOD_ARG', 'MAX_MISSING_PERCENTAGE_ARG'])
+def get_df_imputation_level(ALGORITHMS, RES_DATASET, SPLIT_FIRST_BY, RESAMPLING_METHOD,
+                                  IMPUTATION_METHOD, MAX_MISSING_PERCENTAGE):
+    df_imputation = pd.DataFrame(columns=['X_first_column', 'X', 'ALGORITHMS_ARG', 'RES_DATASET_ARG', 'SPLIT_FIRST_BY_ARG',
+                                              'RESAMPLING_METHOD_ARG', 'IMPUTATION_METHOD_ARG', 'MAX_MISSING_PERCENTAGE_ARG'])
+    for index, tuple in enumerate(itertools.product(ALGORITHMS, RES_DATASET, SPLIT_FIRST_BY, RESAMPLING_METHOD,
+                                  IMPUTATION_METHOD, MAX_MISSING_PERCENTAGE)):
+        print("=================================== START ======================================================")
+        print("tuple [", index,  "]:", tuple)
+        str_tuple = "tuple [", index,  "]:", tuple
 
-# Method use: Merging store id from air_store_id/hpg_store_id and visitor matrix.
-#   By this we can get genres and locations, then we will attach it with labels in the later steps.
-# This is be used to identify which genre and location belong to which cluster.
-# input:
-#   visitor_matrix: Matrix of visitors from chosen, filtered time series
-#
-def get_df_merge_id(store_info_dataset, df_id):
-    # Merging
-    df_merge_id = pd.merge(store_info_dataset, df_id, how='inner', on=[store_id])
+        ALGORITHMS_ARG, RES_DATASET_ARG, SPLIT_FIRST_BY_ARG, RESAMPLING_METHOD_ARG, \
+        IMPUTATION_METHOD_ARG, MAX_MISSING_PERCENTAGE_ARG = tuple
 
-    print("Merging visitor matrix and store id dataset - df_merge_id:\n", df_merge_id)
-    return df_merge_id
+        df_attrib_1_attrib_2, df_vd, df_si = filtering_splitting_merging(df_asi, df_avd, df_hsi, df_hr,
+                                RES_DATASET_ARG, MAX_MISSING_PERCENTAGE_ARG,
+                                SPLIT_FIRST_BY_ARG, RESAMPLING_METHOD_ARG)
 
+        visitor_matrix_transposed = imputing_all_timeseries(df_attrib_1_attrib_2, IMPUTATION_METHOD_ARG)
+        X_first_column, X = split_matrix_values(visitor_matrix_transposed)
+        print("visitor_matrix_transposed:=====================\n", visitor_matrix_transposed)
+        # print("X_first_column:\n", X_first_column)
+        # print("type of X_first_column:\n", type(X_first_column))
+        print("X:\n", X)
+        print("X shape:\n", X.shape)
+        # store_info_dataset, df_vd = get_storeinfo_visitdata(df_asi, df_avd, df_hsi, df_hr, RES_DATASET_ARG)
 
+        df_imputation.loc[index] = [X_first_column] + [X] + [ALGORITHMS_ARG] + [RES_DATASET_ARG] + [SPLIT_FIRST_BY_ARG] + \
+                                       [RESAMPLING_METHOD_ARG] + [IMPUTATION_METHOD_ARG] + [MAX_MISSING_PERCENTAGE_ARG]
+        # sys.exit()
+    return df_imputation, df_vd, df_si
 
 
 # # ============ Step 10: Find the corelation between genres and clusters ==============
 
-# Method use: Find the corelation between genres and clusters
+# Python program to convert a list
+# to string using join() function
+# Function to convert
+def listToString(s):
+    listToStr = ' '.join([str(elem) for elem in s])
+    return listToStr
+
+def convert_labels_to_dataframe(labels):
+    labels = pd.DataFrame(data=labels)
+    labels = labels.astype(int)
+    labels.rename(columns = {0:'labels'}, inplace=True)
+    return labels
+
+# Method:  Remove bracket [] characters
+def convert_Xfirstcol_to_dataframe(X_first_column):
+    X_first_column = pd.DataFrame(X_first_column)
+    X_first_column.rename(columns = {0:'store_id'}, inplace=True)
+    # print("X_first_column convert_Xfirstcol_to_dataframe:\n", X_first_column)
+    return X_first_column
+
+# Evaluating result of pivot dataframe
+def evaluating_pitvot(df):
+    # Remove index column name and remove a list of header
+    df.reset_index(inplace=True)
+
+    # Get names of indexes for which column labels has value != -1
+    df  = df.drop(df[(df['labels'] == -1)].index)
+
+    print("df.shape[0]:", df.shape[0])
+    print("df.shape[1]:", df.shape[1])
+
+    if (df.shape[0] == df.shape[1] - 2):
+        list1 = list(df.columns.values)
+        df = df.drop(['labels', 'index'], axis=1)
+        df = df.reset_index()
+        max_list = []
+        for i in range(df.shape[0]):
+            max = df.values.max()
+            max_list.append(max)
+            tuple = [(df[col][df[col].eq(max)].index[i], df.columns.get_loc(col)) for col in df.columns for i in range(len(df[col][df[col].eq(max)].index))]
+            index_row = tuple[0][0]
+            index_col = tuple[0][1]
+            df = df.drop(df.index[index_row])
+
+            df.drop(df.columns[index_col], axis=1, inplace=True)
+            df=df.reset_index(drop=True)
+
+        sum_of_list = sum(max_list)
+        if sum_of_list > 140:
+            return sum_of_list, 'yes'
+        else:
+            return sum_of_list, 'no'
+    else:
+        return 0, 'NA'
+# Method: Adding 4 more pivot columns
 # input:
-#   timeseries_hierachy_clustered      : dataframe contains 3 columns of store id, genres, locations and clusters
+#   df_clustered: This dataframe contains all possible columns to calculate pivot table
 # output:
-#   df      : dataframe contains corelation between genre groups and clusters
-def corelation_genre_clusters(df):
-    # print("Input dataframe with clustered time series:\n", df)
+#   df_clustered_pivot: Return new dataframe contains pivot table which has 4 flatted columns
+#       pivot_labels, pivot_..._1st, pivot_..._2nd, pivot_..._3rd
+def correlation_clustered_pivoting(df_clustered, df_vd, df_si):
+    # print("df_clustered:", df_clustered)
+    # Iterating row by row
+    for i, row in df_clustered.iterrows():
+        # Create a new dataframe with first columns of X is store_id and it's labels
 
-    df_temp = df
+        X_first_column = df_clustered.iloc[i]['X_first_column']
+        # print("X_first_column:", X_first_column)
+        # sys.exit()
+        labels = df_clustered.iloc[i]['labels']
+        labels = convert_labels_to_dataframe(labels)
+        X_first_column = convert_Xfirstcol_to_dataframe(X_first_column)
+        df_clustered_refined = pd.concat([X_first_column, labels], axis=1)
 
-    # Get first column to form up corelation dataframe
-    df_first_col = df_temp.groupby([genre_name]).size()
-    df_first_col = df_first_col.to_frame(name = 'size').reset_index()
-    # print("df_first_col: \n", df_first_col)
+        df_si = store_info_format(df_si)
+        df_si[genre_name] = df_si[genre_name].str.strip()
+        df_si[area_name]  = df_si[area_name].str.strip()
 
-    # Create a new empty corelation dataframe
-    df_corelation_genre_clusters = pd.DataFrame()
-    # Concatenate the new empty corelation dataframe with first column dataframe
-    # df_corelation_genre_clusters = pd.concat([df_corelation_genre_clusters, df_first_col], axis=1)
+        # Merging with store_info_dataset to get genre name and area name
+        df_clustered_refined = pd.merge(df_si, df_clustered_refined, how='inner', on=[store_id])
+        # df_clustered_refined.to_csv("df_clustered_refined_merged.csv")
+        # print("df_clustered_refined after merging:\n", df_clustered_refined)
 
-    # Loop from the first cluster column to the end
-    max_col = df.shape[1]
-    for i in range(3, max_col):
-        # Group by genre name and cluster columns
-        df = df_temp.groupby([genre_name, df_temp.columns[i]]).size()
-        print("df====== 222\n:", df)
+        # Get only the first word of area_name
+        df_clustered_refined = format_arename_col_first_word(df_clustered_refined).reset_index(drop=True)
+        print("Final dataframe of time series and their clusters:\n", df_clustered_refined)
+
+        # Create 2 new dataframe as temporaries for upcoming
+        df_temp = df_clustered_refined
+        df = df_clustered_refined
+        # Choosing between 2 type of split by genre or area
+        if df_clustered.iloc[i]['SPLIT_FIRST_BY_ARG'] == 'genre':
+            group_type = genre_name
+        else: # groupby area name
+            group_type = area_name
+
+        # Get first column to form up corelation dataframe
+        df_first_col = df_temp.groupby([group_type]).size()
+        df_first_col = df_first_col.to_frame(name = 'size').reset_index()
+
+        # Create a new empty corelation dataframe
+        df_corelation_genre_clusters = pd.DataFrame()
+        # Concatenate the new empty corelation dataframe with first column dataframe
+        df_corelation_genre_clusters = pd.concat([df_corelation_genre_clusters, df_first_col], axis=1)
+
+        # Loop from the first cluster column to the end
+        max_col = df.shape[1] - 1
+        # We group it by group_type and last column number 3.
+        # We create pivot table by these columns.
+
+        # Group by genre name or area name and cluster columns
+        df = df_temp.groupby([group_type, df_temp.columns[max_col]]).size()
+        print("df_temp.columns[j]:\n", df_temp.columns[max_col])
         # reset index column
         df = df.to_frame(name = 'size').reset_index()
         print("df_merge_id:\n", df)
         colname = df.columns[1]
         print("colname = df.columns[pos]:", colname)
-        df_genre_name_cluster = df.groupby([colname, 'genre_name']).agg({'size': 'sum'})
+        df_genre_name_cluster = df.groupby([colname, group_type]).agg({'size': 'sum'})
         print("df_genre_name_cluster:\n", df_genre_name_cluster)
 
         # Calculate percentage for each genres by cluster
@@ -1544,128 +1233,120 @@ def corelation_genre_clusters(df):
                                                  100 * x / float(x.sum()))
         cluster_percentages = cluster_percentages.reset_index()
         print("cluster_percentages:\n", cluster_percentages)
-        cluster_percentages = cluster_percentages.round({'size': 1}).fillna(0)
+        cluster_percentages = cluster_percentages.round({'size': 0}).fillna(0)
 
-        # Pivot table and fill nan value
-        cluster_percentages_pivot = cluster_percentages.pivot_table(index=colname, columns='genre_name', values='size', aggfunc='max')
-        cluster_percentages_pivot = cluster_percentages_pivot.fillna(0)
+
+        cluster_percentages_pivot = cluster_percentages.pivot_table(index=colname, columns=group_type, values='size', aggfunc='max')
+        cluster_percentages_pivot = cluster_percentages_pivot.fillna(0).astype(int)
         cluster_percentages_pivot = cluster_percentages_pivot.reset_index()
         # Get list of column names level 0
-        # cluster_percentages_pivot = cluster_percentages_pivot.reset_index(drop=True,level=0)
-        print("cluster_percentages after using pivot:\n", cluster_percentages_pivot)
-
-
-        # # Groupby genre again to get maximum size of appearances clusters
-        # idx = df.groupby([genre_name])['size'].transform(max) == df['size']
-        # df = df[idx]
-        # print("df====== 333:\n", df)
-        #
-        # str_column_name = df.columns[1]
-        # # print("str_column_name:", str_column_name)
-        #
-        # df = df.groupby(genre_name)[str_column_name].apply(lambda x: ','.join(map(str, x))).reset_index()
-        # print("df====== 444 : \n", df)
-        # df = df[[str_column_name]]
-        # print("df====== 555 : \n", df)
-
-        # Concatenate each result dataframe from each hierachy clustering arguments group
-        df_corelation_genre_clusters = pd.concat([df_corelation_genre_clusters, cluster_percentages_pivot], axis=1)
-
-    # Concatenate a list of dataframes
-    df_corelation_genre_clusters= df_corelation_genre_clusters.reset_index()
-
-    return df_corelation_genre_clusters
+        print("cluster_percentages after using pivot:", "\n", cluster_percentages_pivot)
 
 
 
-def missing_values_clustering(ALGORITHMS_ARG, RES_DATASET_ARG, RESAMPLING_METHOD_ARG, SPLIT_GROUPS_ARG,
-                              IMPUTATION_METHOD_ARG, MAX_MISSING_PERCENTAGE_ARG):
-    df_store_and_visit, store_info_dataset = get_vd_3genres_3locations(RES_DATASET_ARG, RESAMPLING_METHOD_ARG, SPLIT_GROUPS_ARG)
+        print("list(my_dataframe.columns.values):", "\n", list(cluster_percentages_pivot.columns.values))
+        p_labels,group_type_1st,group_type_2nd,group_type_3rd = list(cluster_percentages_pivot.columns.values)
 
-    # Visitor dataframe is used to collect all timeseries as a matrix.
-    # This matrix is used as input for cluster technique
-    # or it can be used to create distance matrix.
-    visitor_df = imputing_all_timeseries(df_store_and_visit, IMPUTATION_METHOD_ARG, MAX_MISSING_PERCENTAGE_ARG)
-    # Draw out variables and arguements and theirs functions
-
-    print('Visitor dataframe after data imputation - visitor_df head:\n {} \n'.format(visitor_df.head()))
-    print('Visitor dataframe after data imputation - visitor_df tail:\n {} \n'.format(visitor_df.tail()))
-    # Overview of all series
-    print("visitor_df.describe():\n", visitor_df.describe())
-
-    # ============================================= For testing hierachy =============================================
-    # visitor_df_transposed : is the transposed version of visitor_df
-    visitor_df_transposed = visitor_df.transpose()
-    # visitor_df_transposed.to_csv('output_visitor.csv')
-    # print("visitor_df_transposed:--------------", visitor_df_transposed)
-
-    visitor_matrix_formatted = format_visitor_matrix(visitor_df_transposed)
-    visitor_matrix_formatted_first_column, visitor_matrix_formatted_values = split_matrix_values(visitor_matrix_formatted)
-
-    if ALGORITHMS_ARG == 'HIERACHY':
-        timeseries_hierachy_clustered = clustering_by_hierachy(visitor_matrix_formatted_values, visitor_matrix_formatted_first_column,
-                                                                store_info_dataset, NUM_OF_HC_CLUSTER_ARG)
-        print("============================== ARGUMENTS LIST ======================================================")
-        print("Alogrithm:", ALGORITHMS_ARG,"-", "Resource dataset:", RES_DATASET_ARG,"-", "Resampling method:", RESAMPLING_METHOD_ARG,"-",
-              "Split to 3 or 9 groups:", SPLIT_GROUPS_ARG,"-",
-              "Imputation method:", IMPUTATION_METHOD_ARG,"-", "Max missing percentage:", MAX_MISSING_PERCENTAGE_ARG)
-
-        df = corelation_genre_clusters(timeseries_hierachy_clustered)
-        print(df)
-    elif ALGORITHMS_ARG == 'DBSCAN':
-        # ============ Step 05: Clustering using DBSCAN and Pairwise Similarity Evaluation ==============
-
-        # visitor_matrix = visitor_df.values
-        # original_visitor_df = visitor_df
-        # print('visitor_matrix X :\n {} \n'.format(visitor_matrix))
-
-        # Transpose the matrix for timeseries as row and timestamps as column
-        # visitor_matrix_transposed = visitor_matrix.transpose()
-        # print('visitor_matrix after transposed :\n {} \n'.format(visitor_matrix))
-
-        pairwise_distance_calculated = pairwise_distances(visitor_matrix_formatted_values, metric='manhattan')
-        print("pairwise_distance_calculated:\n", pairwise_distance_calculated)
-        print("df_store_and_visit:\n", df_store_and_visit)
-        clustering_by_dbscan(visitor_df, pairwise_distance_calculated, df_3genres_3locations)
+        print("cluster_percentages_pivot[p_labels].values.tolist()      ", cluster_percentages_pivot[p_labels].values.tolist())
+        print("cluster_percentages_pivot[group_type_1st].values.tolist()", cluster_percentages_pivot[group_type_1st].values.tolist())
+        print("cluster_percentages_pivot[group_type_2nd].values.tolist()", cluster_percentages_pivot[group_type_2nd].values.tolist())
+        print("cluster_percentages_pivot[group_type_3rd].values.tolist()", cluster_percentages_pivot[group_type_3rd].values.tolist())
+        s = cluster_percentages_pivot[group_type_1st].values.tolist()
 
 
-    return 1
+        df_clustered.at[i, 'pivot_'+p_labels] = listToString(cluster_percentages_pivot[p_labels].values.tolist())
+        df_clustered.at[i, 'pivot_'+group_type_1st] = listToString(cluster_percentages_pivot[group_type_1st].values.tolist())
+        df_clustered.at[i, 'pivot_'+group_type_2nd] = listToString(cluster_percentages_pivot[group_type_2nd].values.tolist())
+        df_clustered.at[i, 'pivot_'+group_type_3rd] = listToString(cluster_percentages_pivot[group_type_3rd].values.tolist())
+
+        print("cluster_percentages_pivot:", "\n", cluster_percentages_pivot)
+        new_cluster_percentages_pivot = cluster_percentages_pivot[['labels', group_type_1st, group_type_2nd, group_type_3rd]].copy()
+        print("new_cluster_percentages_pivot:\n", new_cluster_percentages_pivot)
+        # Evaluating result of pivot dataframe
+        print("new_cluster_percentages_pivot shape 0 - row:", new_cluster_percentages_pivot.shape[0])
+        print("new_cluster_percentages_pivot shape 0 - col:", new_cluster_percentages_pivot.shape[1])
+        # sys.exit()
+        sum_eval ,evaluation_result = evaluating_pitvot(new_cluster_percentages_pivot)
+        df_clustered.at[i, 'sum_eval'] = sum_eval
+        df_clustered.at[i, 'good_result'] = evaluation_result
+
+    df_clustered_pivot = df_clustered
+    return df_clustered_pivot
 
 
 
 
-
-ALGORITHMS = ['HIERACHY']
-ALGORITHMS_ARG = ['HIERACHY', 'DBSCAN']
-# RES_DATASET = ['air', 'hpg']
+ALGORITHMS = ['DBSCAN']
+ALGORITHMS_ARG = ['DBSCAN', 'HIERARCHICAL', 'KMEANS_AUTO', 'KMEANS_DTW', 'OPTICS']
 RES_DATASET = ['air']
-# RES_DATASET_ARG = ['air']
+# RES_DATASET = ['air']
+RES_DATASET_ARG = 'air'
+SPLIT_FIRST_BY = ['area']
+SPLIT_FIRST_BY_ARG = 'area', 'genre'
 RESAMPLING_METHOD = ['under']
-# RESAMPLING_METHOD_ARG = ['under']
+RESAMPLING_METHOD_ARG = 'under', 'over'
 # SPLIT_GROUPS = [3, 9]
-SPLIT_GROUPS= [9]
+
+# split groups arguments always is 9
+# SPLIT_GROUPS_ARG = 9
 # IMPUTATION_METHOD = ['median', 'mean', 'linear', 'time', 'index', 'values', 'nearest', 'zero', 'slinear', 'quadratic', 'cubic', 'barycentric',
 #           'krogh', 'polynomial', 'spline', 'piecewise_polynomial', 'from_derivatives', 'pchip', 'akima']
-IMPUTATION_METHOD = ['median', 'mean']
-# IMPUTATION_METHOD_ARG = ['median']
-MAX_MISSING_PERCENTAGE = [28]
-# MAX_MISSING_PERCENTAGE_ARG = [100]
+# IMPUTATION_METHOD = ['barycentric', 'krogh', 'polynomial', 'spline',] --> fail
+IMPUTATION_METHOD = ['median']
+# IMPUTATION_METHOD_ARG = 'median'
+# MAX_MISSING_PERCENTAGE = 100 means: we take all of timeseries which have missing point
+# MAX_MISSING_PERCENTAGE = 20  means: we take only first 20 percent of timeseries which have missing point
+MAX_MISSING_PERCENTAGE = [55, 60, 65, 70, 75, 80, 85, 90, 95, 100]
+# MAX_MISSING_PERCENTAGE = [55]
+MAX_MISSING_PERCENTAGE_ARG = 90
 
 # NUM_OF_HC_CLUSTER = [3, 9]
 NUM_OF_HC_CLUSTER_ARG = 5
 
 
-for index, tuple in enumerate(itertools.product(ALGORITHMS, RES_DATASET, RESAMPLING_METHOD, SPLIT_GROUPS,
-                              IMPUTATION_METHOD, MAX_MISSING_PERCENTAGE)):
-    print("=================================== START ======================================================")
-    print("tuple [", index,  "]:", tuple)
-    str_tuple = "tuple [", index,  "]:", tuple
 
-    ALGORITHMS_ARG, RES_DATASET_ARG, RESAMPLING_METHOD_ARG, SPLIT_GROUPS_ARG, \
-    IMPUTATION_METHOD_ARG, MAX_MISSING_PERCENTAGE_ARG = tuple
+def main():
+    df_imputation, df_vd, df_si = get_df_imputation_level(ALGORITHMS, RES_DATASET, SPLIT_FIRST_BY, RESAMPLING_METHOD,
+                                  IMPUTATION_METHOD, MAX_MISSING_PERCENTAGE)
 
-    # print("TUPLE OF ARGUMENTS", ALGORITHMS_ARG, RES_DATASET_ARG, RESAMPLING_METHOD_ARG, SPLIT_GROUPS_ARG, \
-    #     IMPUTATION_METHOD_ARG, MAX_MISSING_PERCENTAGE_ARG)
+    # Get clustered by algrorithms
+    df_imputation_dbscan_clustered, df_imputation_optics_clustered, df_imputation_hierachy_clustered, \
+    df_imputation_kmeans_clustered, df_imputation_kmeans_auto_clustered = missing_values_clustering(df_imputation)
 
-    missing_values_clustering(ALGORITHMS_ARG, RES_DATASET_ARG, RESAMPLING_METHOD_ARG, SPLIT_GROUPS_ARG, IMPUTATION_METHOD_ARG, MAX_MISSING_PERCENTAGE_ARG)
+    frames_clustered = [df_imputation_dbscan_clustered, df_imputation_optics_clustered, df_imputation_hierachy_clustered, \
+    df_imputation_kmeans_clustered, df_imputation_kmeans_auto_clustered]
+
+    for i, df in enumerate(frames_clustered):
+        if not df.empty:
+            str_algorithm = df.iloc[0]['ALGORITHMS_ARG']
+            print("Current dataframe of algorithm:", str_algorithm, "\n", df)
+            if str_algorithm == 'DBSCAN':
+                df_dbscan_clustered_pivot   = correlation_clustered_pivoting(df_imputation_dbscan_clustered, df_vd, df_si)
+                print("df_dbscan_clustered_pivot:\n", df_dbscan_clustered_pivot)
+                # df_dbscan_clustered_pivot.to_csv("df_dbscan_clustered_pivot.csv")
+                df_dbscan_clustered_pivot.to_csv("df_dbscan_clustered_pivot" + "_" + RES_DATASET[0] + "_" + SPLIT_FIRST_BY[0]+ "_" + RESAMPLING_METHOD[0] + ".csv")
+            elif str_algorithm == 'OPTICS':
+                RESAMPLING_METHOD
+                df_optics_clustered_pivot = correlation_clustered_pivoting(df_imputation_optics_clustered, df_vd, df_si)
+                print("df_optics_clustered_pivot:\n", df_optics_clustered_pivot)
+                # df_optics_clustered_pivot.to_csv("df_optics_clustered_pivot.csv")
+                df_optics_clustered_pivot.to_csv("df_optics_clustered_pivot" + "_" + RES_DATASET[0] + "_" + SPLIT_FIRST_BY[0]+ "_" + RESAMPLING_METHOD[0] + ".csv")
+            elif str_algorithm == 'HIERARCHICAL':
+                df_hierachy_clustered_pivot = correlation_clustered_pivoting(df_imputation_hierachy_clustered, df_vd, df_si)
+                print("df_hierachy_clustered_pivot:\n", df_hierachy_clustered_pivot)
+                # df_hierachy_clustered_pivot.to_csv("df_hierachy_clustered_pivot.csv")
+                df_hierachy_clustered_pivot.to_csv("df_hierachy_clustered_pivot" + "_" + RES_DATASET[0] + "_" + SPLIT_FIRST_BY[0]+ "_" + RESAMPLING_METHOD[0] + ".csv")
+            elif str_algorithm == 'KMEANS_DTW':
+                df_kmeans_clustered_pivot = correlation_clustered_pivoting(df_imputation_kmeans_clustered, df_vd, df_si)
+                print("df_kmeans_clustered_pivot:\n", df_kmeans_clustered_pivot)
+                # df_kmeans_clustered_pivot.to_csv("df_kmeans_clustered_pivot.csv")
+                df_kmeans_clustered_pivot.to_csv("df_kmeans_clustered_pivot" + "_" + RES_DATASET[0] + "_" + SPLIT_FIRST_BY[0]+ "_" + RESAMPLING_METHOD[0] + ".csv")
+            elif str_algorithm == 'KMEANS_AUTO':
+                df_kmeans_auto_clustered_pivot = correlation_clustered_pivoting(df_imputation_kmeans_auto_clustered, df_vd, df_si)
+                print("df_kmeans_auto_clustered_pivot:\n", df_kmeans_auto_clustered_pivot)
+                # df_kmeans_auto_clustered_pivot.to_csv("df_kmeans_auto_clustered_pivot.csv")
+                df_kmeans_auto_clustered_pivot.to_csv("df_kmeans_auto_clustered_pivot" + "_" + RES_DATASET[0] + "_" + SPLIT_FIRST_BY[0]+ "_" + RESAMPLING_METHOD[0] + ".csv")
+
+if __name__ == "__main__":
+    main()
 

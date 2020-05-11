@@ -9,6 +9,7 @@ import matplotlib.patches as mpatches
 from sklearn.cluster import DBSCAN
 from OPTICS.optics import *
 from sklearn.metrics import pairwise_distances
+import sys
 
 def percentage(part, whole, digits):
     val = float(part)/float(whole)
@@ -32,34 +33,6 @@ def DTWDistance(s1, s2, w=5):
 
     return math.sqrt(DTW[len(s1)-1, len(s2)-1])
 
-# # ============ Step 05: Clustering using DBSCAN and Pairwise Similarity Evaluation ==============
-#
-# visitor_matrix = visitor_df.values
-# original_visitor_df = visitor_df
-# print('visitor_matrix X :\n {} \n'.format(visitor_matrix))
-#
-# # Transpose the matrix for timeseries as row and timestamps as column
-# visitor_matrix_transposed = visitor_matrix.transpose()
-# print('visitor_matrix after transposed :\n {} \n'.format(visitor_matrix))
-#
-#
-#
-# Valid values for metric are:
-# From scikit-learn: [‘cityblock’, ‘cosine’, ‘euclidean’, ‘l1’, ‘l2’, ‘manhattan’]. These metrics support sparse matrix inputs.
-# From scipy.spatial.distance: [‘braycurtis’, ‘canberra’, ‘chebyshev’, ‘correlation’, ‘dice’, ‘hamming’, ‘jaccard’, ‘kulsinski’,
-# ‘mahalanobis’, ‘matching’, ‘minkowski’, ‘rogerstanimoto’, ‘russellrao’, ‘seuclidean’, ‘sokalmichener’, ‘sokalsneath’, ‘sqeuclidean’, ‘yule’]
-
-# pairwise_manhattan = pairwise_distances(visitor_matrix_transposed, metric='manhattan')
-# print('pairwise_distances manhattan:\n {} \n'.format(pairwise_manhattan))
-#
-# pairwise_euclidean = pairwise_distances(visitor_matrix_transposed, metric='euclidean')
-# print('pairwise_distances euclidean:\n {} \n'.format(pairwise_euclidean))
-#
-# similarities = cosine_similarity(visitor_matrix_transposed)
-# print('pairwise cosine_similarity:\n {}\n'.format(similarities))
-
-# # pairwise_DTW = pairwise_distances(visitor_matrix_transposed, metric='euclidean')
-# # print('pairwise_distances euclidean:\n {} \n'.format(pairwise_euclidean))
 
 # #############################################################################
 # Perform DBSCAN clustering from vector array or distance matrix.
@@ -121,12 +94,19 @@ def clustering_by_dbscan(df_imputation_dbscan):
             total_number_of_store = len(labels)
             percent_of_noise = percentage(n_noise_, total_number_of_store, 2)
             cluster_label_matrix[:, ind] = labels
+
+            # core_samples_mask = np.zeros_like(dbs.labels_, dtype=bool)
+            # core_samples_mask[dbs.core_sample_indices_] = True
+
             if nclusters > 1:
                 break_out = True
             # prev_nclusters != nclusters: Choose only one number of cluster - (prev_nclusters != nclusters) &
             # nclusters > 2: Number of clusters must be greater than 2
             # percent_of_noise<10: percent of noise must be less than 10 percent
-            if (nclusters > MIN_CLUSTERS_ARG) & (percent_of_noise < MAX_NOISE_PERCENT_ARG):
+            test = MIN_CLUSTERS_ARG + 1
+            print("test:", test)
+
+            if (nclusters == test) & (percent_of_noise < MAX_NOISE_PERCENT_ARG):
             # if True:
             #     print('================= RESULTS ========================')
             #     print('cluster_labels index   : {}'.format(ind))
@@ -155,8 +135,9 @@ def clustering_by_dbscan(df_imputation_dbscan):
         # for i in range(0, cluster_label_matrix.shape[0]):
         #     encoded_labels = [ str(x).encode() for x \
         #             in cluster_label_matrix[i, 0:len(actual_parameters)] ]
-    # print("Dataframe after imputation and dbscan clustering - df_imputation_dbscan_arg: \n", df_imputation_dbscan_arg)
+    print("Dataframe after imputation and dbscan clustering - df_imputation_dbscan_arg: \n", df_imputation_dbscan_arg)
     # df_imputation_dbscan_arg.to_csv('df_imputation_dbscan_arg.csv')
+    # sys.exit()
     return df_imputation_dbscan_arg
 
 def check_central_majority(df_genre_location, labels):
@@ -170,12 +151,7 @@ def check_central_majority(df_genre_location, labels):
     df = df.copy()
     print("df dataframe:\n", df)
     df.loc[:,'labels'] = labels
-    # print('df_genre_location        :\n {} \n'.format(df))
-    # df.loc[df.air_area_name == '', 'make'] = df.air_area_name.str.split().str.get(0)
     df['first_word'] = df['air_area_name'].str.split().str[0]
-    # print('df_genre_location        :\n {} \n'.format(df))
-    # df.iloc[0:df[df.labels == '0'].index[0]]
-    # For each k-th cluster in a set of clusters
     for k in unique_labels:
         df_label = df.loc[df['labels'] == k]
         print('df_genre_location new column labels :\n {} \n'.format(df_label))

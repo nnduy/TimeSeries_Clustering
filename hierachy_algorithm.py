@@ -52,19 +52,6 @@ def format_arename_col_first_word(df):
 # output:
 #   labels_hc       : labels of hierachy cluster
 def labeling_hierachy_cluster(dataset_ts_arg, affinity_arg, linkage_arg, NUM_OF_HC_CLUSTER_ARG):
-    #3 Using the dendrogram to find the optimal numbers of clusters.
-    # First thing we're going to do is to import scipy library. scipy is an open source
-    # Python library that contains tools to do hierarchical clustering and building dendrograms.
-
-    #Lets create a dendrogram variable
-    # linkage is actually the algorithm itself of hierarchical clustering and then in
-    #linkage we have to specify on which data we apply and engage. This is X dataset
-
-    # dendrogram = sch.dendrogram(sch.linkage(dataset_ts, method = "ward"))
-    # plt.title('Dendrogram')
-    # plt.xlabel('Series')
-    # plt.ylabel('Euclidean distances')
-    # plt.show()
 
     #4 Fitting hierarchical clustering to the Mall_Customes dataset
     # There are two algorithms for hierarchical clustering: Agglomerative Hierarchical Clustering and
@@ -74,11 +61,7 @@ def labeling_hierachy_cluster(dataset_ts_arg, affinity_arg, linkage_arg, NUM_OF_
 
     # Lets try to fit the hierarchical clustering algorithm  to dataset X while creating the
     # clusters vector that tells for each customer which cluster the customer belongs to.
-    # print("type of one element in dataset_ts_arg:", dataset_ts_arg[0][0])
-    # print("type of one element in dataset_ts_arg:", type(dataset_ts_arg[0][0]))
     labels_hc = hc.fit_predict(dataset_ts_arg)
-    # print("labels_hc:\n", labels_hc)
-    # print("labels_hc type:", type(labels_hc))
     return labels_hc
 
 # Method used: Clustering by hierachy method
@@ -109,21 +92,7 @@ def clustering_by_hierachy(df_imputation_hierachy):
         n_noise_ = list(labels).count(-1)
         total_number_of_store = len(labels)
         percent_of_noise = percentage(n_noise_, total_number_of_store, 2)
-        if nclusters > 1:
-            break_out = True
-        # prev_nclusters != nclusters: Choose only one number of cluster - (prev_nclusters != nclusters) &
-        # nclusters > 2: Number of clusters must be greater than 2
-        # percent_of_noise<10: percent of noise must be less than 10 percent
-        if (nclusters > 2) & (percent_of_noise<60):
-        # if True:
-            print('================= RESULTS ========================')
-            print('NUM_OF_HC_CLUSTER_ARG  : {}'.format(NUM_OF_HC_CLUSTER_ARG))
-            print('AFFINITY_ARG           : {}'.format(AFFINITY_ARG))
-            print('LINKAGE_ARG            : {}'.format(LINKAGE_ARG))
-            print('labels                 : \n {}'.format(labels))
-            print('Number of the clusters : {}'.format(nclusters))
-            print('Number of noise points : {}'.format(n_noise_))
-            print('Percent_of_noise       : {}'.format(percent_of_noise))
+        if (nclusters == 3):
 
             df_imputation_hierachy_arg.loc[imputation_hierachy_arg_index] = [df_imputation_hierachy.iloc[i]['X_first_column']] + [df_imputation_hierachy.iloc[i]['X']]\
                 + [df_imputation_hierachy.iloc[i]['ALGORITHMS_ARG']] + [df_imputation_hierachy.iloc[i]['RES_DATASET_ARG']]\
@@ -133,10 +102,4 @@ def clustering_by_hierachy(df_imputation_hierachy):
                 + [labels] + [nclusters] + [n_noise_] + [percent_of_noise]
             imputation_hierachy_arg_index = imputation_hierachy_arg_index + 1
 
-        if (prev_nclusters == 1) & (nclusters == 1) & break_out:
-          break
-        else:
-          prev_nclusters = nclusters
-    print("Dataframe after imputation and hierachy clustering - df_imputation_hierachy_arg: \n", df_imputation_hierachy_arg)
-    # df_imputation_hierachy_arg.to_csv('df_imputation_hierachy_arg.csv')
     return df_imputation_hierachy_arg
